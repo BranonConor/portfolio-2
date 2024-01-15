@@ -62,7 +62,7 @@ export const Nav = () => {
       overflow="hidden"
     >
       <Flex
-        display={["none", "none", "block"]}
+        display={["none", "none", "flex"]}
         width="100%"
         alignItems="center"
         justifyContent="center"
