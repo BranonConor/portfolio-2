@@ -46,15 +46,15 @@ export const Nav = () => {
   return (
     <Flex
       as="nav"
-      alignItems="flex-start"
-      justifyContent="flex-start"
+      alignItems={["center", "center", "flex-start"]}
+      justifyContent={["center", "center", "flex-start"]}
       flexDirection="column"
-      height="100%"
+      height={["64px", "64px", "100%"]}
       position="fixed"
       left="0"
-      top="0"
+      top={["calc(100% - 64px)", "calc(100% - 64px)", "0"]}
       zIndex={10}
-      width={16}
+      width={["100%", "100%", 16]}
       bg={bg}
       boxShadow={shadow}
       borderRight={border}
@@ -62,6 +62,7 @@ export const Nav = () => {
       overflow="hidden"
     >
       <Flex
+        display={["none", "none", "block"]}
         width="100%"
         alignItems="center"
         justifyContent="center"
@@ -73,12 +74,13 @@ export const Nav = () => {
       </Flex>
       <UnorderedList
         display="flex"
-        flexDirection="column"
+        flexDirection={["row", "row", "column"]}
         alignItems="center"
         width="100%"
         margin={0}
       >
         <Tooltip
+          display={["none", "none", "block"]}
           borderRadius={6}
           label="Home"
           fontSize="md"
@@ -125,6 +127,7 @@ export const Nav = () => {
           </ListItem>
         </Tooltip>
         <Tooltip
+          display={["none", "none", "block"]}
           borderRadius={6}
           label="About"
           fontSize="md"
@@ -171,6 +174,7 @@ export const Nav = () => {
           </ListItem>
         </Tooltip>
         <Tooltip
+          display={["none", "none", "block"]}
           borderRadius={6}
           label="Projects"
           fontSize="md"
@@ -217,6 +221,7 @@ export const Nav = () => {
           </ListItem>
         </Tooltip>
         <Tooltip
+          display={["none", "none", "block"]}
           borderRadius={6}
           label="Blog"
           fontSize="md"
