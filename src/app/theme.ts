@@ -1,4 +1,5 @@
 import { extendTheme } from "@chakra-ui/react";
+import { buttonTheme } from "./componentOverrides/button";
 
 const colors = {
   white: "#FFFFFF",
@@ -9,6 +10,8 @@ const colors = {
     darkBg: "#111",
     lightBg: "#F6F6F6",
     pink: "#FF0096",
+    darkPink: "#980059",
+    blue: "#0080c7",
     gradient: "linear-gradient(124.41deg,#0072b1,#fd36ab 95.2%)",
   },
   shadows: {
@@ -21,4 +24,8 @@ const config = {
   useSystemColorMode: true,
 };
 
-export const theme = extendTheme({ colors, config });
+const components = {
+  Button: buttonTheme,
+};
+
+export const theme = extendTheme({ colors, config, components });

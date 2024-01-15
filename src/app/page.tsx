@@ -1,6 +1,13 @@
 "use client";
 
-import { Box, Flex, Heading, useColorModeValue, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  useColorModeValue,
+  Text,
+  Button,
+} from "@chakra-ui/react";
 import { Nav } from "../components/Nav";
 import { Wave } from "@/components/Wave";
 
@@ -48,7 +55,7 @@ export default function Home() {
           >
             I'm a UX-focused software engineer.
           </Heading>
-          <Text as="p">
+          <Text as="p" mb={8}>
             With a degree in behavioral neuroscience, a seasoned eye for
             best-in-class UX/UI, and a powerful command of modern technologies
             to build quality interfaces and experiences, my strengths lie at the
@@ -56,6 +63,12 @@ export default function Home() {
             accessible, and scalable software that delights users and propels
             businesses forward.
           </Text>
+          <Flex>
+            <Button variant="primary" mr={4}>
+              See my work
+            </Button>
+            <Button variant="secondary">Download resume</Button>
+          </Flex>
         </Flex>
       </Box>
       <Wave />
