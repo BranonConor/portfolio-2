@@ -15,6 +15,7 @@ import Link from "next/link";
 import { Technologies } from "@/components/sections/Technologies";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PageWrapper } from "@/components/PageWrapper";
+import { Showcase } from "@/components/sections/Showcase";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -43,6 +44,7 @@ export default function Home() {
         <Flex
           flexDirection={["column", "column", "row"]}
           width={["100%", "auto", "auto"]}
+          mb={[8, 10, 12]}
         >
           <Button
             variant="primary"
@@ -68,6 +70,7 @@ export default function Home() {
         </Flex>
 
         <Technologies />
+        <Showcase />
       </Flex>
     </PageWrapper>
   );

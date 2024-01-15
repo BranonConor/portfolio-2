@@ -49,7 +49,7 @@ export const Technologies = () => {
 
   return (
     <Box
-      marginY={[12, 16, 24]}
+      marginY={[8, 10, 12]}
       borderRadius={8}
       bg={bg}
       width="100%"
