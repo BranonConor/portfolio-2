@@ -20,6 +20,7 @@ export const ColorModeButton = () => {
       position="fixed"
       top={4}
       right={4}
+      zIndex={9}
       borderRadius="100%"
       bg={bg}
       boxShadow={shadow}

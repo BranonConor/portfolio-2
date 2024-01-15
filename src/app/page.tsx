@@ -14,6 +14,7 @@ import { Wave } from "@/components/Wave";
 import { DownloadIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { Technologies } from "@/components/sections/Technologies";
+import { FancyHeading } from "@/components/FancyHeading";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -25,7 +26,9 @@ export default function Home() {
       minHeight="100vh"
       maxWidth="100%"
       width="100%"
-      padding="0"
+      paddingY={0}
+      pl={16}
+      pr={0}
       display="flex"
       justifyContent="center"
       boxSizing="border-box"
@@ -37,6 +40,7 @@ export default function Home() {
         paddingY={16}
         paddingX={8}
         width="100%"
+        zIndex={1}
       >
         <Nav />
         <Flex
@@ -48,17 +52,7 @@ export default function Home() {
           <Heading as="h1" size="2xl" mb={4}>
             Hi, I'm Branon! 👋
           </Heading>
-          <Heading
-            as="h2"
-            size="xl"
-            color="brand.pink"
-            borderLeft="4px solid"
-            borderLeftColor="brand.pink"
-            pl={6}
-            mb={8}
-          >
-            I'm a UX-focused software engineer.
-          </Heading>
+          <FancyHeading>I'm a UX-focused software engineer.</FancyHeading>
           <Text as="p" mb={8}>
             With a degree in behavioral neuroscience, a seasoned eye for
             best-in-class UX/UI, and a powerful command of modern technologies
