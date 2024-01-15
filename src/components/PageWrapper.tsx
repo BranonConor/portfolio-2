@@ -28,7 +28,7 @@ export const PageWrapper: React.FC<BoxProps> = ({
         position="relative"
         overflowX="hidden"
         paddingY={16}
-        paddingX={8}
+        paddingX={[4, 4, 8]}
         width="100%"
         zIndex={1}
       >

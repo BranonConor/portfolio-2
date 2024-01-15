@@ -40,12 +40,28 @@ export default function Home() {
           accessible, and scalable software that delights users and propels
           businesses forward.
         </Text>
-        <Flex>
-          <Button variant="primary" as={Link} href="/projects" mr={4}>
+        <Flex
+          flexDirection={["column", "column", "row"]}
+          width={["100%", "auto", "auto"]}
+        >
+          <Button
+            variant="primary"
+            as={Link}
+            href="/projects"
+            mr={[0, 0, 4]}
+            mb={[4, 4, 0]}
+            width={["100%", "100%", "auto"]}
+          >
             <Image src="/icons/projects-light.svg" mr={2} width={4} />
             See my work
           </Button>
-          <Button variant="secondary" as="a" download href="/resume.pdf">
+          <Button
+            variant="secondary"
+            as="a"
+            download
+            href="/resume.pdf"
+            width={["100%", "100%", "auto"]}
+          >
             <DownloadIcon mr={2} width={4} />
             Download resume
           </Button>

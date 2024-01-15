@@ -48,7 +48,13 @@ export const Technologies = () => {
   ];
 
   return (
-    <Box marginY={24} borderRadius={8} bg={bg} width="100%" padding={4}>
+    <Box
+      marginY={[12, 16, 24]}
+      borderRadius={8}
+      bg={bg}
+      width="100%"
+      padding={4}
+    >
       <Heading as="h3" size="l" fontWeight={700} mb={4}>
         My Tools and Tech
       </Heading>
