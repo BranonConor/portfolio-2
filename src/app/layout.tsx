@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
-import {
-  ColorModeScript,
-  theme,
-  Flex,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { ColorModeScript, theme } from "@chakra-ui/react";
 import { ColorModeButton } from "@/components/ColorModeButton";
 
 export const metadata: Metadata = {
