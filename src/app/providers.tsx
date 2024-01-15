@@ -6,7 +6,7 @@ import { theme } from "./theme";
 import { Comfortaa } from "next/font/google";
 
 const comfortaa = Comfortaa({
-  weight: ["300", "400", "600"],
+  weight: ["300", "400", "600", "700"],
   subsets: ["latin"],
 });
 const fonts = {

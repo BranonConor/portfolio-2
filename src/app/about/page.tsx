@@ -29,7 +29,9 @@ export default function Home() {
       >
         <Nav />
         <Flex width="100%" alignItems="flex-start" justifyContent="flex-start">
-          <Heading as="h1">About Me</Heading>
+          <Heading as="h1" size="2xl">
+            About Me
+          </Heading>
           <Heading as="h2"></Heading>
         </Flex>
       </Box>

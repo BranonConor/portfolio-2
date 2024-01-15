@@ -7,9 +7,13 @@ import {
   useColorModeValue,
   Text,
   Button,
+  Image,
 } from "@chakra-ui/react";
 import { Nav } from "../components/Nav";
 import { Wave } from "@/components/Wave";
+import { DownloadIcon } from "@chakra-ui/icons";
+import Link from "next/link";
+import { Technologies } from "@/components/sections/Technologies";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -64,11 +68,17 @@ export default function Home() {
             businesses forward.
           </Text>
           <Flex>
-            <Button variant="primary" mr={4}>
+            <Button variant="primary" as={Link} href="/projects" mr={4}>
+              <Image src="/icons/projects-light.svg" mr={2} width={4} />
               See my work
             </Button>
-            <Button variant="secondary">Download resume</Button>
+            <Button variant="secondary" as="a" download href="/resume.pdf">
+              <DownloadIcon mr={2} width={4} />
+              Download resume
+            </Button>
           </Flex>
+
+          <Technologies />
         </Flex>
       </Box>
       <Wave />

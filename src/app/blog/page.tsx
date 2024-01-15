@@ -30,7 +30,9 @@ export default function Home() {
       >
         <Nav />
         <Flex width="100%" alignItems="flex-start" justifyContent="flex-start">
-          <Heading as="h1">Blog</Heading>
+          <Heading as="h1" size="2xl">
+            Blog
+          </Heading>
           <Heading as="h2"></Heading>
         </Flex>
       </Box>

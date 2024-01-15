@@ -11,7 +11,6 @@ export const ColorModeButton = () => {
     "lg",
     "0px 4px 15px 0px rgba(226,175,255, 0.10)"
   );
-  const border = useColorModeValue("2px solid", "0px solid");
 
   return (
     <Box
