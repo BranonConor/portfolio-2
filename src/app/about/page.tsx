@@ -40,7 +40,7 @@ export default function Home() {
           thinking in building beautiful and intuitive interfaces, and in
           constructing world-class design systems + component libraries.
         </Text>
-        <Text as="p" mb={4}>
+        <Text as="p" mb={16}>
           Outside of my main roles, I build productivity tools in my startup,
           LIFTOFF, co-create Udemy software development courses for tens of
           thousands of students, freelance as a web designer and developer for

@@ -30,7 +30,7 @@ export const Photography = () => {
             overflow="hidden"
             borderRadius={16}
             boxShadow={shadow}
-            border="8px solid"
+            border={"8px solid"}
             borderColor={border}
           >
             <Image src={photo} minWidth="100%" objectFit="cover" />
