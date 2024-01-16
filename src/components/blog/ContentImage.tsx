@@ -23,7 +23,7 @@ const ContentImage: React.FC<IContentImageProps> = ({ image, caption }) => {
         overflow="hidden"
         boxShadow={shadow}
       >
-        <Image src={image} objectFit="cover" alt={caption} />
+        <Image src={image} objectFit="cover" minWidth="100%" alt={caption} />
       </Box>
       {caption && (
         <Text fontStyle="italic" mb={8} as="span" fontSize="12px">
