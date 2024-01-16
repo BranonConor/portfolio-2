@@ -4,6 +4,7 @@ import { Flex, Box, Heading, useColorModeValue, Text } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { Photography } from "@/components/sections/Photography";
+import { SpotifyCard } from "@/components/sections/SpotifyCard";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -72,8 +73,28 @@ export default function Home() {
             ways to flex my creative muscles ever since I picked it up!
           </Text>
         </Box>
-
         <Photography />
+
+        <Box
+          width="100%"
+          borderRadius={10}
+          padding={4}
+          mt={8}
+          mb={4}
+          boxShadow={shadow}
+          bg={cardBg}
+        >
+          <Heading as="h3" size="l" mb={4}>
+            Music Production
+          </Heading>
+          <Text as="p">
+            I've been producing hip hop beats since I was in high school - over
+            a decade. I recently released my 3rd beat tape album on Spotify
+            under my producer name, @PancitPapi (a hearken to my Filipino
+            heritage). Check it out!
+          </Text>
+        </Box>
+        <SpotifyCard trackId="3sTnhMmZkSWRqwOjUd61Q8" />
       </Flex>
     </PageWrapper>
   );

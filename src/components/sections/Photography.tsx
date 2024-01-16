@@ -19,7 +19,7 @@ export const Photography = () => {
   );
 
   return (
-    <Flex my={4} width="100%">
+    <Flex my={4} mb={16} width="100%">
       <Grid
         width="100%"
         gridGap={4}
