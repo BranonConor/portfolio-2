@@ -18,12 +18,11 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
       borderRadius={10}
       mb={8}
       overflow="hidden"
-      height="300px"
+      height={["170px", "200px", "250px", "300px"]}
       boxShadow={shadow}
     >
       <Image
         src={image}
-        width="100%"
         objectFit="cover"
         objectPosition={["center", "center", "top center"]}
         position="absolute"
