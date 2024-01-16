@@ -17,6 +17,7 @@ const MetdataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
       borderRadius={10}
       padding={4}
       width="100%"
+      mt={4}
       mb={10}
     >
       <Flex alignItems="center" mb={[4, 4, 0]}>
