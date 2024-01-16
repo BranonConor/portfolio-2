@@ -31,7 +31,7 @@ export default function Home() {
     },
   ];
   return (
-    <PageWrapper bg={bg}>
+    <PageWrapper bg={bg} pb={8}>
       <Flex
         flexDirection="column"
         width="100%"
