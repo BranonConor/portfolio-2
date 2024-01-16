@@ -1,0 +1,32 @@
+import MetadataBar from "@/components/blog/MetadataBar";
+import HeaderImage from "@/components/blog/HeaderImage";
+import Note from "@/components/blog/Note";
+
+<HeaderImage image="/blog/creating-an-a11y-auditing-kit/cover.png" />
+
+# Creating an a11y audit kit
+
+## Breaking down my approach to accessibility auditing for the NIH's All of Us research program. 🧐
+
+<MetadataBar date="August 2022" category="A11y" />
+
+### Our Commitment to Accessibility
+
+At Color, I’m part of a team that spans a multitude of different disciplines (product design, content design, design technology, engineering, and more) with a single, lofty goal: implement processes to ensure that we conform to WCAG 2.0 AA!
+
+If you’re unfamiliar with WCAG, it stands for Web Content Accessibility Guidelines and it’s essentially the accessibility “bible” for digital experiences. As a design technologist with a neuroscience background, Color’s endeavor to create equitable healthcare experiences that account for the diversity of the human experience is right up my alley, so I was eager to take part in our goal of focusing on the accessibility of our web applications from the moment I joined the team.
+
+In time, we started to see two primary accessibility work streams:
+
+- Routinely audit existing products for WCAG 2.0 AA compliance (or, making things as accessible as possible)
+- Working on our processes and workflows to foster ongoing WCAG compliance as we build new features and new products going forward (or, keeping things as accessible as possible)
+
+A lot can be said about these items, but I’d like to focus on the first one for this article. I knew we wanted to make fixes and improvements to our products so they are up to accessibility standards, but… how? How can I identify what needs fixing in our apps? Where do I look for problems and what am I even really looking for? If you’re here reading this you’re likely fumbling with the same questions at your company, and that’s exactly why I’m writing this article!
+
+I recently ran my first product accessibility audit at Color (with the guidance and wisdom of my trusty Design Technology counterpart, Cordelia), and I learned a ton from it that might be helpful for you. We chose to start with our product that supports the All of Us Program in conjunction with the NIH and many other great partners (shameless plug), and I created a reproducible process from my learnings out of this audit. Today I’m going to share it with you so you can use it too. Oh —and to make this a bit more immersive and exciting, I’m going to audit your product with you right now by walking through each step of our flashy new A11y Audit Kit. It’s going to be fun, I promise!
+
+<Note>
+  Note: “a11y” is a numeronym for “accessibility”, where “11” is used to denote
+  the number of letters between “a” and “y”. From here on out, this article will
+  refer to “accessibility” as “a11y” accordingly.
+</Note>

@@ -9,14 +9,12 @@ import {
   Button,
   Image,
 } from "@chakra-ui/react";
-import { Nav } from "../components/Nav";
 import { DownloadIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { Technologies } from "@/components/sections/Technologies";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PageWrapper } from "@/components/PageWrapper";
 import { Showcase } from "@/components/sections/Showcase";
-import { MobileNav } from "@/components/MobileNav";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");

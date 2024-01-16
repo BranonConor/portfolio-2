@@ -7,6 +7,7 @@ import {
   Box,
   useColorModeValue,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 interface IPostCardProps {
   title: string;
@@ -38,6 +39,17 @@ export const PostCard: React.FC<IPostCardProps> = ({
       overflow="hidden"
       boxShadow="lg"
       minHeight="300px"
+      _hover={{
+        img: {
+          "&:first-of-type": {
+            transform: "scale(1.1)",
+            filter: "blur(8px)",
+          },
+          "&:last-of-type": {
+            transform: "translateX(-70%) scale(3)",
+          },
+        },
+      }}
     >
       <Image
         src={image}
@@ -48,6 +60,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
         height="100%"
         objectFit="cover"
         zIndex={0}
+        transition="0.15s ease all"
       />
       <Image
         src="/blog/gradient-dark.svg"
@@ -58,6 +71,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
         height="100%"
         objectFit="cover"
         zIndex={0}
+        transition="0.45s ease all"
       />
       <Flex
         flexDirection="column"
@@ -87,9 +101,9 @@ export const PostCard: React.FC<IPostCardProps> = ({
           </Text>
         </Box>
         <Button
-          as="a"
+          as={Link}
           aria-label={`Read more about ${title}`}
-          variant="secondary"
+          variant="primary"
           href={link}
         >
           Read more

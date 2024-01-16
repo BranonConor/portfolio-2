@@ -16,6 +16,13 @@ export default function Home() {
       date: "August 2022",
     },
     {
+      title: "Creating an A11y Auditing Kit",
+      category: "A11y",
+      image: "/blog/creating-an-a11y-auditing-kit/cover.png",
+      link: "/blog/posts/creating-an-a11y-auditing-kit",
+      date: "June 2022",
+    },
+    {
       title: "My strengths, as told by others",
       category: "Culture",
       image: "/blog/my-strengths-as-told-by-others/cover.png",
