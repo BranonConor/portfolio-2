@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, BoxProps } from "@chakra-ui/react";
 import { Wave } from "./Wave";
 import { AnimatePresence, motion } from "framer-motion";

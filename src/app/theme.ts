@@ -1,3 +1,5 @@
+"use client";
+
 import { extendTheme } from "@chakra-ui/react";
 import { buttonTheme } from "./componentOverrides/button";
 
