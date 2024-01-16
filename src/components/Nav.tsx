@@ -45,16 +45,17 @@ export const Nav = () => {
 
   return (
     <Flex
+      display={["none", "none", "block"]}
       as="nav"
-      alignItems={["center", "center", "flex-start"]}
-      justifyContent={["center", "center", "flex-start"]}
+      alignItems="flex-start"
+      justifyContent="flex-start"
       flexDirection="column"
-      height={["64px", "64px", "100%"]}
+      height="100%"
       position="fixed"
       left="0"
-      top={["calc(100% - 64px)", "calc(100% - 64px)", "0"]}
+      top="0"
       zIndex={10}
-      width={["100%", "100%", 16]}
+      width={16}
       bg={bg}
       boxShadow={shadow}
       borderRight={border}
@@ -62,7 +63,7 @@ export const Nav = () => {
       overflow="hidden"
     >
       <Flex
-        display={["none", "none", "flex"]}
+        display="flex"
         width="100%"
         alignItems="center"
         justifyContent="center"
@@ -74,13 +75,12 @@ export const Nav = () => {
       </Flex>
       <UnorderedList
         display="flex"
-        flexDirection={["row", "row", "column"]}
+        flexDirection="column"
         alignItems="center"
         width="100%"
         margin={0}
       >
         <Tooltip
-          display={["none", "none", "block"]}
           borderRadius={6}
           label="Home"
           fontSize="md"

@@ -10,7 +10,7 @@ export const Wave = () => {
       right={0}
       bottom={0}
       zIndex={0}
-      display={["none", "none", "block"]}
+      display={["none", "none", "none", "none", "none", "block"]}
     />
   );
 };

@@ -48,7 +48,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
       transition="0.15s ease all"
       _hover={{
         boxShadow: "lg",
-        transform: "translateY(-2px)",
+        transform: "translateY(-4px)",
       }}
     >
       <Heading as="h4" size="md" mb={2}>

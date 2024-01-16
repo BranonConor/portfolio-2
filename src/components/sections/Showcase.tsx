@@ -13,7 +13,7 @@ export const Showcase: React.FC = () => {
       title: "Launched ListRocket in Beta! 🚀",
       description:
         "I've launched my web app, ListRocket, a productivity tool for bootstrapping every-day events with friends and family, in beta, fully free! Check it out 👇",
-      role: "Design Technologist",
+      role: "Software Engineer",
       link: "https://listrocket.app",
       codeLink: "#",
     },
