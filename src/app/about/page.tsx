@@ -47,6 +47,13 @@ export default function Home() {
           small businesses, and much more!
         </Text>
 
+        <FancyHeading pl={2} mb={4}>
+          More than just a tech worker
+        </FancyHeading>
+        <Text>
+          Life's too short to do anything but what you love. Here are some of my
+          other passions:
+        </Text>
         <Box
           width="100%"
           borderRadius={10}
@@ -55,19 +62,14 @@ export default function Home() {
           boxShadow={shadow}
           bg={cardBg}
         >
-          <Heading
-            color="brand.blue"
-            as="h3"
-            size="l"
-            borderLeft="2px solid"
-            pl={2}
-            mb={4}
-          >
-            I'm more than just a tech worker though!
+          <Heading as="h3" size="l" mb={4}>
+            Photography & Digital Art
           </Heading>
-          <Text>
-            Life's too short to do anything but what you love. Here are some of
-            my other passions:
+          <Text as="p">
+            I've been doing photography for almost a decade, winning many awards
+            and honors as well as scoring contracts with large companies for
+            collaborations and shoots. Photography has been one of my favorite
+            ways to flex my creative muscles ever since I picked it up!
           </Text>
         </Box>
 
