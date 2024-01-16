@@ -21,7 +21,7 @@ export const Technologies = () => {
     { name: "CSS", image: "css.svg" },
     { name: "Javascript", image: "javascript.svg" },
     { name: "Typescript", image: "typescript.svg" },
-    { name: "React", image: "React.svg" },
+    { name: "React", image: "react-logo.svg" },
     { name: "NextJS", image: "next.svg" },
     { name: "GatsbyJS", image: "gatsby.svg" },
     { name: "Figma", image: "figma.svg" },
