@@ -21,7 +21,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </FancyHeading>
     ),
     h3: ({ children }) => (
-      <Heading as="h3" size="l" borderLeft="2px solid" pl={2}>
+      <Heading as="h3" size="l" borderLeft="2px solid" pl={2} mt={8}>
         {children}
       </Heading>
     ),

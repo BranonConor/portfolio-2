@@ -7,7 +7,7 @@ interface IMetadataBarProps {
   category: string;
 }
 
-const MetdataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
+const MetadataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
   return (
     <Flex
       alignItems={["flex-start", "flex-start", "center"]}
@@ -18,7 +18,7 @@ const MetdataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
       padding={4}
       width="100%"
       mt={4}
-      mb={10}
+      mb={4}
     >
       <Flex alignItems="center" mb={[4, 4, 0]}>
         <Text color="white" as="span" mr={2}>
@@ -56,4 +56,4 @@ const MetdataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
     </Flex>
   );
 };
-export default MetdataBar;
+export default MetadataBar;

@@ -19,6 +19,7 @@ const Note: React.FC<BoxProps> = ({ children, ...otherProps }) => {
       fontWeight={700}
       fontSize="sm"
       {...otherProps}
+      mb={4}
     >
       {children}
     </Box>

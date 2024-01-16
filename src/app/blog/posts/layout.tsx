@@ -1,14 +1,15 @@
 "use client";
 
 import { PageWrapper } from "@/components/PageWrapper";
-import { Flex, useColorModeValue } from "@chakra-ui/react";
+import { Button, Flex, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
+import Link from "next/link";
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const bg = useColorModeValue("white", "brand.grey");
 
   return (
-    <PageWrapper bg={bg} mt="-32px">
+    <PageWrapper bg={bg} mt="-32px" pb={10}>
       <Flex justifyContent="center" width="100%">
         <Flex
           flexDirection="column"
@@ -18,6 +19,11 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           justifyContent="flex-start"
         >
           {children}
+          <Flex>
+            <Button mt={8} variant="primary" as={Link} href="/blog">
+              👈🏽 Back to blog
+            </Button>
+          </Flex>
         </Flex>
       </Flex>
     </PageWrapper>
