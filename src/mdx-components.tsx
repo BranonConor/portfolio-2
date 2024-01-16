@@ -1,4 +1,4 @@
-import { Heading, Text, UnorderedList } from "@chakra-ui/react";
+import { Heading, Text, UnorderedList, Link } from "@chakra-ui/react";
 import type { MDXComponents } from "mdx/types";
 import Image, { ImageProps } from "next/image";
 import { FancyHeading } from "./components/FancyHeading";
@@ -31,6 +31,22 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Text>
     ),
     ul: ({ children }) => <UnorderedList size="md">{children}</UnorderedList>,
+    a: ({ children, href }) => (
+      <Link
+        color="brand.blue"
+        textDecoration="underline"
+        fontWeight={700}
+        href={href}
+        target="blank"
+        rel="noreferrer noopenner"
+        size="md"
+        _hover={{
+          color: "brand.pink",
+        }}
+      >
+        {children}
+      </Link>
+    ),
 
     img: (props) => (
       <Image

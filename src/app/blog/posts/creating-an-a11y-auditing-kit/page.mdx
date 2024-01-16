@@ -15,7 +15,7 @@ import Note from "@/components/blog/Note";
 
 At Color, I’m part of a team that spans a multitude of different disciplines (product design, content design, design technology, engineering, and more) with a single, lofty goal: implement processes to ensure that we conform to WCAG 2.0 AA!
 
-If you’re unfamiliar with WCAG, it stands for Web Content Accessibility Guidelines and it’s essentially the accessibility “bible” for digital experiences. As a design technologist with a neuroscience background, Color’s endeavor to create equitable healthcare experiences that account for the diversity of the human experience is right up my alley, so I was eager to take part in our goal of focusing on the accessibility of our web applications from the moment I joined the team.
+If you’re unfamiliar with WCAG, it stands for [Web Content Accessibility Guidelines](https://www.w3.org/WAI/standards-guidelines/wcag/) and it’s essentially the accessibility “bible” for digital experiences. As a design technologist with a neuroscience background, Color’s endeavor to create equitable healthcare experiences that account for the diversity of the human experience is right up my alley, so I was eager to take part in our goal of focusing on the accessibility of our web applications from the moment I joined the team.
 
 In time, we started to see two primary accessibility work streams:
 
@@ -24,7 +24,7 @@ In time, we started to see two primary accessibility work streams:
 
 A lot can be said about these items, but I’d like to focus on the first one for this article. I knew we wanted to make fixes and improvements to our products so they are up to accessibility standards, but… how? How can I identify what needs fixing in our apps? Where do I look for problems and what am I even really looking for? If you’re here reading this you’re likely fumbling with the same questions at your company, and that’s exactly why I’m writing this article!
 
-I recently ran my first product accessibility audit at Color (with the guidance and wisdom of my trusty Design Technology counterpart, Cordelia), and I learned a ton from it that might be helpful for you. We chose to start with our product that supports the All of Us Program in conjunction with the NIH and many other great partners (shameless plug), and I created a reproducible process from my learnings out of this audit. Today I’m going to share it with you so you can use it too. Oh —and to make this a bit more immersive and exciting, I’m going to audit your product with you right now by walking through each step of our flashy new A11y Audit Kit. It’s going to be fun, I promise!
+I recently ran my first product accessibility audit at Color (with the guidance and wisdom of my trusty Design Technology counterpart, [Cordelia](https://medium.com/u/5c929a7ccb98?source=post_page-----4dd09c1ceff4--------------------------------)), and I learned a ton from it that might be helpful for you. We chose to start with our product that supports the [All of Us Program](https://www.joinallofus.org/) in conjunction with the NIH and many other great partners (shameless plug), and I created a reproducible process from my learnings out of this audit. Today I’m going to share it with you so you can use it too. Oh —and to make this a bit more immersive and exciting, I’m going to audit your product with you right now by walking through each step of our flashy new A11y Audit Kit. It’s going to be fun, I promise!
 
 <Note>
   Note: “a11y” is a numeronym for “accessibility”, where “11” is used to denote
@@ -34,7 +34,7 @@ I recently ran my first product accessibility audit at Color (with the guidance 
 
 ### The A11y Audit Kit
 
-You’ve been very patient so here it is! Our A11y Audit Kit is a collection of documentation and tools, like Deque’s axe DevTools chrome plugin, which can empower anyone to jump in and audit a product’s core flows for a11y issues. The elevator pitch:
+You’ve been very patient so here it is! Our A11y Audit Kit is a collection of documentation and tools, like Deque’s [axe DevTools](https://www.deque.com/axe/devtools/) chrome plugin, which can empower anyone to jump in and audit a product’s core flows for a11y issues. The elevator pitch:
 
 <Note>
   It’s a framework for auditing, documenting, and creating remediation plans for
@@ -86,8 +86,8 @@ With the product’s core flows documented, you’re ready to crank the A11y Aud
 
 To start, this doc explains that axe DevTools has two types of tests to help find accessibility issues:
 
-- Automated Tests — scans the entire page you’re on for common accessibility issues, outputs the number of issues found with a breakdown of each one that you can highlight in the browser. Covers about 57% of a11y issues!
-- Intelligent Guided Tests — tests that are run somewhat manually with some guidance from the plugin’s UI, more focused (like keyboard navigation tests, heading order tests, image tests, etc.), with a nice output of results and recommended fixes. Extends your a11y issue coverage to 80% or more!
+- Automated Tests — scans the entire page you’re on for common accessibility issues, outputs the number of issues found with a breakdown of each one that you can highlight in the browser. Covers about [57% of a11y issues](https://www.deque.com/automated-accessibility-testing-coverage/)!
+- Intelligent Guided Tests — tests that are run somewhat manually with some guidance from the plugin’s UI, more focused (like keyboard navigation tests, heading order tests, image tests, etc.), with a nice output of results and recommended fixes. Extends your a11y issue coverage to [80% or more](https://www.youtube.com/watch?v=aM4nKEZyOjE)!
 
 Running these two types of tests on each page of your core flows (see the doc we finished in Step 2) is the bread and butter of the audit! At each step, axe DevTools will output incredible interactive reports and you’ll want to log that data into the two results sheets: Audit Results — Automated Tests + Audit Results — Intelligent Guided Tests.
 

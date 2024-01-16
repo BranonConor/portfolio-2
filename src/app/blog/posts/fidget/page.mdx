@@ -1,11 +1,68 @@
-# Welcome to my MDX page!
+import MetadataBar from "@/components/blog/MetadataBar";
+import HeaderImage from "@/components/blog/HeaderImage";
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
 
-This is some **bold** and _italics_ text.
+<HeaderImage image="/blog/fidget/cover.png" />
 
-This is a list in markdown:
+# Fidget - an award-winning hackweek project
 
-- One
-- Two
-- Three
+## Fidget is a Figma Widget for design peer reviews! 🚀
 
-Checkout my React component:
+<MetadataBar date="August 2022" category="Projects" />
+
+### Hot Hack Summer 2022
+
+It's Hack Week at [Color](https://color.com/) and I had the honor of assembling a team of some of my colleagues to help build a tool I've wanted to build for a long time - a Figma widget that helps empower Designers to get design reviews from their peers!
+
+We're proud to announce that Fidget won the Hot Hack Summer 2022, Inclusivity and Accessibility Award at Color! 🏆 Now that I've convinced you it's awesome, here's why.
+
+### Why Do Designers Need Peer Reviews?
+
+The better question is: why would they ship anything without a peer review? 🤔
+
+Think about it - software engineers have long had effective ways of collaborating and reviewing code through tools like Github, and code reviews are an integral part of engineering culture and process. Why shouldn't designers strive for the same?
+
+At Color, we have plenty of processes in place for designers to seek feedback (don't worry, we're not savages) but one thing that is endlessly fleeting is a "traffic controller" that can organize asynchronous reviews for all to see, vs. many different, more manual processes.
+
+Fidget does just that - it extends that peer-review model to our design ecosystem, and allows the design team to peer review work and improve consistency, quality, and visibility of our design work without ever having to leave their favorite design tools!
+
+### What We Built
+
+Fidget is modeled after the Github PR / code review flow. You start by opening a design file in Figma and finding the mockup you want reviews on. Then, just slap in the widget next to the file. It'll look like this in its default state:
+
+<ContentImage
+  image="/blog/fidget/welcome.webp"
+  caption="Fidget welcome screen"
+/>
+
+From here, you can request reviewers. If you click request a review, you'll be taken to the Requester UI. That looks like this:
+
+<ContentImage
+  image="/blog/fidget/request.webp"
+  caption="Fidget request a review UI"
+/>
+
+In the Requester UI, you can add reviewers from a list of your team members as reviewers, and then provide a description. You can also specify if the review is urgent or not. Neat! Submit that and you'll see the Widget UI change when its state is updated with an official request for reviews!
+
+<ContentImage
+  image="/blog/fidget/reviews.webp"
+  caption="Fidget awaiting reviews UI"
+/>
+
+We've engineered this widget to be sensitive to the roles of whoever is logged in viewing the file and the widget, as well as the statuses of the roles. If you're a reviewer, you'll be able to start your review. If you're not, and no one has listed a review, you won't be able to view anything. But if you're an observer and reviews have been left, you'll be able to view them in read-only mode. 👍🏽
+
+If you're a reviewer, you'll come to leave your review. For now, reviews just consist of Figma comments since they're convenient and powerful to work with. Once you're done marking up a design with comments, you can leave a review summary with an approval or request for changes in the Reviewer UI. That looks like this:
+
+<ContentImage
+  image="/blog/fidget/review.webp"
+  caption="Fidget leaving a review UI"
+/>
+
+Submit either an approval or a request for changes, and you'll see the Widget UI update its state in real time! You can also go in at any time and edit or update your review.
+
+Once all required reviewers come in and approve the request, you'll know that the design mockup is ready for handoff to eng. These widgets keep state forever too, which is awesome, AND you can have as many as you want on the page with no issues - each instance of Fidget keeps track of its own state independent from the rest, so reviews can happen all over concurrently with no issues.
+
+### A Fidget Demo!
+
+[Check it out here](https://www.loom.com/share/06bf10a4338241ada158a0ce50856544)! We can't wait to bring it to a Figma file near you soon. ✨
