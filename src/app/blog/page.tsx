@@ -39,7 +39,7 @@ export default function Home() {
         justifyContent="flex-start"
       >
         <Heading as="h1" size="2xl" mb={4}>
-          Blog
+          Blog ✍🏼
         </Heading>
         <FancyHeading as="h2">Updates, thoughts, and more!</FancyHeading>
         <Grid

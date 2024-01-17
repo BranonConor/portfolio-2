@@ -2,8 +2,8 @@
 
 import {
   Flex,
-  Box,
-  Grid,
+  Button,
+  Image,
   Heading,
   useColorModeValue,
   Text,
@@ -12,14 +12,12 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { Photography } from "@/components/sections/Photography";
 import { Music } from "@/components/sections/Music";
+import Link from "next/link";
+import { ChatIcon } from "@chakra-ui/icons";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
-  const cardBg = useColorModeValue("brand.lightBg", "brand.darkBg");
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.10)"
-  );
+
   return (
     <PageWrapper bg={bg} pb={8}>
       <Flex
@@ -29,7 +27,7 @@ export default function Home() {
         flexDirection="column"
       >
         <Heading as="h1" size="2xl" mb={4}>
-          About Me
+          About Me 💭
         </Heading>
         <FancyHeading as="h2">I love people. I love technology.</FancyHeading>
         <Text as="p" mb={4}>
@@ -39,23 +37,45 @@ export default function Home() {
           neuropsychiatric clinic.
         </Text>
         <Text as="p" mb={4}>
-          As my fascination with technology got the better of me, I began to
-          experiment with designing and coding websites. I was hooked
-          immediately, and since then I've been diving deeper and deeper into
-          the vast worlds of software development and UX/UI design. Nowadays, I
-          specialize in design systems, accessibility, prototyping, and general
-          frontend engineering. I love flexing creativity and systems-level
-          thinking in building beautiful and intuitive interfaces, and in
-          constructing world-class design systems + component libraries.
+          Nowadays, I specialize in design + engineering in design systems,
+          accessibility, prototyping, and general frontend product work. I love
+          flexing creativity and systems-level thinking in building beautiful
+          and intuitive interfaces, and in constructing world-class design
+          systems + component libraries.
         </Text>
-        <Text as="p" mb={16}>
-          Outside of my main roles, I build productivity tools in my startup,
-          LIFTOFF, co-create Udemy software development courses for tens of
-          thousands of students, freelance as a web designer and developer for
-          small businesses, and much more!
+        <Text as="p" mb={8}>
+          Outside of my main roles, I build fullstack web apps, create Udemy
+          software development courses for tens of thousands of students, do web
+          design/development for small businesses, and much more!
         </Text>
+        <Flex
+          flexDirection={["column", "column", "row"]}
+          width={["100%", "auto", "auto"]}
+          mb={[10, 12, 16]}
+        >
+          <Button
+            variant="primary"
+            as={Link}
+            href="/projects"
+            mr={[0, 0, 4]}
+            mb={[4, 4, 0]}
+            width={["100%", "100%", "auto"]}
+          >
+            <Image src="/icons/projects-light.svg" mr={2} width={4} />
+            See my work
+          </Button>
+          <Button
+            variant="secondary"
+            as={Link}
+            href="/blog"
+            width={["100%", "100%", "auto"]}
+          >
+            <ChatIcon mr={2} width={4} />
+            Visit blog
+          </Button>
+        </Flex>
 
-        <Heading mb={4}>More than just a tech worker</Heading>
+        <Heading my={4}>More than just a tech worker</Heading>
         <Text>
           Life's too short to do anything but what you love. Here are some of my
           other passions:
