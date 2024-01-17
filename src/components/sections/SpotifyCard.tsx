@@ -19,9 +19,8 @@ export const SpotifyCard: React.FC<ISpotifyCardProps> = ({ trackId }) => {
       height="600px"
       allowFullScreen
       allow="encrypted-media"
-      borderRadius={20}
+      borderRadius={16}
       boxShadow={shadow}
-      border="8px solid"
       borderColor={borderColor}
     />
   );

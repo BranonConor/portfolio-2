@@ -1,10 +1,17 @@
 "use client";
 
-import { Flex, Box, Heading, useColorModeValue, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Grid,
+  Heading,
+  useColorModeValue,
+  Text,
+} from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { Photography } from "@/components/sections/Photography";
-import { SpotifyCard } from "@/components/sections/SpotifyCard";
+import { Music } from "@/components/sections/Music";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -48,53 +55,13 @@ export default function Home() {
           small businesses, and much more!
         </Text>
 
-        <FancyHeading pl={2} mb={4}>
-          More than just a tech worker
-        </FancyHeading>
+        <Heading mb={4}>More than just a tech worker</Heading>
         <Text>
           Life's too short to do anything but what you love. Here are some of my
           other passions:
         </Text>
-        <Box
-          width="100%"
-          borderRadius={10}
-          padding={4}
-          mt={8}
-          boxShadow={shadow}
-          bg={cardBg}
-        >
-          <Heading as="h3" size="l" mb={4}>
-            Photography & Digital Art
-          </Heading>
-          <Text as="p">
-            I've been doing photography for almost a decade, winning many awards
-            and honors as well as scoring contracts with large companies for
-            collaborations and shoots. Photography has been one of my favorite
-            ways to flex my creative muscles ever since I picked it up!
-          </Text>
-        </Box>
+        <Music />
         <Photography />
-
-        <Box
-          width="100%"
-          borderRadius={10}
-          padding={4}
-          mt={8}
-          mb={4}
-          boxShadow={shadow}
-          bg={cardBg}
-        >
-          <Heading as="h3" size="l" mb={4}>
-            Music Production
-          </Heading>
-          <Text as="p">
-            I've been producing hip hop beats since I was in high school - over
-            a decade. I recently released my 3rd beat tape album on Spotify
-            under my producer name, @PancitPapi (a hearken to my Filipino
-            heritage). Check it out!
-          </Text>
-        </Box>
-        <SpotifyCard trackId="3sTnhMmZkSWRqwOjUd61Q8" />
       </Flex>
     </PageWrapper>
   );

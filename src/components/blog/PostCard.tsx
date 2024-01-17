@@ -15,6 +15,9 @@ interface IPostCardProps {
   link: string;
   category: string;
   date: string;
+  useSecondaryButton?: boolean;
+  buttonText?: string;
+  useExternalLink?: boolean;
 }
 
 export const PostCard: React.FC<IPostCardProps> = ({
@@ -23,6 +26,9 @@ export const PostCard: React.FC<IPostCardProps> = ({
   link,
   category,
   date,
+  useSecondaryButton = false,
+  useExternalLink = false,
+  buttonText = "Read more",
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
@@ -100,14 +106,27 @@ export const PostCard: React.FC<IPostCardProps> = ({
             {date}
           </Text>
         </Box>
-        <Button
-          as={Link}
-          aria-label={`Read more about ${title}`}
-          variant="primary"
-          href={link}
-        >
-          Read more
-        </Button>
+        {useExternalLink ? (
+          <Button
+            as="a"
+            aria-label={`${buttonText} - ${title}`}
+            variant={useSecondaryButton ? "secondary" : "primary"}
+            href={link}
+            target="blank"
+            rel="noreferrer noopenner"
+          >
+            {buttonText}
+          </Button>
+        ) : (
+          <Button
+            as={Link}
+            aria-label={`${buttonText} - ${title}`}
+            variant={useSecondaryButton ? "secondary" : "primary"}
+            href={link}
+          >
+            {buttonText}
+          </Button>
+        )}
       </Flex>
     </Flex>
   );
