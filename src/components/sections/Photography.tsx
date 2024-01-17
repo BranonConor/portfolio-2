@@ -21,7 +21,7 @@ export const Photography = () => {
     { location: "Lake Tahoe, CA", image: "/photography/tahoe.png" },
   ];
   const shadow = useColorModeValue(
-    "lg",
+    "md",
     "0px 4px 15px 0px rgba(226,175,255, 0.10)"
   );
   const cardBg = useColorModeValue("brand.lightBg", "brand.darkBg");
@@ -63,12 +63,13 @@ export const Photography = () => {
               <Text
                 bg={bannerBg}
                 position="absolute"
-                top={0}
-                left={0}
+                top={1}
+                left={1}
                 height={8}
                 color={textColor}
                 fontWeight={700}
-                width="100%"
+                width="calc(100% - 8px)"
+                borderRadius={12}
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
@@ -79,6 +80,16 @@ export const Photography = () => {
                 <Image src={icon} width={4} height={4} mr={2} />
                 {photo.location}
               </Text>
+              {/* <Box
+                position="absolute"
+                top={1}
+                left={1}
+                border="4px solid"
+                borderColor={bannerBg}
+                width="calc(100% - 8px)"
+                height="calc(100% - 8px)"
+                borderRadius={16}
+              /> */}
             </Box>
           ))}
         </Grid>
