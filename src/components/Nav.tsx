@@ -71,7 +71,7 @@ export const Nav = () => {
         boxShadow={shadow}
         mb={8}
       >
-        <Image src={logo} width="42px" marginY={4} />
+        <Image draggable="false" src={logo} width="42px" marginY={4} />
       </Flex>
       <UnorderedList
         display="flex"
@@ -118,6 +118,7 @@ export const Nav = () => {
               justifyContent="center"
             >
               <Image
+                draggable="false"
                 src={homeIcon}
                 width={6}
                 height={6}
@@ -165,6 +166,7 @@ export const Nav = () => {
               justifyContent="center"
             >
               <Image
+                draggable="false"
                 src={aboutIcon}
                 width={6}
                 height={6}
@@ -212,6 +214,7 @@ export const Nav = () => {
               justifyContent="center"
             >
               <Image
+                draggable="false"
                 src={projectsIcon}
                 width={6}
                 height={6}
@@ -259,6 +262,7 @@ export const Nav = () => {
               justifyContent="center"
             >
               <Image
+                draggable="false"
                 src={blogIcon}
                 width={6}
                 height={6}

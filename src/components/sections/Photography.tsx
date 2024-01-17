@@ -55,6 +55,7 @@ export const Photography = () => {
           {photos.map((photo) => (
             <Box overflow="hidden" borderRadius={16} position="relative">
               <Image
+                draggable="false"
                 src={photo.image}
                 minWidth="100%"
                 objectFit="cover"
@@ -77,7 +78,13 @@ export const Photography = () => {
                 boxShadow={shadow}
                 fontSize="12px"
               >
-                <Image src={icon} width={4} height={4} mr={2} />
+                <Image
+                  src={icon}
+                  width={4}
+                  height={4}
+                  mr={2}
+                  draggable="false"
+                />
                 {photo.location}
               </Text>
               {/* <Box

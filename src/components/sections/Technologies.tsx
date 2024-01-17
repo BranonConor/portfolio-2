@@ -83,6 +83,7 @@ export const Technologies = () => {
             gutter={8}
           >
             <Image
+              draggable="false"
               as={motion.img}
               borderRadius={6}
               src={`/logos/${item.image}`}

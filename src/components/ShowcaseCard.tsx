@@ -79,7 +79,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
             transition: { duration: 0.1 },
           }}
         >
-          <Image src={linkIcon} />
+          <Image src={linkIcon} draggable="false" />
         </Link>
         <Link
           as={motion.a}
@@ -99,7 +99,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
             transition: { duration: 0.1 },
           }}
         >
-          <Image src={codeIcon} />
+          <Image src={codeIcon} draggable="false" />
         </Link>
       </Flex>
     </Flex>

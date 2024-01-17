@@ -69,6 +69,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
         transition="0.15s ease all"
       />
       <Image
+        draggable="false"
         src="/blog/gradient-dark.svg"
         position="absolute"
         top={0}
