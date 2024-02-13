@@ -23,6 +23,10 @@ export const Nav = () => {
     "/icons/projects-dark.svg",
     "/icons/projects-light.svg"
   );
+  const engagementsIcon = useColorModeValue(
+    "/icons/engagements-dark.svg",
+    "/icons/engagements-light.svg"
+  );
   const blogIcon = useColorModeValue(
     "/icons/blog-dark.svg",
     "/icons/blog-light.svg"
@@ -216,6 +220,54 @@ export const Nav = () => {
               <Image
                 draggable="false"
                 src={projectsIcon}
+                width={6}
+                height={6}
+                boxSizing="border-box"
+              />
+            </Box>
+          </ListItem>
+        </Tooltip>
+        <Tooltip
+          display={["none", "none", "block"]}
+          borderRadius={6}
+          label="Engagements"
+          fontSize="md"
+          placement="right"
+          bg={tooltipBg}
+          color={tooltipText}
+          fontWeight="bold"
+          gutter={16}
+        >
+          <ListItem
+            borderRadius="10px"
+            marginY={1}
+            as={motion.li}
+            listStyleType="none"
+            height={12}
+            cursor="pointer"
+            width="70%"
+            whileHover={{
+              scale: 1.1,
+              transition: { duration: 0.05, type: "spring" },
+              boxShadow: itemShadow,
+            }}
+            whileTap={{
+              scale: 1.2,
+              transition: { duration: 0.1 },
+            }}
+          >
+            <Box
+              as={Link}
+              href="/engagements"
+              width="100%"
+              height="100%"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Image
+                draggable="false"
+                src={engagementsIcon}
                 width={6}
                 height={6}
                 boxSizing="border-box"
