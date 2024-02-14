@@ -7,13 +7,13 @@ import { PostCard } from "@/components/blog/PostCard";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
-  const projects = [
+  const engagements = [
     {
-      title: "Rebranding @ Charter Healthcare",
-      category: "Brand Design",
-      image: "/projects/charter/cover.png",
-      link: "/projects/posts/charter",
-      date: "July 2020",
+      title: "Design Panel w/ SDSU + Friends of Figma",
+      category: "Mentoring",
+      image: "/engagements/sdsu-friends-of-figma/cover.png",
+      link: "/engagements/posts/sdsu-friends-of-figma",
+      date: "April 2022",
     },
   ];
 
@@ -26,21 +26,21 @@ export default function Home() {
         justifyContent="flex-start"
       >
         <Heading as="h1" size="2xl" mb={4}>
-          Projects 🛠️
+          Engagements 🤝
         </Heading>
-        <FancyHeading as="h2">Cool things I've worked on</FancyHeading>
+        <FancyHeading as="h2">Showing up for the community!</FancyHeading>
         <Grid
           width="100%"
           gridGap={4}
           gridTemplateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr", "1fr 1fr"]}
         >
-          {projects.map((project) => (
+          {engagements.map((engagement) => (
             <PostCard
-              title={project.title}
-              image={project.image}
-              link={project.link}
-              category={project.category}
-              date={project.date}
+              title={engagement.title}
+              image={engagement.image}
+              link={engagement.link}
+              category={engagement.category}
+              date={engagement.date}
             />
           ))}
         </Grid>

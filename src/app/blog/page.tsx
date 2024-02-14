@@ -30,6 +30,7 @@ export default function Home() {
       date: "August 2022",
     },
   ];
+
   return (
     <PageWrapper bg={bg} pb={8}>
       <Flex
