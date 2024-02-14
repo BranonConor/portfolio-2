@@ -11,7 +11,7 @@ export default function Home() {
     {
       title: "Design Panel w/ SDSU + Friends of Figma",
       category: "Mentoring",
-      image: "/blog/sdsu-friends-of-figma/cover.png",
+      image: "/engagements/sdsu-friends-of-figma/cover.png",
       link: "/engagements/posts/sdsu-friends-of-figma",
       date: "April 2022",
     },

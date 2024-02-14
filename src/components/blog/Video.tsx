@@ -1,16 +1,28 @@
 "use client";
 
-import { AspectRatio } from "@chakra-ui/react";
+import { AspectRatio, Box, useColorModeValue } from "@chakra-ui/react";
 
 interface IVideoProps {
   url: string;
 }
 
 const Video: React.FC<IVideoProps> = ({ url }) => {
+  const shadow = useColorModeValue(
+    "lg",
+    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
+  );
   return (
-    <AspectRatio maxW="560px" ratio={1}>
-      <iframe title="SDSU Design Panel" src={url} allowFullScreen />
-    </AspectRatio>
+    <Box
+      width="100%"
+      overflow="hidden"
+      borderRadius={12}
+      boxShadow={shadow}
+      my={8}
+    >
+      <AspectRatio maxW="100%" ratio={2 / 1}>
+        <iframe src={url} />
+      </AspectRatio>
+    </Box>
   );
 };
 
