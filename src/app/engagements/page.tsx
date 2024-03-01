@@ -9,11 +9,18 @@ export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
   const engagements = [
     {
-      title: "Design Panel w/ SDSU + Friends of Figma",
+      title: "Design Panel @ SDSU + Friends of Figma",
       category: "Mentoring",
       image: "/engagements/sdsu-friends-of-figma/cover.png",
       link: "/engagements/posts/sdsu-friends-of-figma",
       date: "April 2022",
+    },
+    {
+      title: "Featured Guest @ One Bad Habit Podcast",
+      category: "Public Speaking",
+      image: "/engagements/one-bad-habit/cover.png",
+      link: "/engagements/posts/one-bad-habit",
+      date: "June 2022",
     },
   ];
 
