@@ -7,7 +7,14 @@ import { PostCard } from "@/components/blog/PostCard";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
-  const projects = [
+  const brandingProjects = [
+    {
+      title: "Rebranding @ Etch AI",
+      category: "Brand Design",
+      image: "/projects/etch/cover.png",
+      link: "/projects/posts/etch",
+      date: "March 2024",
+    },
     {
       title: "Rebranding @ Charter Healthcare",
       category: "Brand Design",
@@ -29,12 +36,16 @@ export default function Home() {
           Projects 🛠️
         </Heading>
         <FancyHeading as="h2">Cool things I've worked on</FancyHeading>
+
+        <Heading as="h3" size="md" my={4}>
+          Brand Design
+        </Heading>
         <Grid
           width="100%"
           gridGap={4}
           gridTemplateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr", "1fr 1fr"]}
         >
-          {projects.map((project) => (
+          {brandingProjects.map((project) => (
             <PostCard
               title={project.title}
               image={project.image}
