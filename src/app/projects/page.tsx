@@ -44,8 +44,28 @@ export default function Home() {
         </Heading>
         <FancyHeading as="h2">Cool things I've worked on</FancyHeading>
 
+        {/* <Heading as="h3" size="md" mb={4}>
+          🎨 Design Systems
+        </Heading>
+        <Grid
+          width="100%"
+          gridGap={4}
+          mb={24}
+          gridTemplateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr", "1fr 1fr"]}
+        >
+          {brandingProjects.map((project) => (
+            <PostCard
+              title={project.title}
+              image={project.image}
+              link={project.link}
+              category={project.category}
+              date={project.date}
+            />
+          ))}
+        </Grid> */}
+
         <Heading as="h3" size="md" my={4}>
-          Brand Design
+          🌈 Brand Design
         </Heading>
         <Grid
           width="100%"
