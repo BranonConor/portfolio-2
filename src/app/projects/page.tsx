@@ -4,32 +4,10 @@ import { Flex, Grid, Heading, useColorModeValue } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PostCard } from "@/components/blog/PostCard";
+import { brandingProjects } from "./consts";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
-  const brandingProjects = [
-    {
-      title: "Rebranding @ Etch AI",
-      category: "Brand Design",
-      image: "/projects/etch/cover.png",
-      link: "/projects/posts/etch",
-      date: "March 2024",
-    },
-    {
-      title: "Branding & Digital @ TIDAL Acupuncture",
-      category: "Brand Design",
-      image: "/projects/tidal/cover.png",
-      link: "/projects/posts/tidal",
-      date: "December 2023",
-    },
-    {
-      title: "Rebranding @ Charter Healthcare",
-      category: "Brand Design",
-      image: "/projects/charter/cover.png",
-      link: "/projects/posts/charter",
-      date: "July 2020",
-    },
-  ];
 
   return (
     <PageWrapper bg={bg}>
