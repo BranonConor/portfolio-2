@@ -103,6 +103,7 @@ export default function Home() {
               duration: 0.15,
               type: "spring",
             }}
+            style={{ width: "100%" }}
           >
             <Heading as="h3" size="md" my={4}>
               🎨 Design Systems
@@ -132,6 +133,7 @@ export default function Home() {
               duration: 0.15,
               type: "spring",
             }}
+            style={{ width: "100%" }}
           >
             <Heading as="h3" size="md" my={4}>
               🌈 Brand Design
@@ -169,6 +171,7 @@ export default function Home() {
               duration: 0.15,
               type: "spring",
             }}
+            style={{ width: "100%" }}
           >
             <Heading as="h3" size="md" my={4}>
               🤝 Accessibility
