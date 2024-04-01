@@ -10,7 +10,7 @@ const Note: React.FC<BoxProps> = ({ children, ...otherProps }) => {
   );
   return (
     <Box
-      paddingY={2}
+      paddingY={4}
       px={4}
       bg={bg}
       borderRadius="10"
@@ -19,7 +19,14 @@ const Note: React.FC<BoxProps> = ({ children, ...otherProps }) => {
       fontWeight={700}
       fontSize="sm"
       {...otherProps}
-      mb={4}
+      my={4}
+      sx={{
+        "& > p": {
+          margin: 0,
+          borderLeft: "1px solid",
+          paddingLeft: 2,
+        },
+      }}
     >
       {children}
     </Box>
