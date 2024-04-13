@@ -30,3 +30,12 @@ export const designSystemsProjects = [
     date: "Dec 2022",
   },
 ];
+export const a11yProjects = [
+  {
+    title: "A11y Audit Program @ Color Health",
+    category: "A11y",
+    image: "/projects/a11y-kit/cover.png",
+    link: "/projects/posts/a11y-kit",
+    date: "June 2022",
+  },
+];

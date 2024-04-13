@@ -1,0 +1,175 @@
+import MetadataBar from "@/components/blog/MetadataBar";
+import HeaderImage from "@/components/blog/HeaderImage";
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
+
+<HeaderImage image="/projects/a11y-kit/cover.png" />
+
+# Color Palette Parity @ Color Health
+
+## Aligning system color palettes in design x code
+
+<MetadataBar date="June 2022" category="A11y" />
+
+### ✍🏽 About Color
+
+Color Health is a Series E biotech unicorn building a public health software platform.
+
+Color offers healthcare services like testing, vaccines, and medication for COVID, at-home screening for biometrics, and STIs, all made seamless with web applications and portals.
+
+In 2022 they partnered with 2,000 organizations, including public health departments, universities, and employers across the US.
+
+<ContentImage
+  image="/projects/a11y-kit/intro.png"
+  caption="Color Health website landing page"
+/>
+
+### ⚠️ The Problems
+
+- With partners like the National Institutes of Health (NIH), Yale, etc. - we’re often bound to Section 508 compliance.
+- We needed to audit and fix our products to be able to ensure WCAG 2.1 AA standards are met in our web apps.
+- We had no existing program in place to do so.
+
+### ✨ The Solution
+
+- Perform the first E2E a11y audit on a product at Color
+- Make necessary fixes based on audit findings to achieve WCAG 2.1 AA compliance
+- Compile learnings and create a system/framework to make future audits frictionless
+
+### 👯‍♂️ The Team
+
+#### UX Infrastructure
+
+- 1 Senior EM
+- 2 Design Systems Product Designers
+- Staff Design Technologist
+- Design Technologist (Me 👋🏽)
+
+#### UX Research
+
+- 2 User Researchers
+
+#### All of Us Team
+
+- Principle Product Manager
+- 5 Software Engineers
+- 3 Product Designers
+- 1 Design Manager
+
+<br />
+
+# 🛠️ AoU A11y Audit
+
+Before diving in, we needed to cover some of our bases:
+
+- What are the core flows of AoU’s Genomics Platform (GP) product?
+- How can I access the product in staging, local, etc. environments?
+- What tools can we employ to audit the product?
+
+<ContentImage
+  image="/projects/a11y-kit/flows.png"
+  caption="A user path through a couple mobile screens of the Color web app"
+/>
+
+With our audit prep done, it was time to dig in. I devoted an entire 2-week sprint to traversing the core flows of GP, running Axe’s DevTools tests at each step of the way and recorded the output into a spreadsheet. Once I was done auditing the core flows, I had a couple giant spreadsheets full of a11y issue data.
+
+The next challenge was to figure out how to take that data and create actionable work out of it. I worked with the AoU PM, Amy, to create a Jira Epic for GP A11y, and I translated the data into Jira tickets.
+
+<ContentImage
+  image="/projects/a11y-kit/spreadsheets.png"
+  caption="Spreadsheets with data and a Jira dashboard with tasks"
+/>
+
+Now that we had a nice Jira Epic full of tickets tracking all existing UI a11y bugs in GP, it was time to make the engineering fixes.
+
+The team was busy with a launch though, so I volunteered to dive in and grind my way through the epic by myself in the background.
+
+I made fixes to GP-specific React components and Design System components alike! I merged each fix in over time, resulting in 100% of A11y issues being resolved (300+)!
+
+To tie up loose ends, I:
+
+- Did a bit of manual testing
+- Reran Axe tests to confirm issue resolution
+- Addressed any final issues in a similar manner
+
+<ContentImage
+  image="/projects/a11y-kit/fix.png"
+  caption="Code being written, with an error notification turning into a success notification"
+/>
+
+### WCAG 2.1 AA Compliance reached!
+
+<ContentImage
+  image="/projects/a11y-kit/wcag.png"
+  caption="WCAG 2.1 AA compliance reached in our product"
+/>
+
+We had now more or less reached our desired standard of accessibility compliance in our product! We had a great update from our internal Head of Research Programs about how our a11y efforts made us stand out from all of the other technology partners in the All of Us program, saying:
+
+<Note>
+  "I'm reviewing the program-wide AoU Initiative Proposals for H2 2022, and
+  there's a call out to address 100+ adverse findings related to Section 508
+  [accessibility requirements], BUT none of them are in the Genomics Platform
+  🙂. THANK YOU to @branon.eusebio and this team for being a leader for
+  accessibility in AoU [All of Us] and at Color 🙌🏼🎉" <br />
+</Note>
+
+But we weren't done yet! What if we need to do this again someday? 🤯
+
+<br />
+
+# 🧳 A11y Audit Kit
+
+Anticipating future audits like this one, I thought it'd be awesome to fill some gaps in our internal knowledge repos and create a system around what we did here so that anyone in any function / any org at the company could crack open a product, audit it, and fix it up if needed. I got busy creating our <em>A11y Audit Kit</em>, a simple google folder containing a few documents and spreadsheets that help walk anyone through the process of doing a product a11y audit from start to finish!
+
+<ContentImage
+  image="/projects/a11y-kit/audit-kit.png"
+  caption="Several spreadsheets, docs, etc. that make up the A11y Audit Kit"
+/>
+
+Following our audit kit, anyone could follow a detailed guide which breaks down the process and the docs included. Starting by documenting core flows with a team's product manager(s), stepping through those flows using Axe DevTools, outputting data into the spreadsheets, and creating Jira epics and tickets out of the work to get the items addressed and fixed in the product.
+
+<br />
+
+# 🚀 Impact & Follow-up
+
+Lo-and-behold, in no time we found ourselves facing a critical a11y audit to produce a VPAT for a deal with Yale. Luckily, we had a reproducible process guided by our audit kit, so we were able to turn around a VPAT in no time, facilitating the many-million-dollar deal for the company.
+
+<Note>
+  ...if you could let Color Health know we received the accessibility of the
+  platform and were impressed. [...] Kudos to their accessibility and product
+  teams." <br /> - Yale's a11y team
+</Note>
+
+And of course, I had something nauseatingly stupid to say about that 😂
+
+<ContentImage
+  image="/projects/a11y-kit/yale.png"
+  caption="A stupid quote by yours truly"
+/>
+
+### Running a User A11y Study
+
+After the launch of our changes to the AoU product, we collaborated with the UX Research folks to run a usability study to validate that our changes did in fact (or... did not perhaps!) improve the accessible experience of the platform.
+
+I won't talk about that here, but if you'd like to learn more, we published an article [in the Human Centered design blog](https://medium.com/color-research-design/we-used-ux-research-after-an-accessibility-audit-heres-what-happened-e84ac05ae20a) that breaks down exactly what we did! Spoiler alert - the results were awesome and real assistive technology users were impressed by the usability of our product!
+
+<Note>
+  "Someone knew about accessibility when they built this." <br /> - a real,
+  blind screen-reader user in our study. 😭🫶🏽
+</Note>
+
+### 🧠 Learnings
+
+- Cross-functional collaboration with many moving parts
+- A11y fundamentals, WCAG standards, keyboard navigation, screen reader functionality, color and typography accessibility, ARIA labels, accessible imagery, and much more.
+- Organizing JIRA Epics
+- Creating internal processes and systems
+
+### 📝 Limitations
+
+- A lot of manual processes required to complete an audit
+- Manual running of Axe across core flows
+- Manual updates to Audit Kit to keep it in sync with latest Axe updates, etc.
+
+Thanks for listening - hope you enjoyed learning more about my a11y work at Color Health!

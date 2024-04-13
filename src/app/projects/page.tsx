@@ -11,7 +11,11 @@ import {
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PostCard } from "@/components/blog/PostCard";
-import { brandingProjects, designSystemsProjects } from "./consts";
+import {
+  brandingProjects,
+  designSystemsProjects,
+  a11yProjects,
+} from "./consts";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -196,7 +200,15 @@ export default function Home() {
                 "1fr 1fr",
               ]}
             >
-              Coming Soon 🤩
+              {a11yProjects.map((project) => (
+                <PostCard
+                  title={project.title}
+                  image={project.image}
+                  link={project.link}
+                  category={project.category}
+                  date={project.date}
+                />
+              ))}
             </Grid>
           </motion.div>
         )}
