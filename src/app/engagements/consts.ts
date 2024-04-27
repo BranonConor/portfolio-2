@@ -1,7 +1,7 @@
 export const publicSpeaking = [
   {
     title: "Design Systems Panel + Brunch 🥞",
-    category: "Mentoring",
+    category: "Public Speaking",
     image: "/engagements/design-systems-brunch/cover.png",
     link: "/engagements/posts/design-systems-brunch",
     date: "April 2022",
@@ -15,7 +15,7 @@ export const publicSpeaking = [
   },
   {
     title: "Design Panel @ SDSU + Friends of Figma",
-    category: "Mentoring",
+    category: "Public Speaking",
     image: "/engagements/sdsu-friends-of-figma/cover.png",
     link: "/engagements/posts/sdsu-friends-of-figma",
     date: "April 2022",
