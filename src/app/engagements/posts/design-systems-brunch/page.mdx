@@ -1,0 +1,117 @@
+import MetadataBar from "@/components/blog/MetadataBar";
+import HeaderImage from "@/components/blog/HeaderImage";
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
+
+<HeaderImage image="/engagements/design-systems-brunch/postCover.png" />
+
+# Design Systems Panel & Brunch 🥞
+
+## I got to talk about design systems with some great folks over brunch!
+
+<MetadataBar date="April 2024" category="Public Speaking" />
+
+### Joining the Panel
+
+Thanks to a generous invitation from [Friends of Figma's San Diego Chapter](https://friends.figma.com/san-diego/) + a local organization named [Design Systems Ignition](https://designsystemignition.com/), I got to join a panel of design systems experts to field some questions from an audience of designers, engineers, PMs, and more!
+
+We got an awesome turnout, with 20-30 people showing up to join in the fun. We did 1 hour of networking beforehand followed by a 1 hour panel discussion, where myself and 2 other design systems workers (a designer and a product manager) got to take turns answering a series of design systems questions. It was an awesome time!
+
+### The Questions!
+
+So the event wasn't recorded but I thought it'd be fun to share my notes from prepping for the panel presentation so you can see what we chatted about! I've got some receipts so don't worry 💅🏼 Enjoy some screenshots of my notes as well as a more text-friendly version of the content, courtesy of ChatpGPT.
+
+<ContentImage
+  image="/engagements/design-systems-brunch/notes1.png"
+  caption="Notes I took to prep for the panel - part 1/2"
+/>
+
+#### 1.) Design System Team Structure?
+
+- Overall: 80-90 teams across =20 pillars (not all tech/product teams).
+- Around 15-25 teams use our design system.
+- Org Structure: Director of UX, 3 designers, 1 Design Technology Manager, 3 Design Technologists, 1 Product Manager, 1 TPM, and 1 a11y program manager.
+
+#### 2.) How do you measure DS impact?
+
+Many ways to measure things; at this time, we primarily focus on measuring HOW the system is used:
+
+- Sheets + dashboards to track office hours topics, issues, etc.
+- Figma analyses to see component usage.
+- Slack channels analytics.
+- Component analyses scripts in code to see usage, adoption, etc.
+
+Usage + Adoption give great insight into effectiveness, showing us painpoints and places for improvement:
+
+- Are designers defaulting to certain components too often?
+- Are engineers overriding components, unused components or variants?
+
+#### 3.) How do you balance guard rails with allowing for creativity and innovation in design systems?
+
+- Good Token System allow for consistency and uniformity in customizations
+- Component Modularity: build components modularly, leveraging atomic design principles, and composability of the system will allow teams to stitch stuff together with it still adhering to your design language and principles, more or less.
+- Have a good internal framework for deciding on when to pull in molecules/organisms.
+- Resources are key: Office hours, docs, Slack channels, etc.
+
+Also, component limitations are our friends! Making sure the system has proper boundaries in place can keep things tidy for years to come.
+
+#### 4.) Addressing Adoption
+
+Adoption is ongoing; teams adopt new changes as we make them in a never-ending iterative cycle. Challenges:
+
+- Stay close to the teams!
+- Overcommunicate: Stay in the loop with teams' work, complement their work.
+- Maximize utility of the system, minimize headaches, leading to increased adoption.
+- Dive in to help: Volunteered to do migrations to the system for teams, answer questions, etc.
+
+It's all about TRUST!
+
+<ContentImage
+  image="/engagements/design-systems-brunch/notes2.png"
+  caption="Notes I took to prep for the panel - part 2/2"
+/>
+
+#### 5.) Making decisions and prioritizing
+
+Have an internal decision-making framework (decision tree) for system components and work. Some common criteria examples:
+
+- Is the component used across multiple teams?
+- Does the component already exist / net-new?
+- Can teams contribute to the decision? (Federated Model)
+- Have deadlines?
+- Is the update related to critical bugs / fixes?
+
+#### 6.) AI in our design system?
+
+None so far for us! Our system services AI Features though. We have an upcoming hackweek where someone is going to tackle creating an AI Assistant for ease of system use/documentation referencing, etc.
+
+#### 7.) How might AI transform DS work in general?
+
+Generative AI will definitely help drive design & code partially. One great example is a tool by a colleague of mine, Alex, created as a YCombinator backed startup called [Magic Patterns](https://www.magicpatterns.com/). It can take a prompt about a component you want and output it in an impressively well-written react component, etc.
+Concerns: lack of understanding of AI strengths vs. limitations - I sometimes worry we may trust it too much too quickly and that too few people understand how it works / where it falls short.
+
+#### 8.) What tools / tech do you use?
+
+- Tools: Figma, Jira, etc.
+- Tech: React, EmotionCSS, NextJS (documentation), NX (monorepo), etc.
+
+#### 9.) Hows a component made from start to finish?
+
+Kinda depends if it's a new or pre-existing component:
+
+- Need identified.
+- RFC (request for comments) is started.
+- Harvest is announced (design team all crawls their files for the requested component if it exists)
+- Component designs created.
+- Design reviews / RFC is sent out.
+- Eng. handoff -> implementation.
+- Release of new version is done.
+
+#### 10.) How do you handle versioning?
+
+Semver! (semantic versioning)
+Major.
+Minor.
+Patch.
+
+Thanks for reading and see you at the next Friends of Figma / Design Systems Ignition event! 🤩 Oh and shoutout for the free brunch. Cheers.
