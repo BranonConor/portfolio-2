@@ -23,6 +23,13 @@ export const brandingProjects = [
 ];
 export const designSystemsProjects = [
   {
+    title: "Design System Maturation @ Endpoint",
+    category: "Design Systems",
+    image: "/projects/process-improvements/cover.png",
+    link: "/projects/posts/process-improvements",
+    date: "Sept 2023",
+  },
+  {
     title: "Color Palette Parity @ Color Health",
     category: "Design Systems",
     image: "/projects/color-palette-parity/cover.png",

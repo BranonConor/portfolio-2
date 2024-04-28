@@ -1,0 +1,114 @@
+import MetadataBar from "@/components/blog/MetadataBar";
+import HeaderImage from "@/components/blog/HeaderImage";
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
+
+<HeaderImage image="/projects/process-improvements/cover.png" />
+
+# Design System Maturation @ Endpoint
+
+## Building up the design systems processes and team infrastructure
+
+<MetadataBar date="Sept 2023" category="Design Systems" />
+
+### ✍🏽 About Endpoint
+
+Endpoint is a real estate tech company backed by First American.
+
+Endpoint offers products for seamlessly handling real estate transactions from start to finish, as well as a product for notaries and a new workflow-building platform for real estate back-office operators.
+
+<ContentImage
+  image="/projects/process-improvements/intro.png"
+  caption="Graphic depicting the complex process of buying a home"
+/>
+
+### ⚠️ The Problems
+
+As a newer (but really powerful and well-made!) design system that didn't have a dedicated 'team' and was instead maintained by a 'working group' consisting of 2 designers, a senior design technologist (me!), and a dedicated design systems engineer, we could benefit from more robust processes and maturation.
+
+### ✨ The Solutions
+
+Over the course of my time at Endpoint, I tried to lead the charge in implementing process improvements with my teammates. This included things like:
+
+- Drafting a decision tree as an internal desicion-making framework for scoping our design system work as a group
+- Implementing an automated intake request form that adds submissions to our internal Notion dashboards
+- Creating a project brief template for improved project proposals, planning, and tracking
+- Spinning up pre/post surveys for qualitative and quantitative feedback on design system initiatives
+
+<br />
+
+# 🌳 The Desicion Tree
+
+When I joined Endpoint and began to immerse myself in the design system processes, quarterly planning, agile ceremonies, and more, it seemed that we might benefit from having a widely-agreed-upon framework for deciding what work to take on.
+
+I jumped into Figjam (because I will literally take any chance I can get to play around in Figjma) and began to make some flowcharts! Our design systems engineer kindly sent me some similar trees for inspiration from other design systems, like Twilio's Paste, etc.
+
+I drafted a version, beginning with the most basic question: will this component be used across multiple teams, or only a single team? If not, we'd identify it as out of our scope, but if so, we'd move on throughout the tree to further desicions.
+
+The rest of the tree begs questions such as:
+
+- are there urgent deadlines?
+- does the team have bandwidth to contribute? (we had a federated model, encouraging contributions from product team ICs)
+- does the component already exist somewhere?
+- etc.
+
+<ContentImage
+  image="/projects/process-improvements/tree-drafts.png"
+  caption="A few versions of the tree in Figjam"
+/>
+
+We iterated a few times on the tree until we felt it served as a great framework sensitive to our scope as a 'team' and whatnot! 🤝
+
+<br />
+
+# 🦾 Automating Intake Requests
+
+Next up on my list was coming up with a more automated process for receiving requests from product teams for component work. As it existed, we had a Notion table with a link in our docs site, which wasn't terrible. But the act of looking for our docs site, finding the link to the request table, and then inserting a Notion database item wasn't the most user friendly for our teams.
+
+To smooth out this process, I created a Jotform (kinda like a Google form) with all the questions we'd want a team to note when making a request to us. I hooked it up to automatically insert a Notion Database item in our internal docs using Zapier integrations! ⚡️ I pinned this form in our system Slack channel (as well as updating the link in the docs site).
+
+<ContentImage
+  image="/projects/process-improvements/zapier.png"
+  caption="A Zapier integration between the form and the Notion table"
+/>
+
+The result was a much smoother request process, where teams could simply click the link on our Slack channel header and fill out a submission in a nice form, with the response going straight to our team where we need it. In our first month, we received 30+ submissions, a huge increase from months prior!
+
+<ContentImage
+  image="/projects/process-improvements/intake-form.png"
+  caption="An easy, simple form to fill out a design system request in"
+/>
+
+# 📝 Project Briefs
+
+With infrastructure in place for choosing WHAT to work on, and HOW to get a backlog of work representative of the most pressing needs across the org, I thought we'd benefit next from a Project Brief template to organize our thoughts around projects and some of the larger initiatives.
+
+I took inspiration from project briefs I'd used at past companies for design systems work, as well as some examples from around the internet. I also asked our good friend ChatGPT what some important things might be for a team that creates design system components for all product teams at a real-estate tech shop. Slap all that together, and you get a great project brief template ✨
+
+<ContentImage
+  image="/projects/process-improvements/project-brief.png"
+  caption="A project brief template in Notion"
+/>
+
+# 🗳️ Surveys
+
+As we continued thinking of system processes and proving business value of the design system, the question of analytics came up. Our engineer had already spun up an amazing script using react-scanner on NPM to crawl components in the code and get good data on system usage, but that was most of what we had in terms of analytics.
+
+One thing I thought would be awesome is simply asking the users of the system themselves how things are going! I created pre/post surveys using Google Forms, with a set for designers and a set for engineers (since we may want to ask them different types of questions!). Some questions contained Likert scales to get objective/quantitative data, while other questions were more qualitative, and even free-form.
+
+The idea was that before we begin a component / system project, we provide the pre-survey, and after it ships (within a quarter so teams have time to use the new stuff) we would provide the post survey.
+
+<ContentImage
+  image="/projects/process-improvements/surveys.png"
+  caption="Google Forms for data on how a design system initiative went"
+/>
+
+We iterated a bit on these surveys until they were just right, but unfortunately I moved on from Endpoint to a new role before we got to use them. But the team felt very positively about these surveys and it got us a bit closer to our goal of having better design system impact data. And speaking of impact...
+
+# 🚀 Impact
+
+### 🧠 Learnings
+
+I learned a lot about design system ecosystems throughout these various initiatives. With the help of a great team, iterating on these processes was a breeze and a lot of fun. I learned a lot about the wider socialization, project management, and business-y facets of running a design system. It was a great exercise in systems-level thinking, but beyond the scope of just working on the components themselves.
+
+Thanks for reading along - hope you enjoyed this project 😊 Cheers!
