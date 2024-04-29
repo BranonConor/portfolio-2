@@ -4,7 +4,7 @@ export const publicSpeaking = [
     category: "Public Speaking",
     image: "/engagements/design-systems-brunch/cover.png",
     link: "/engagements/posts/design-systems-brunch",
-    date: "April 2022",
+    date: "April 2024",
   },
   {
     title: "Featured Guest @ One Bad Habit Podcast",
