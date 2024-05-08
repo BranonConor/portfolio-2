@@ -15,6 +15,7 @@ import {
   brandingProjects,
   designSystemsProjects,
   a11yProjects,
+  otherProjects,
 } from "./consts";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -75,20 +76,6 @@ export default function Home() {
             fontSize="12px"
             paddingY={1}
             paddingX={2}
-            bg={currentFilter === "Brand Design" ? "brand.pink" : "brand.blue"}
-            borderRadius={120}
-            onClick={() => setCurrentFilter("Brand Design")}
-            mr={2}
-            mb={2}
-          >
-            🌈 Brand Design
-          </Text>
-          <Text
-            color="white"
-            as="button"
-            fontSize="12px"
-            paddingY={1}
-            paddingX={2}
             bg={currentFilter === "A11y" ? "brand.pink" : "brand.blue"}
             borderRadius={120}
             onClick={() => setCurrentFilter("A11y")}
@@ -96,6 +83,34 @@ export default function Home() {
             mb={2}
           >
             🤝 Accessibility
+          </Text>
+          <Text
+            color="white"
+            as="button"
+            fontSize="12px"
+            paddingY={1}
+            paddingX={2}
+            bg={currentFilter === "Other" ? "brand.pink" : "brand.blue"}
+            borderRadius={120}
+            onClick={() => setCurrentFilter("Other")}
+            mr={2}
+            mb={2}
+          >
+            🚀 Miscellaneous
+          </Text>
+          <Text
+            color="white"
+            as="button"
+            fontSize="12px"
+            paddingY={1}
+            paddingX={2}
+            bg={currentFilter === "Brand Design" ? "brand.pink" : "brand.blue"}
+            borderRadius={120}
+            onClick={() => setCurrentFilter("Brand Design")}
+            mr={2}
+            mb={2}
+          >
+            🌈 Brand Design
           </Text>
         </Flex>
 
@@ -137,44 +152,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {(currentFilter === "all" || currentFilter === "Brand Design") && (
-          <motion.div
-            initial={{ x: -32, scale: 0.95, opacity: 0 }}
-            animate={{ x: 0, scale: 1, opacity: 1 }}
-            transition={{
-              duration: 0.15,
-              type: "spring",
-            }}
-            style={{ width: "100%" }}
-          >
-            <Heading as="h3" size="md" my={4}>
-              🌈 Brand Design
-            </Heading>
-            <Grid
-              width="100%"
-              gridGap={4}
-              mb={8}
-              gridTemplateColumns={[
-                "1fr",
-                "1fr",
-                "1fr 1fr",
-                "1fr 1fr",
-                "1fr 1fr",
-              ]}
-            >
-              {brandingProjects.map((project) => (
-                <PostCard
-                  title={project.title}
-                  image={project.image}
-                  link={project.link}
-                  category={project.category}
-                  date={project.date}
-                />
-              ))}
-            </Grid>
-          </motion.div>
-        )}
-
         {(currentFilter === "all" || currentFilter === "A11y") && (
           <motion.div
             initial={{ x: -32, scale: 0.95, opacity: 0 }}
@@ -201,6 +178,82 @@ export default function Home() {
               ]}
             >
               {a11yProjects.map((project) => (
+                <PostCard
+                  title={project.title}
+                  image={project.image}
+                  link={project.link}
+                  category={project.category}
+                  date={project.date}
+                />
+              ))}
+            </Grid>
+          </motion.div>
+        )}
+
+        {(currentFilter === "all" || currentFilter === "Other") && (
+          <motion.div
+            initial={{ x: -32, scale: 0.95, opacity: 0 }}
+            animate={{ x: 0, scale: 1, opacity: 1 }}
+            transition={{
+              duration: 0.15,
+              type: "spring",
+            }}
+            style={{ width: "100%" }}
+          >
+            <Heading as="h3" size="md" my={4}>
+              🚀 Miscellaneous
+            </Heading>
+            <Grid
+              width="100%"
+              gridGap={4}
+              mb={8}
+              gridTemplateColumns={[
+                "1fr",
+                "1fr",
+                "1fr 1fr",
+                "1fr 1fr",
+                "1fr 1fr",
+              ]}
+            >
+              {otherProjects.map((project) => (
+                <PostCard
+                  title={project.title}
+                  image={project.image}
+                  link={project.link}
+                  category={project.category}
+                  date={project.date}
+                />
+              ))}
+            </Grid>
+          </motion.div>
+        )}
+
+        {(currentFilter === "all" || currentFilter === "Brand Design") && (
+          <motion.div
+            initial={{ x: -32, scale: 0.95, opacity: 0 }}
+            animate={{ x: 0, scale: 1, opacity: 1 }}
+            transition={{
+              duration: 0.15,
+              type: "spring",
+            }}
+            style={{ width: "100%" }}
+          >
+            <Heading as="h3" size="md" my={4}>
+              🌈 Brand Design
+            </Heading>
+            <Grid
+              width="100%"
+              gridGap={4}
+              mb={8}
+              gridTemplateColumns={[
+                "1fr",
+                "1fr",
+                "1fr 1fr",
+                "1fr 1fr",
+                "1fr 1fr",
+              ]}
+            >
+              {brandingProjects.map((project) => (
                 <PostCard
                   title={project.title}
                   image={project.image}

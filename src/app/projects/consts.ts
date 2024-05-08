@@ -46,3 +46,12 @@ export const a11yProjects = [
     date: "June 2022",
   },
 ];
+export const otherProjects = [
+  {
+    title: "EZ Links @ Smartsheet",
+    category: "Hackweek",
+    image: "/projects/ez-links/cover.png",
+    link: "/projects/posts/ez-links",
+    date: "May 2024",
+  },
+];
