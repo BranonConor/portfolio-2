@@ -30,6 +30,13 @@ export const designSystemsProjects = [
     date: "Sept 2023",
   },
   {
+    title: "Dynamic Token Layers @ Endpoint",
+    category: "Design Systems",
+    image: "/projects/dynamic-token-layers/cover.png",
+    link: "/projects/posts/dynamic-token-layers",
+    date: "June 2023",
+  },
+  {
     title: "Color Palette Parity @ Color Health",
     category: "Design Systems",
     image: "/projects/color-palette-parity/cover.png",
