@@ -52,18 +52,20 @@ export const PostCard: React.FC<IPostCardProps> = ({
       boxShadow="lg"
       minHeight="300px"
       _hover={{
-        img: {
-          "&:first-of-type": {
-            transform: "scale(1.1)",
-            filter: "blur(12px)",
+        "@media only screen and (min-width: 450px)": {
+          img: {
+            "&:first-of-type": {
+              transform: "scale(1.1)",
+              filter: "blur(12px)",
+            },
+            "&:last-of-type": {
+              transform: "translateX(-70%) scale(3)",
+            },
           },
-          "&:last-of-type": {
-            transform: "translateX(-70%) scale(3)",
+          p: {
+            bottom: "42%",
+            opacity: 1,
           },
-        },
-        p: {
-          bottom: "45%",
-          opacity: 1,
         },
       }}
     >
@@ -72,7 +74,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
         zIndex={5}
         position="absolute"
         bottom="-25%"
-        right="50%"
+        right="48%"
         transition="0.2s ease all"
         transform="scale(5)"
         opacity={0}

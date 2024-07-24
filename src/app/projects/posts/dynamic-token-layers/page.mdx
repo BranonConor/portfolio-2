@@ -53,7 +53,7 @@ Here's this info in a (super simplified) graphic, for you visual folks like me �
 
 <ContentImage
   image="/projects/dynamic-token-layers/token-layers.png"
-  caption="A few versions of the tree in Figjam"
+  caption="A diagram of a button component with various layers of tokens hooked up to it"
 />
 
 So how does this create flexibility? Well, if components are built using component tokens, which point to semantic tokens, which point to primitives, any consumer of the system's components can swap out the primitive layer and point the semantic layer to these new custom values, and the components will automatically adapt to those new primitives!
@@ -68,7 +68,7 @@ Okay - enough theory, let me show you how I did it in good 'ol Figgy.
 
 ### 🪙 Primitive Tokens
 
-Figma had JUST come out with variables (I believe in miracles 🎶) so I knew it'd be the perfect time to try this out. Figma's variables feature allows you to store key/value pairs, where the key is the name and the value is... well, the value. You can even assign a variable as a values for a variable. And these variables can be organized into different collections. Perfect.
+Figma had JUST come out with variables (I believe in miracles 🎶) so I knew it'd be the perfect time to try this out. Figma's variables feature allows you to store key/value pairs, where the key is the name and the value is... well, the value. You can even assign a variable as a value for another variable. And these variables can be organized into different collections. Perfect.
 
 I cranked open a new file for my POC and began to translate our primitive token sets into collections of variables in Figma. We had different sets of primitives based on different themes (Endpoint, Jot, etc.) that are used in different products. The result here was 2 primitive variable sets.
 
@@ -126,9 +126,9 @@ To drive the example home, I created two frames in a file and set one to Endpoin
 
 Okay, okay, so the colors I chose are barely different - my mistake. But look close enough I promise they're different shades of blue ('blue' primitives vs 'coast' primitives) 🥲
 
-But that's it - we've now got ca 3-layer token system in Figma using collections of variables, with frames configured to either of the themes and a single button component that render those theme colors automatically. NICE. ✨
+But that's it - we've now got a 3-layer token system in Figma using collections of variables, with frames configured to either of the themes and a single button component that render those theme colors automatically. NICE. ✨
 
-Now it'd be super easy to demo to the design org the power of this configuration, and a world in which Jot product design files and Endpoint design files can pull in the same components from our design system Figma lib, getting the automatic theming and branding they require for their product. Out of the box.
+Now it'd be super easy to demo to the design org the power of this configuration, and to show off a world in which Jot product design files and Endpoint design files can pull in the same components from our design system Figma lib, getting the automatic theming and branding they require for their product. Out of the box.
 
 <br />
 <br />
