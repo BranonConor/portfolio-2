@@ -9,6 +9,13 @@ export const Music = () => {
     category: string;
   }[] = [
     {
+      title: "Adobo Tapes",
+      image: "/adobo-tapes.png",
+      date: "2024",
+      link: "https://open.spotify.com/album/1VwNNoVc3fJFH45PQ7yqTK?si=mnPFB9RHSaWKzikZa1SB7w",
+      category: "Hip hop Beats",
+    },
+    {
       title: "OVER THE YEARS",
       image: "/over-the-years.png",
       date: "2023",
@@ -51,13 +58,7 @@ export const Music = () => {
       </Text>
       <Grid
         gridGap={4}
-        gridTemplateColumns={[
-          "1fr",
-          "1fr",
-          "1fr 1fr ",
-          "1fr 1fr",
-          "repeat(3, 1fr)",
-        ]}
+        gridTemplateColumns={["1fr", "1fr", "1fr 1fr ", "1fr 1fr", "1fr 1fr"]}
       >
         {items.map((item) => (
           <PostCard
@@ -69,6 +70,7 @@ export const Music = () => {
             useSecondaryButton
             useExternalLink
             buttonText="Listen"
+            hoverIcon="🎧"
           />
         ))}
       </Grid>

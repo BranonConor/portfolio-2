@@ -18,6 +18,7 @@ interface IPostCardProps {
   useSecondaryButton?: boolean;
   buttonText?: string;
   useExternalLink?: boolean;
+  hoverIcon?: string;
 }
 
 export const PostCard: React.FC<IPostCardProps> = ({
@@ -26,15 +27,20 @@ export const PostCard: React.FC<IPostCardProps> = ({
   link,
   category,
   date,
-  useSecondaryButton = false,
   useExternalLink = false,
   buttonText = "Read more",
+  hoverIcon = "👀",
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
 
   return (
     <Flex
+      as={useExternalLink ? "a" : Link}
+      aria-label={`${buttonText} - ${title}`}
+      href={link}
+      target={useExternalLink ? "_blank" : ""}
+      rel="noreferrer noopenner"
       flexDirection="column"
       alignItems="flex-start"
       justifyContent="flex-start"
@@ -49,14 +55,30 @@ export const PostCard: React.FC<IPostCardProps> = ({
         img: {
           "&:first-of-type": {
             transform: "scale(1.1)",
-            filter: "blur(8px)",
+            filter: "blur(12px)",
           },
           "&:last-of-type": {
             transform: "translateX(-70%) scale(3)",
           },
         },
+        p: {
+          bottom: "45%",
+          opacity: 1,
+        },
       }}
     >
+      <Text
+        as="p"
+        zIndex={5}
+        position="absolute"
+        bottom="-25%"
+        right="50%"
+        transition="0.2s ease all"
+        transform="scale(5)"
+        opacity={0}
+      >
+        {hoverIcon}
+      </Text>
       <Image
         src={image}
         position="absolute"
@@ -107,27 +129,6 @@ export const PostCard: React.FC<IPostCardProps> = ({
             {date}
           </Text>
         </Box>
-        {useExternalLink ? (
-          <Button
-            as="a"
-            aria-label={`${buttonText} - ${title}`}
-            variant={useSecondaryButton ? "secondary" : "primary"}
-            href={link}
-            target="blank"
-            rel="noreferrer noopenner"
-          >
-            {buttonText}
-          </Button>
-        ) : (
-          <Button
-            as={Link}
-            aria-label={`${buttonText} - ${title}`}
-            variant={useSecondaryButton ? "secondary" : "primary"}
-            href={link}
-          >
-            {buttonText}
-          </Button>
-        )}
       </Flex>
     </Flex>
   );
