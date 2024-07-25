@@ -43,6 +43,13 @@ export const designSystemsProjects = [
     link: "/projects/posts/color-palette-parity",
     date: "Dec 2022",
   },
+  {
+    title: "UNIFY Design System @ Charter Healthcare",
+    category: "Design Systems",
+    image: "/projects/unify/cover.png",
+    link: "/projects/posts/unify",
+    date: "July 2020",
+  },
 ];
 export const a11yProjects = [
   {

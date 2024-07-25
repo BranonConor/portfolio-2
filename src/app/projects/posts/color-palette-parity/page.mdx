@@ -73,6 +73,8 @@ I documented the structure of the default MUI color Palette types here next. Thi
   caption="A flowchart diagram of the color palette structure Material UI code"
 />
 
+<br />
+
 # 🧠 Phase 2: Plan The Fix
 
 Time to plan out the implementation! I came up with 2 options after some deliberation:
@@ -85,7 +87,7 @@ Time to plan out the implementation! I came up with 2 options after some deliber
   caption="2 solutions side by side written out"
 />
 
-Of course, things at scale are always more complicated than they may seem. For us here, we had to consider questions like:
+We ended up deciding on Solution A to minimize customization, preventing as much future migration pain as possible should the MUI API change (which it has definitely done). Of course, things at scale are always more complicated than they may seem. For us here, we had to consider other questions like:
 
 - How can we continue to ensure design system flexibility and how can we make bug discovery and remediation easier?
 
@@ -93,6 +95,8 @@ To address these constraints, we opted for some finishing touches in our solutio
 
 - Make all palette values required: if all values in the palette are required, all teams need to be specify a token for each value. Some themes didn't have tokens for all values though, which leads us to item 2 -->
 - Utilize an unusedColorValue token: for themes that don't need certain values, they can stick this value in its place. It defaults to an error red color, so if components eventually end up using values that certain themes don't specify, it should provide a glaringly obvious sign to the teams that the designers should assign a value for that field.
+
+<br />
 
 # 🚀 Phase 3: Ship it!
 
