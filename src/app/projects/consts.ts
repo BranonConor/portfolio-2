@@ -68,4 +68,11 @@ export const otherProjects = [
     link: "/projects/posts/ez-links",
     date: "May 2024",
   },
+  {
+    title: "Design Review Figma Widget @ Color Health",
+    category: "Projects",
+    image: "/projects/fidget/cover.png",
+    link: "/projects/posts/fidget",
+    date: "August 2022",
+  },
 ];

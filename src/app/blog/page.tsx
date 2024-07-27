@@ -9,13 +9,6 @@ export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
   const posts = [
     {
-      title: "Fidget, an award-winning hackweek project",
-      category: "Projects",
-      image: "/blog/fidget/cover.png",
-      link: "/blog/posts/fidget",
-      date: "August 2022",
-    },
-    {
       title: "Creating an A11y Auditing Kit",
       category: "A11y",
       image: "/blog/creating-an-a11y-auditing-kit/cover.png",
