@@ -23,10 +23,10 @@ const HeroStrip: React.FC<HeroStripProps> = ({
       width="100%"
       flexDirection="column"
       bg="brand.gradient"
-      borderRadius={10}
+      borderRadius={16}
     >
       <HeaderImage image={image} />
-      <Heading as="h1" size="xl" mt={4} color="white" mx={4}>
+      <Heading as="h1" size="xl" mt={[1, 2, 3]} color="white" mx={4}>
         {title}
       </Heading>
       <Heading

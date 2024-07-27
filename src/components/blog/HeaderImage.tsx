@@ -15,7 +15,8 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
     <Box
       width="100%"
       position="relative"
-      borderRadius={10}
+      borderTopLeftRadius={16}
+      borderTopRightRadius={16}
       mb={8}
       overflow="hidden"
       height={["170px", "200px", "250px", "300px"]}

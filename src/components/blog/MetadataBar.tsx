@@ -13,11 +13,10 @@ const MetadataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
       alignItems={["flex-start", "flex-start", "center"]}
       justifyContent={"flex-start"}
       flexDirection={["column", "column", "row"]}
-      borderRadius={10}
       py={4}
       width="100%"
       mt={4}
-      mb={4}
+      mb={[6, 6, 8]}
       mx={4}
     >
       <Flex alignItems="center" mb={[4, 4, 0]}>
