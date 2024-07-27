@@ -18,7 +18,7 @@ export const brandingProjects = [
     category: "Brand Design",
     image: "/projects/charter/cover.png",
     link: "/projects/posts/charter",
-    date: "July 2020",
+    date: "May 2020",
   },
 ];
 export const designSystemsProjects = [
@@ -70,7 +70,7 @@ export const otherProjects = [
   },
   {
     title: "Design Review Figma Widget @ Color Health",
-    category: "Projects",
+    category: "Hackweek",
     image: "/projects/fidget/cover.png",
     link: "/projects/posts/fidget",
     date: "August 2022",
