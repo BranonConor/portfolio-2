@@ -24,6 +24,7 @@ const HeroStrip: React.FC<HeroStripProps> = ({
       flexDirection="column"
       bg="brand.gradient"
       borderRadius={16}
+      overflow="hidden"
     >
       <HeaderImage image={image} />
       <Heading as="h1" size="xl" mt={[1, 2, 3]} color="white" mx={4}>
