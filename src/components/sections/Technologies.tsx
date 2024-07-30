@@ -1,5 +1,4 @@
 import {
-  Flex,
   Box,
   Heading,
   Image,
@@ -8,13 +7,19 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { useCallback, useState } from "react";
 
 export const Technologies = () => {
+  const [activeHover, setActiveHover] = useState<number | null>(null);
   const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
   const logoBg = useColorModeValue("brand.lightGrey", "black");
   const itemShadow = useColorModeValue(
     "0px 4px 15px 0px rgba(0,0,0, 0.2)",
     "0px 4px 15px 0px rgba(226,175,255, 0.2)"
+  );
+  const secondaryShadow = useColorModeValue(
+    "0px 2px 5px 0px rgba(0,0,0, 0.15)",
+    "0px 2px 5px 0px rgba(226,175,255, 0.15)"
   );
   const technologies: { name: string; image: string }[] = [
     { name: "HTML", image: "html.svg" },
@@ -46,6 +51,41 @@ export const Technologies = () => {
     { name: "Atlassian", image: "atlassian.svg" },
     { name: "Axe DevTools", image: "axe.svg" },
   ];
+  const getScale = useCallback(
+    (index: number, activeHover: null | number) => {
+      if (activeHover !== null) {
+        // if there's a valid item before and the active hover is the one after it, scale it up
+        if (technologies[activeHover - 1] && activeHover - 1 === index) {
+          return 1.075;
+        }
+        // if there's a valid item after and the active hover is the one before it, scale it up
+        if (technologies[activeHover + 1] && activeHover + 1 === index) {
+          return 1.075;
+        }
+      } else {
+        return 1;
+      }
+    },
+    [activeHover]
+  );
+  const getShadow = useCallback(
+    (index: number, activeHover: null | number) => {
+      if (activeHover !== null) {
+        // if there's a valid item before and the active hover is the one after it, scale it up
+        if (technologies[activeHover - 1] && activeHover - 1 === index) {
+          return secondaryShadow;
+        }
+        // if there's a valid item after and the active hover is the one before it, scale it up
+        if (technologies[activeHover + 1] && activeHover + 1 === index) {
+          return secondaryShadow;
+        }
+        return "none";
+      } else {
+        return "none";
+      }
+    },
+    [activeHover]
+  );
 
   return (
     <Box
@@ -54,6 +94,11 @@ export const Technologies = () => {
       bg={bg}
       width="100%"
       padding={4}
+      _hover={{
+        div: {
+          transform: "scale(0.95)",
+        },
+      }}
     >
       <Heading as="h3" size="l" fontWeight={700} mb={4}>
         My Tools and Tech
@@ -69,39 +114,54 @@ export const Technologies = () => {
           "repeat(14, 1fr)",
           "repeat(16, 1fr)",
         ]}
+        transition="0.2s ease all"
       >
-        {technologies.map((item) => (
-          <Tooltip
-            id={item.name}
-            borderRadius={6}
-            label={item.name}
-            fontSize="md"
-            placement="top"
-            bg="brand.gradient"
-            color="white"
-            fontWeight="bold"
-            gutter={8}
-          >
-            <Image
-              draggable="false"
-              as={motion.img}
+        {technologies.map((item, index) => {
+          console.log(getScale(index, activeHover));
+          return (
+            <Tooltip
+              id={item.name}
               borderRadius={6}
-              src={`/logos/${item.image}`}
-              padding={1}
-              boxSizing="border-box"
-              bg={logoBg}
-              whileHover={{
-                scale: 1.1,
-                transition: { duration: 0.05, type: "spring" },
-                boxShadow: itemShadow,
-              }}
-              whileTap={{
-                scale: 1.2,
-                transition: { duration: 0.1 },
-              }}
-            />
-          </Tooltip>
-        ))}
+              label={item.name}
+              fontSize="md"
+              placement="top"
+              bg="brand.gradient"
+              color="white"
+              fontWeight="bold"
+              gutter={8}
+            >
+              <Image
+                onMouseEnter={() => setActiveHover(index)}
+                onMouseLeave={() => setActiveHover(null)}
+                draggable="false"
+                as={motion.img}
+                borderRadius={6}
+                src={`/logos/${item.image}`}
+                padding={1}
+                boxSizing="border-box"
+                bg={logoBg}
+                transform={`scale(${getScale(index, activeHover)})`}
+                transition="0.2s ease all"
+                boxShadow={getShadow(index, activeHover)}
+                // whileHover={{
+                //   scale: 1.1,
+                //   transition: { duration: 0.05, type: "spring" },
+                //   boxShadow: itemShadow,
+                // }}
+                // whileTap={{
+                //   scale: 1.2,
+                //   transition: { duration: 0.1 },
+                // }}
+                _hover={{
+                  transform: "scale(1.2)",
+                  transition: "0.35s ease all",
+                  boxShadow: itemShadow,
+                  zIndex: 5,
+                }}
+              />
+            </Tooltip>
+          );
+        })}
       </Grid>
     </Box>
   );
