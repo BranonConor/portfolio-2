@@ -12,7 +12,6 @@ interface ScrollButtonProps {
 }
 
 const ScrollButton: React.FC<ScrollButtonProps> = ({
-  isEndOfPage,
   scrollDirection = "up",
   bottomPosition,
   scrollPosition,
@@ -32,8 +31,7 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       position="fixed"
       right={4}
       top={yPosition}
-      transition="0.25s ease all"
-      zIndex={9}
+      transition="0.25s ease top"
       borderRadius="100%"
       bg={bg}
       boxShadow={shadow}
