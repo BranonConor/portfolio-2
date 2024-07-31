@@ -37,11 +37,13 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       boxShadow={shadow}
       aria-label="scroll to top"
       padding={4}
-      onClick={() =>
-        scrollDirection === "up"
-          ? window.scrollTo({ top: 0 })
-          : window.scrollTo({ top: bottomPosition })
-      }
+      onClick={() => {
+        if (typeof window !== "undefined") {
+          return scrollDirection === "up"
+            ? window.scrollTo({ top: 0 })
+            : window.scrollTo({ top: bottomPosition });
+        }
+      }}
       boxSizing="border-box"
       whileHover={{
         scale: 1.1,

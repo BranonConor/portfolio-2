@@ -14,26 +14,31 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [bottomPosition, setBottomPosition] = useState(0);
 
   const handleScroll = () => {
-    const position = window.pageYOffset;
-    const totalPageHeight = document.body.scrollHeight;
-    setBottomPosition(totalPageHeight);
-    const scrollPoint = window.scrollY + window.innerHeight;
+    if (typeof window !== "undefined") {
+      const position = window.pageYOffset;
+      const totalPageHeight = document.body.scrollHeight;
+      setBottomPosition(totalPageHeight);
+      const scrollPoint = window.scrollY + window.innerHeight;
 
-    // check if we hit the bottom of the page
-    if (scrollPoint + 32 >= totalPageHeight) {
-      setIsEndOfPage(true);
-    } else {
-      setIsEndOfPage(false);
+      // check if we hit the bottom of the page
+      if (scrollPoint + 32 >= totalPageHeight) {
+        setIsEndOfPage(true);
+      } else {
+        setIsEndOfPage(false);
+      }
+
+      setScrollPosition(position);
     }
-
-    setScrollPosition(position);
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, [window, scrollPosition]);
 
