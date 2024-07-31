@@ -36,7 +36,9 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
       window.addEventListener("scroll", handleScroll, { passive: true });
     }
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, [window, scrollPosition]);
 
