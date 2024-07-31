@@ -2,12 +2,13 @@ import {
   Flex,
   Heading,
   Text,
-  Button,
   Image,
   Box,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRef, useState } from "react";
 
 interface IPostCardProps {
   title: string;
@@ -33,6 +34,9 @@ export const PostCard: React.FC<IPostCardProps> = ({
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
+  const [yRotationValue, setYRotationValue] = useState<number>(0);
+  const [xRotationValue, setXRotationValue] = useState<number>(0);
+  const boundingRef = useRef<DOMRect | null>(null);
 
   return (
     <Flex
@@ -55,8 +59,11 @@ export const PostCard: React.FC<IPostCardProps> = ({
         "@media only screen and (min-width: 450px)": {
           img: {
             "&:first-of-type": {
-              transform: "scale(1.1)",
-              filter: "blur(12px)",
+              transform: `scale(1.2) translateX(${xRotationValue}px) translateY(${yRotationValue}px) rotateX(${
+                xRotationValue * 1.5
+              }deg) rotateY(${yRotationValue * 1.5}deg)`,
+              transition: "0.4 ease all",
+              filter: "blur(3px)",
             },
             "&:last-of-type": {
               transform: "translateX(-70%) scale(3)",
@@ -65,8 +72,28 @@ export const PostCard: React.FC<IPostCardProps> = ({
           p: {
             bottom: "42%",
             opacity: 1,
+            transform: `scale(5) translateX(${xRotationValue}px) translateY(${yRotationValue}px) rotateX(${
+              xRotationValue * 1.5
+            }deg) rotateY(${yRotationValue * 1.5}deg)`,
+            transition: "0.25 ease all",
           },
         },
+      }}
+      onMouseLeave={() => (boundingRef.current = null)}
+      onMouseEnter={(ev: any) => {
+        boundingRef.current = ev.currentTarget.getBoundingClientRect();
+      }}
+      onMouseMove={(ev: any) => {
+        if (!boundingRef.current) return;
+        const x = ev.clientX - boundingRef.current.left;
+        const y = ev.clientY - boundingRef.current.top;
+        const xPercentage = x / boundingRef.current.width;
+        const yPercentage = y / boundingRef.current.height;
+        const xRotation = (xPercentage - 0.5) * 20;
+        const yRotation = (0.5 - yPercentage) * -20;
+
+        setYRotationValue(yRotation);
+        setXRotationValue(xRotation);
       }}
     >
       <Text
@@ -76,12 +103,12 @@ export const PostCard: React.FC<IPostCardProps> = ({
         bottom="-25%"
         right="48%"
         transition="0.2s ease all"
-        transform="scale(5)"
         opacity={0}
       >
         {hoverIcon}
       </Text>
       <Image
+        as={motion.img}
         src={image}
         position="absolute"
         top={0}

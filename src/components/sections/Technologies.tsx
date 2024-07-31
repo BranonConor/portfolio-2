@@ -7,7 +7,7 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export const Technologies = () => {
   const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
@@ -50,10 +50,6 @@ export const Technologies = () => {
   const [yRotationValue, setYRotationValue] = useState<number>(0);
   const [xRotationValue, setXRotationValue] = useState<number>(0);
 
-  useEffect(() => {
-    console.log({ yRotationValue, xRotationValue });
-  }, [yRotationValue, xRotationValue]);
-
   return (
     <Box
       marginY={[8, 10, 12]}
@@ -78,7 +74,7 @@ export const Technologies = () => {
         ]}
         transition="0.2s ease all"
       >
-        {technologies.map((item, index) => {
+        {technologies.map((item) => {
           const boundingRef = useRef<DOMRect | null>(null);
           return (
             <Tooltip
