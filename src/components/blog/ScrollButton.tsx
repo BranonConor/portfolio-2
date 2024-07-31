@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, useColorModeValue, Text } from "@chakra-ui/react";
+import { Flex, useColorModeValue, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -26,7 +26,7 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
     scrollDirection === "down" ? (scrollPosition > 128 ? 36 : 20) : 20;
 
   return (
-    <Box
+    <Flex
       as={motion.button}
       position="fixed"
       right={4}
@@ -36,7 +36,10 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       bg={bg}
       boxShadow={shadow}
       aria-label="scroll to top"
-      padding={4}
+      width={12}
+      height={12}
+      alignItems="center"
+      justifyContent="center"
       onClick={() => {
         if (typeof global?.window !== "undefined") {
           return scrollDirection === "up"
@@ -66,10 +69,10 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
         transition: { duration: 1, type: "spring" },
       }}
     >
-      <Text width={4} height={4} position="relative" top="-4px">
+      <Text width={4} height={4} position="relative" top="-2px">
         {scrollDirection === "up" ? "👆🏽" : "👇🏽"}
       </Text>
-    </Box>
+    </Flex>
   );
 };
 
