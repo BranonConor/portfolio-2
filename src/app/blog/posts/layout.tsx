@@ -13,25 +13,25 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (typeof global?.window !== "undefined") {
-        const position = global?.window.pageYOffset;
-        const totalPageHeight = document.body.scrollHeight;
-        setBottomPosition(totalPageHeight);
-        const scrollPoint = global?.window.scrollY + global?.window.innerHeight;
+  const handleScroll = () => {
+    if (typeof global?.window !== "undefined") {
+      const position = global?.window.pageYOffset;
+      const totalPageHeight = document.body.scrollHeight;
+      setBottomPosition(totalPageHeight);
+      const scrollPoint = global?.window.scrollY + global?.window.innerHeight;
 
-        // check if we hit the bottom of the page
-        if (scrollPoint + 32 >= totalPageHeight) {
-          setIsEndOfPage(true);
-        } else {
-          setIsEndOfPage(false);
-        }
-
-        setScrollPosition(position);
+      // check if we hit the bottom of the page
+      if (scrollPoint + 32 >= totalPageHeight) {
+        setIsEndOfPage(true);
+      } else {
+        setIsEndOfPage(false);
       }
-    };
 
+      setScrollPosition(position);
+    }
+  };
+
+  useEffect(() => {
     if (typeof global?.window !== "undefined") {
       global?.window.addEventListener("scroll", handleScroll, {
         passive: true,
@@ -44,6 +44,10 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
       }
     };
   }, [global?.window, scrollPosition]);
+
+  useEffect(() => {
+    handleScroll();
+  }, []);
 
   return (
     <PageWrapper bg={bg} mt="-32px" pb={10} id="blog-page">
