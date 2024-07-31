@@ -17,7 +17,12 @@ export default function RootLayout({
     <html
       suppressHydrationWarning
       lang="en"
-      style={{ padding: "none", margin: "none", overflowX: "hidden" }}
+      style={{
+        padding: "none",
+        margin: "none",
+        overflowX: "hidden",
+        scrollBehavior: "smooth",
+      }}
     >
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
