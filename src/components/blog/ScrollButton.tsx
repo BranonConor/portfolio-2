@@ -38,10 +38,10 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       aria-label="scroll to top"
       padding={4}
       onClick={() => {
-        if (typeof window !== "undefined") {
+        if (typeof global?.window !== "undefined") {
           return scrollDirection === "up"
-            ? window.scrollTo({ top: 0 })
-            : window.scrollTo({ top: bottomPosition });
+            ? global?.window.scrollTo({ top: 0 })
+            : global?.window.scrollTo({ top: bottomPosition });
         }
       }}
       boxSizing="border-box"

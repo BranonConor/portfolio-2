@@ -13,34 +13,37 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
 
-  const handleScroll = () => {
-    if (typeof window !== "undefined") {
-      const position = window.pageYOffset;
-      const totalPageHeight = document.body.scrollHeight;
-      setBottomPosition(totalPageHeight);
-      const scrollPoint = window.scrollY + window.innerHeight;
-
-      // check if we hit the bottom of the page
-      if (scrollPoint + 32 >= totalPageHeight) {
-        setIsEndOfPage(true);
-      } else {
-        setIsEndOfPage(false);
-      }
-
-      setScrollPosition(position);
-    }
-  };
-
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", handleScroll, { passive: true });
-    }
-    return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      if (typeof global?.window !== "undefined") {
+        const position = global?.window.pageYOffset;
+        const totalPageHeight = document.body.scrollHeight;
+        setBottomPosition(totalPageHeight);
+        const scrollPoint = global?.window.scrollY + global?.window.innerHeight;
+
+        // check if we hit the bottom of the page
+        if (scrollPoint + 32 >= totalPageHeight) {
+          setIsEndOfPage(true);
+        } else {
+          setIsEndOfPage(false);
+        }
+
+        setScrollPosition(position);
       }
     };
-  }, [window, scrollPosition]);
+
+    if (typeof global?.window !== "undefined") {
+      global?.window.addEventListener("scroll", handleScroll, {
+        passive: true,
+      });
+    }
+
+    return () => {
+      if (typeof global?.window !== "undefined") {
+        global?.window.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [global?.window, scrollPosition]);
 
   return (
     <PageWrapper bg={bg} mt="-32px" pb={10} id="blog-page">
