@@ -1,5 +1,6 @@
 "use client";
 
+import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 import { Flex, useColorModeValue, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React from "react";
@@ -17,6 +18,14 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
   scrollPosition,
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
+  const upIcon = useColorModeValue(
+    <TriangleUpIcon color="brand.grey" />,
+    <TriangleUpIcon />
+  );
+  const downIcon = useColorModeValue(
+    <TriangleDownIcon color="brand.grey" />,
+    <TriangleDownIcon />
+  );
   const shadow = useColorModeValue(
     "lg",
     "0px 4px 15px 0px rgba(226,175,255, 0.10)"
@@ -69,9 +78,7 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
         transition: { duration: 1, type: "spring" },
       }}
     >
-      <Text width={4} height={4} position="relative" top="-2px">
-        {scrollDirection === "up" ? "👆🏽" : "👇🏽"}
-      </Text>
+      {scrollDirection === "up" ? upIcon : downIcon}
     </Flex>
   );
 };
