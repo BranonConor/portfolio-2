@@ -53,6 +53,13 @@ export const designSystemsProjects = [
 ];
 export const a11yProjects = [
   {
+    title: "Reusable Focus Utility @ Smartsheet",
+    category: "A11y",
+    image: "/projects/focus-utility/cover.png",
+    link: "/projects/posts/focus-utility",
+    date: "Nov 2024",
+  },
+  {
     title: "A11y Audit Program @ Color Health",
     category: "A11y",
     image: "/projects/a11y-kit/cover.png",

@@ -24,6 +24,12 @@ export default function RootLayout({
         scrollBehavior: "smooth",
       }}
     >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"
+        ></link>
+      </head>
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <Providers>
