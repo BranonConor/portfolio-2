@@ -16,7 +16,7 @@ Smartsheet is an industry-leading enterprise work management platform, boasting 
 
 The same project data can be dynamically viewed in various different ways (card/boards, timelines/gantt charts, and tables/grids). Content/asset management, workflows, mini-apps, dashboards, and more make for a robust CWM ecosystem capable of servicing large enterprise customers and small nimble customers alike.
 
-### ⚠️ Keyboard Navigation & Accsesibility
+### ⚠️ Keyboard Navigation & Accessibility
 
 Programmatic focus/keyboard nav is a staple a11y concern across components in a design system. In complex components, baking in accessible keyboard navigation with sensical screen reader interactions out of the box can be a huge value-add for:
 
@@ -63,8 +63,6 @@ const MyComponent = () => {
 
 Here, `MyComponent` is a container with some items, and those items are sensitive to keypress events, and they perform some sort of logic depending on what the user pressed. But what might that logic look like in more detail? It is the secret sauce here, after all.
 
-In many cases (like a listbox again), proper focus/navigation management includes calling .focus() on the new element, as well as updating tabIndex properties as you go. The goal with tab indices in these cases is to keep all items other than the actively-focused one -1, while the focused one is set to 0 at each step.
-
 ```jsx
 //a bit more specific example of keypress handlers for keyboard nav/focus management
 
@@ -73,15 +71,21 @@ const activeElement = document.activeElement;
 
 const handleKeyDown = (event) => {
   if (event.key === "ArrowUp") {
+    //get the prev sibling element
     const prevElement = activeElement?.previousElementSibling;
     if(prevElement) {
+      //if it exists, unfocus the current element
+      //and focus the prev one
       activeElement.tabIndex = -1;
       prevElement.tabIndex = 0;
       prevElement.focus();
     }
   } else if (event.key === "ArrowDown") {
+    //get the next sibling element
     const nextElement = activeElement?.nextElementSibling;
     if(nextElement) {
+      //if it exists, unfocus the current element
+      //and focus the next one
       activeElement.tabIndex = -1;
       nextElement.tabIndex = 0;
       nextElement.focus();
@@ -99,11 +103,11 @@ Two important things to focus on here (pun very very intended 😌):
 
 The focus() calls are pretty straight forward - move the focus to the next element in question.
 
-The updating of the tabIndex moves things in and out of the page's focus order. If your component contains a bunch of items that take a while to traverse, it can be nice to make sure only one item at a time is a foucsable tab stop. The user can use arrow keys to navigate and they can use the tab key to leave that component altogether to traverse to the next interactable element on the page. And even cooler - if they come back to it, it will go right to where they left off because the last item they traversed to is the tab stop for that component (assuming no rerendering, etc.). Neat!
+The updating of the tabIndex moves things in and out of the page's focus order. If your component contains a bunch of items that take a while to traverse, it can be nice to make sure only one item at a time is a focusable tab stop. The user can use arrow keys to navigate and they can use the tab key to leave that component altogether to traverse to the next interactable element on the page. And even cooler - if they come back to it, it will go right to where they left off because the last item they traversed to is the tab stop for that component (assuming no rerendering, etc.). Neat!
 
 # So what's the problem? 🤨
 
-Glad you asked. So imagine a real, more complex component than our super simple example above. Imagine various keypresses we may want to account for, etc. Now imagine as well that same code needed across MANY components that need these interaction capabilities. And finally, imagine how many consumers are taking design system components and stitching together product UIs that also need this exact same functionality. Suddenly, we've got an issue of scale and a violation of DRY principles (Do Not Repeat Yourself) within our entire frontend infrastructure.
+Glad you asked. So imagine a real, more complex component than our super simple example above. Imagine various keypresses we may want to account for, etc. Now imagine as well that same code needed across MANY components that need these interaction capabilities. And finally, imagine how many consumers are taking design system components and stitching together product UIs that also need this exact same functionality. Suddenly, we've got an issue of scale and a violation of DRY principles (Don't Repeat Yourself) within our entire frontend infrastructure.
 
 When encountering this in our design system code at Smartsheet recently, I decided to abstract some of this high-repitition code into a reusable utility function, for us as well as our consumers.
 
@@ -113,7 +117,7 @@ This new function is super simple, and really flexible in how it can be used. Se
 
 ```jsx
 /**
- * A utilty function that handles programmatic focusing from one element (`currentElement`)
+ * A utility function that handles programmatic focusing from one element (`currentElement`)
  * to another element (`nextElement`). It handles .focus() as well as tabIndex changing.
  *
  * @param currentElement the current element you're focused on. If the focus is being called
@@ -154,7 +158,7 @@ The function isn't too crazy! If you pass it a `currentElement`, it'll do some t
 
 Sometimes though, you may not want to move focus to a new element while setting the tabIndex to -1 & 0 respectively as you traverse. That default behavior here is super helpful in components that contain things like `listboxes`, `filetree`, `menu`, etc. but this function can be used for any other normal focus/keyboard nav event thanks to the `tabIndices` arg.
 
-The `tabIndices` arg is a typescript Tuple of 2 number args. The first number will override the tabIndex of the `currentElement` arg, while the second will override the `nextElement` arg tabIndex. Note that both are optional based on our types, so you can provide one, the other, or both for granular override control. This allows for easy focus shifting/nav between 2 elements of any kind, ones that should always stay interactable or not (maybe even jumping across large sections of the UI!).
+The `tabIndices` arg is a typescript Tuple of 2 number args. The first number will override the tabIndex of the `currentElement` arg, while the second will override the `nextElement` arg tabIndex. Note that both are optional based on our types, so you can provide one, the other, or both for granular override control. This allows for easy focus shifting/nav between 2 elements of any kind, including ones that should always stay interactable or not.
 
 ### Implementation Examples 💭
 
@@ -202,7 +206,7 @@ it("should handle tabIndices by default from one element to the next when provid
 });
 ```
 
-You can see from these test blocks how it works - call it with the current element and the element you want to shift to. What used to be several lines of code per focus/keyboard nav shift now becomes one line.
+You can see from these test blocks how it works - call it with the current element and the element you want to shift to, it takes care of everything 😍. What used to be several lines of code per focus/keyboard nav shift now becomes one line.
 
 How about those custom tabIndices? Well we tested that too - here's how you'd use it with those args:
 
@@ -250,7 +254,7 @@ it("should treat custom tabIndices as nums and not as truthy/falsy values", asyn
 
 # 🚀 Conclusion
 
-Nailing up-to-spec keyboard navigation in our design system components is a great way to ensure high quality UX across your products for assitive technology users. And outside of the design system, we know product teams will need similar utilities to ease the lift and repitition of keyboard nav code in UIs they're building.
+Nailing up-to-spec keyboard navigation in design system components is a great way to ensure high quality UX across products for assistive technology users. And outside of the design system, we know product teams will need similar utilities to ease the lift and repetition of keyboard nav code in UIs they're building.
 
 By shipping this utility, we give ourselves and all frontend devs at Smnartsheet a simple but powerful way to abstract out some of the verbose syntax that goes into keyboard nav/focusing. The result here is increased code readability, DRYness, quicker development time, and every so slightly less friction on our road to building accessible UIs for our users.
 
