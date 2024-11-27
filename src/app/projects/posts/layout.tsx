@@ -57,6 +57,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
       sx={{
         ".remark-highlight": {
           width: "100%",
+          my: "16px",
         },
       }}
     >

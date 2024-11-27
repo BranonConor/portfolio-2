@@ -3,8 +3,8 @@ import HeroStrip from "@/components/blog/HeroStrip";
 import Note from "@/components/blog/Note";
 
 <HeroStrip
-  title="Reusable Focus Utility @ Smartsheet"
-  subtitle="Building tools for programmatic focus management across Smartsheet UIs"
+  title="Focus/Keyboard Nav Utilities @ Smartsheet"
+  subtitle="Building tools for accessible focus/keyboard nav management across Smartsheet UIs"
   image="/projects/focus-utility/cover.png"
   date="Nov 2024"
   category="A11y"
@@ -16,102 +16,247 @@ Smartsheet is an industry-leading enterprise work management platform, boasting 
 
 The same project data can be dynamically viewed in various different ways (card/boards, timelines/gantt charts, and tables/grids). Content/asset management, workflows, mini-apps, dashboards, and more make for a robust CWM ecosystem capable of servicing large enterprise customers and small nimble customers alike.
 
-<ContentImage image="/projects/focus-utility/intro.png" caption="" />
-
 ### ⚠️ Keyboard Navigation & Accsesibility
 
-Programmatic focus is a staple a11y concern across components in a design system. With many more complex components, baking in accessible keyboard navigation with sensical screen reader interactions out of the box can be a huge value-add to consumers of the system.
+Programmatic focus/keyboard nav is a staple a11y concern across components in a design system. In complex components, baking in accessible keyboard navigation with sensical screen reader interactions out of the box can be a huge value-add for:
 
-Many of our components at Smartsheet ship keyboard nav capabilities out of the box, such as our `Toolbar` and `Menu` components, which allow for arrow key navigation between items and more. In a recent a11y audit, we found a bug in our menu component's programmatic focus code which led me to create a reusable utility to help handle programmatic keyboard nav and focus - which is today's topic 🤓
+- Consumers of the system, who get to save development time & effort building those things in themselves
+- End users, who get to benefit from good usability and interface accessibility
 
-<br />
+Many of our components at Smartsheet ship keyboard nav capabilities out of the box, such as our `Toolbar` and `Menu` components, which allow for arrow key navigation between items and more. In recent work, I was brushing up our Menu's focus/keyboard nav code which led me to create a reusable utility to help handle programmatic keyboard nav and focus - the topic of this post 🤓
+
+<ContentImage
+  image="/projects/focus-utility/intro.png"
+  caption="Arrow keys with a :thinking: emoji face next to a thought bubble"
+/>
 
 # How does programmatic keyboard navigation work?
 
-Programmatic focus management generally
+Programmatic focus management is a very browser-API-centric effort. Generally, if you want to make components easily navigable via keyboard (such as arrow keys in a listbox, etc.) you have to implement a series of keyPress events that traverse DOM nodes in certain ways. In a react component, that might look something like this 👇🏽
 
 ```jsx
-const this = this;
+//a very crude, oversimplified example :)
+const MyComponent = () => {
+  const items = [1, 2, 3];
+
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowUp") {
+      console.log("UP");
+      // Perform some action
+    } else if (event.key === "ArrowDown") {
+      console.log("DOWN");
+      // Perform some action
+    } else {
+      ...
+    }
+  };
+
+  return (
+    <ul>
+      {items.map((item) => (
+        <li onKeydown={handleKeyDown}>{item}</li>
+      ))}
+    </ul>
+  );
+};
 ```
 
-### 💪🏻 Step 1 - Getting Situated
+Here, `MyComponent` is a container with some items, and those items are sensitive to keypress events, and they perform some sort of logic depending on what the user pressed. But what might that logic look like in more detail? It is the secret sauce here, after all.
 
-First things first - we needed to sync up to kick things off as a team. We started a nice doc to hash out our decisions, goals, todos, and explorations on technology choices, etc.
+In many cases (like a listbox again), proper focus/navigation management includes calling .focus() on the new element, as well as updating tabIndex properties as you go. The goal with tab indices in these cases is to keep all items other than the actively-focused one -1, while the focused one is set to 0 at each step.
 
-<ContentImage
-  image="/projects/ez-links/doc.png"
-  caption="Our planning doc for the EZ Links hackweek project"
-/>
+```jsx
+//a bit more specific example of keypress handlers for keyboard nav/focus management
 
-### 🔎 Step 2 - Explore Technologies
+//this is just an example demo'ing that SOMEHOW, you've got the active element stored.
+const activeElement = document.activeElement;
 
-Our first challenge would be deciding on our technologies. We knew we needed a couple main things:
+const handleKeyDown = (event) => {
+  if (event.key === "ArrowUp") {
+    const prevElement = activeElement?.previousElementSibling;
+    if(prevElement) {
+      activeElement.tabIndex = -1;
+      prevElement.tabIndex = 0;
+      prevElement.focus();
+    }
+  } else if (event.key === "ArrowDown") {
+    const nextElement = activeElement?.nextElementSibling;
+    if(nextElement) {
+      activeElement.tabIndex = -1;
+      nextElement.tabIndex = 0;
+      nextElement.focus();
+    }
+  } else {
+    ...
+  }
+};
+```
 
-- A rich text editor
-- A rich text renderer
+Two important things to focus on here (pun very very intended 😌):
 
-Our Board view in the Smartsheet platform renders kanban-like columns full of cards, so teams can organize work. This would be the perfect spot to concept out the EZ links experience, since most people are adding links in tickets in this view.
+1. We are updating the tabIndex as we go
+2. We are manually focusing as we go
 
-We would generally need to implement a rich text renderer in the editor panel for a card's fields (mainly the description field), and then in the card itself where that data is displayed, we'd need to add a rich text renderer to compile any link nodes from the data payload into rendered HTML.
+The focus() calls are pretty straight forward - move the focus to the next element in question.
 
-So we were off to the races to explore different industry-standard rich text solutions!
+The updating of the tabIndex moves things in and out of the page's focus order. If your component contains a bunch of items that take a while to traverse, it can be nice to make sure only one item at a time is a foucsable tab stop. The user can use arrow keys to navigate and they can use the tab key to leave that component altogether to traverse to the next interactable element on the page. And even cooler - if they come back to it, it will go right to where they left off because the last item they traversed to is the tab stop for that component (assuming no rerendering, etc.). Neat!
 
-We ended up settling on [SlateJS](https://www.slatejs.org/examples/richtext) for the rich text editor component, and on [React Rich Text Renderer by Hygraph](https://hygraph.com/blog/hygraph-react-rich-text-renderer) for the renderer in the cards. A look at the docs showed that Hygraph's renderer expected (by default) the exact data structure that the SlateJS editor outputs (by default) - a match made in heaven. 😇
+# So what's the problem? 🤨
 
-<ContentImage
-  image="/projects/ez-links/hygraph.png"
-  caption="Default API data structure for the rich text renderer"
-/>
+Glad you asked. So imagine a real, more complex component than our super simple example above. Imagine various keypresses we may want to account for, etc. Now imagine as well that same code needed across MANY components that need these interaction capabilities. And finally, imagine how many consumers are taking design system components and stitching together product UIs that also need this exact same functionality. Suddenly, we've got an issue of scale and a violation of DRY principles (Do Not Repeat Yourself) within our entire frontend infrastructure.
 
-Now, it was time to wrangle the code!
+When encountering this in our design system code at Smartsheet recently, I decided to abstract some of this high-repitition code into a reusable utility function, for us as well as our consumers.
 
-### 🛠️ Step 3 - HACK!
+# focusNewElement() 🛠️
 
-With tech nailed down, we divided and conquered the implementations. We hacked together our solution, adding the renderer to the editor panel (in a very pared-down format where we only added link capability, since editors can also allow many other rich text features), styled with our design system tokens so it matched the rest of the UX (an imperative for a hackweek team comprised of almost all design system engineers!). We added the renderer in cards, and also added the renderer in the tooltip that shows overflow text when the card description gets truncated.
+This new function is super simple, and really flexible in how it can be used. See for yourself, then let's break it down:
 
-<ContentImage
-  image="/projects/ez-links/demo.png"
-  caption="The rich text editor in the panel, the renderer in the card"
-/>
+```jsx
+/**
+ * A utilty function that handles programmatic focusing from one element (`currentElement`)
+ * to another element (`nextElement`). It handles .focus() as well as tabIndex changing.
+ *
+ * @param currentElement the current element you're focused on. If the focus is being called
+ * to an element for the first time and there is no current focused element,
+ * set this to `null`.
+ * @param nextElement the next element you want to shift focus to.
+ * @param tabIndices optional set of 2 numbers which define what the tabIndices will be after
+ * this focus event takes place. The first number is the new tabIndex for the currentElement
+ * and the second is the new tabIndex for the nextElement.
+ */
+export const focusNewElement = (
+    currentElement: HTMLElement | null,
+    nextElement: HTMLElement,
+    tabIndices?: [number?, number?]
+) => {
+    //if a current element is passed in...
+    if (currentElement) {
+        //... set the currentElement tabIndex to either the custom tabIndex or -1
+        currentElement.tabIndex = tabIndices?.[0] !== undefined ? tabIndices[0] : -1;
+    }
+    // set the nextElement tabIndex to either the custom tabIndex or 0
+    nextElement.tabIndex = tabIndices?.[1] !== undefined ? tabIndices[1] : 0;
+    nextElement.focus();
+};
+```
 
-The final 2 pieces of the puzzle:
+### Prop API 🔨
 
-1. Provide a UI/UX for editing/removing links once they're added into the editor
-2. Integrate the data from the new editor field in the panel into the actual app API, so the rich text nodes can be passed along in JSON to the renderer in the card (two different areas of our codebase).
+The API for this function contains just a few args:
 
-For item #1 - we added in a nice tooltip flyout editor for links that were already pasted in, inspired by the hero tooltip editor in Slack for the same type of interactions. It came out great! For item #2, we updated the API code to pass JSON data along as intended. The result was a fully working EZ Links solution!
+- `currentElement` - the current focused/nav'd element
+- `nextElement` - where you want to focus/nav to next
+- `tabIndices` - the new tabIndex for each element after this new nav/focus action takes place
 
-<ContentImage
-  image="/projects/ez-links/tooltip.png"
-  caption="The tooltip flyout editor for links once pasted into the field"
-/>
+### The logic 💡
 
-Because the 'pasting' in interaction may not be obvious to all users as an available interaction, we also opted to add a couple simple icon buttons for adding a link and deleting a link (once added). SlateJS has awesome examples on how to do this in their own playground/docs.
+The function isn't too crazy! If you pass it a `currentElement`, it'll do some tabIndex logic on that element before we move focus elsewhere. In either case it moves on, and makes the next element interactable, then focuses to it.
 
-Now we were ready to show it off!
+Sometimes though, you may not want to move focus to a new element while setting the tabIndex to -1 & 0 respectively as you traverse. That default behavior here is super helpful in components that contain things like `listboxes`, `filetree`, `menu`, etc. but this function can be used for any other normal focus/keyboard nav event thanks to the `tabIndices` arg.
 
-### 🎥 Step 4 - Demo it to the world
+The `tabIndices` arg is a typescript Tuple of 2 number args. The first number will override the tabIndex of the `currentElement` arg, while the second will override the `nextElement` arg tabIndex. Note that both are optional based on our types, so you can provide one, the other, or both for granular override control. This allows for easy focus shifting/nav between 2 elements of any kind, ones that should always stay interactable or not (maybe even jumping across large sections of the UI!).
 
-Demo day came around and we had a fully working, in-product solution in place! As the hackweek team lead I prepped to give a live demo in a quick 2-3 minute span on demo day. Amongst 70-80 hackweek teams, we presented EZ Links to 1k+ people and our solution was very well received!
+### Implementation Examples 💭
 
-<ContentImage
-  image="/projects/ez-links/reviews.png"
-  caption="Tons of great quotes from excited viewers of our demo!"
-/>
+So how can this be used? Let's look at some unit tests I wrote for this function to see some examples of its potential:
 
-<br />
+```jsx
+const TestUI = () => {
+  return (
+    <div>
+      <button tabIndex={0}>Button 1</button>
+      <button tabIndex={-1}>Button 2</button>
+    </div>
+  );
+};
 
-# 🚀 Impact
+it("should focus from one element to the next when provided a current and next element", async () => {
+  render(<TestUI />);
 
-### 🧠 Learnings
+  // focus the first button to start
+  await userEvent.keyboard("tab");
 
-I learned a ton about implementing rich text editors, renderers, and the various ways they might be able to structure their data (JSON, markdown, etc). I also learned a lot about product areas that I hadn't yet got to work with as a design system team engineer (a very valuable experience for us!). It was SO awesome to learn how to build the exact type of feature I know and love in products I use every day, which was a really rewarding experience.
+  const button1 = screen.getByText("Button 1");
+  const button2 = screen.getByText("Button 2");
 
-This was also the second hackweek I've led a team for in my career, so it was fun to cosplay as a team lead once again 😂
+  // focus from the first button to the second button using the util function
+  focusNewElement(button1, button2);
 
-### 🔮 Future Implications
+  const focusedButton = document.activeElement;
+  expect(focusedButton).toHaveTextContent("Button 2");
+});
+it("should handle tabIndices by default from one element to the next when provided a current and next element", async () => {
+  render(<TestUI />);
 
-Our solution unfortunately didn't win any of the hackweek awards (it was an EXTREMELY competitive hackweek with AI solutions and tons of other insane projects), but we did garner the attention of some important product and UX folks (even the Chief Product Officer). As of the writing of this article, we've got EZ Links in our backlog and hope to someday find time to implement it into the various views that make the Smartsheet platform the beloved product that it is. And how exciting to play a part in making it even MORE modern and awesome as a platform!
+  // focus the first button to start
+  await userEvent.keyboard("tab");
+
+  const button1 = screen.getByText("Button 1");
+  const button2 = screen.getByText("Button 2");
+
+  // focus from the first button to the second button using the util function
+  focusNewElement(button1, button2);
+
+  expect(button1.tabIndex).toEqual(-1);
+  expect(button2.tabIndex).toEqual(0);
+});
+```
+
+You can see from these test blocks how it works - call it with the current element and the element you want to shift to. What used to be several lines of code per focus/keyboard nav shift now becomes one line.
+
+How about those custom tabIndices? Well we tested that too - here's how you'd use it with those args:
+
+```jsx
+it("should provide custom tabIndices to both elements if 2 numbers are passed in", async () => {
+  render(<TestUI />);
+
+  // focus the first button to start
+  await userEvent.keyboard("tab");
+
+  const button1 = screen.getByText("Button 1");
+  const button2 = screen.getByText("Button 2");
+
+  // focus from the first button to the second button using the util function
+  focusNewElement(button1, button2, [1, 2]);
+
+  expect(button1.tabIndex).toEqual(1);
+  expect(button2.tabIndex).toEqual(2);
+});
+```
+
+As you can see, the tuple provides a super simple way to have full custom control over the tabIndex updates that happen programmatically, in just a few chars!
+
+### Other Considerations
+
+It's worth noting as well our `undefined` check for the tabIndices tuple values - someone will likely need to send in a 0 or -1 value of their own at some point, and without proper type checks those nums may evaluate as falsy, which would cause the override to not kick in. One of our tests validates that this behavior is prevented by our type checks:
+
+```jsx
+it("should treat custom tabIndices as nums and not as truthy/falsy values", async () => {
+  render(<TestUI />);
+
+  // focus the first button to start
+  await userEvent.keyboard("tab");
+
+  const button1 = screen.getByText("Button 1");
+  const button2 = screen.getByText("Button 2");
+
+  // focus from the first button to the second button using the util function
+  focusNewElement(button1, button2, [0, -1]);
+
+  expect(button1.tabIndex).toEqual(0);
+  expect(button2.tabIndex).toEqual(-1);
+});
+```
+
+# 🚀 Conclusion
+
+Nailing up-to-spec keyboard navigation in our design system components is a great way to ensure high quality UX across your products for assitive technology users. And outside of the design system, we know product teams will need similar utilities to ease the lift and repitition of keyboard nav code in UIs they're building.
+
+By shipping this utility, we give ourselves and all frontend devs at Smnartsheet a simple but powerful way to abstract out some of the verbose syntax that goes into keyboard nav/focusing. The result here is increased code readability, DRYness, quicker development time, and every so slightly less friction on our road to building accessible UIs for our users.
+
+From here, bolstering our infrastructure for focus management and keyboard navigation across products is the goal. I think it'd be awesome to ship all kinds of focus utilities like this one, enabling consistency and DRY code across our own system and making the same possible for the consumers of our design system.
+
+I hope this glimpse into our own UI a11y work inspires you to do similar stuff!
 
 Cheers,
 Branon

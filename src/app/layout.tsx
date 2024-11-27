@@ -22,6 +22,7 @@ export default function RootLayout({
         margin: "none",
         overflowX: "hidden",
         scrollBehavior: "smooth",
+        background: "linear-gradient(124deg, #0072b1, #fd36ab 95.2%)",
       }}
     >
       <head>
