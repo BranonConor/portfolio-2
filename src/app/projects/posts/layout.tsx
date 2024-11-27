@@ -50,7 +50,17 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PageWrapper bg={bg} mt="-32px" pb={10}>
+    <PageWrapper
+      bg={bg}
+      mt="-32px"
+      pb={10}
+      sx={{
+        ".remark-highlight": {
+          width: "100%",
+          my: "16px",
+        },
+      }}
+    >
       <Flex justifyContent="center" width="100%">
         <Flex
           flexDirection="column"

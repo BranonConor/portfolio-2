@@ -22,8 +22,15 @@ export default function RootLayout({
         margin: "none",
         overflowX: "hidden",
         scrollBehavior: "smooth",
+        background: "linear-gradient(124deg, #0072b1, #fd36ab 95.2%)",
       }}
     >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"
+        ></link>
+      </head>
       <body>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
         <Providers>
