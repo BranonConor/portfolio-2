@@ -23,6 +23,13 @@ export const brandingProjects = [
 ];
 export const designSystemsProjects = [
   {
+    title: "Theme Architecture Refactor @ Smartsheet",
+    category: "Design Systems",
+    image: "/projects/theme-refactor/cover.png",
+    link: "/projects/posts/theme-refactor",
+    date: "June 2024",
+  },
+  {
     title: "Design System Maturation @ Endpoint",
     category: "Design Systems",
     image: "/projects/process-improvements/cover.png",

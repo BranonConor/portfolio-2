@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Flex,
-  Text,
-  Box,
-  Grid,
-  Heading,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Flex, Text, Grid, Heading, useColorModeValue } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PostCard } from "@/components/blog/PostCard";

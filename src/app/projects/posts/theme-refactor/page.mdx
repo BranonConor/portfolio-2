@@ -1,0 +1,173 @@
+import ContentImage from "@/components/blog/ContentImage";
+import ContentVideo from "@/components/blog/ContentVideo";
+import Note from "@/components/blog/Note";
+import HeroStrip from "@/components/blog/HeroStrip";
+
+<HeroStrip
+  title="Theme Architecture Refactor @ Smartsheet"
+  subtitle="Building a more scalable theming architecture for design system consumers"
+  image="/projects/theme-refactor/cover.png"
+  date="June 2024"
+  category="Design Systems"
+/>
+
+### ✍🏽 About Smartsheet
+
+Smartsheet is an industry-leading enterprise work management platform, boasting millions of passionate users!
+
+The same project data can be dynamically viewed in various different ways (card/boards, timelines/gantt charts, and tables/grids). Content/asset management, workflows, mini-apps, dashboards, and more make for a robust CWM ecosystem capable of servicing large enterprise customers and small nimble customers alike.
+
+<ContentVideo url="/projects/theme-refactor/smar-views.mp4" />
+
+### ⚠️ The Problems
+
+- We needed to help teams ship the new look and feel for the Smartsheet platform - our new and improved 'Ursa' theme!
+- Switching over to the new theme for all teams at once would effectively be impossible 🙃
+- Thus, we needed a way to provide teams control over what theme they were rendering, so they can build and launch their experience in the new theme according to their own unique roadmaps/priorities.
+- To do this, we needed to completely rethink and rebuild the current theming architecture. 👀
+
+### ✨ The Solutions
+
+- Learn about the current system - understand its tradeoffs, its pros and cons, etc.
+- Architect a new solution that meets new requirements for the design system delivery across product teams, and propose how to bridge the gap from current state to future state.
+- Ship it!
+
+### 👯‍♂️ The Team
+
+- 2 Design Engineers (spearheaded by me), later 4 design engineers as our team grew! ✨
+
+<br />
+
+# 💭 Introduction: A Huge Product Redesign Effort
+
+When I first joined Smartsheet's Ursa Design System team at the beginning of 2024, we were well on our way in shipping a complete redesign of the product. We were in the midst of meeting with teams to discuss migration to our new design system theme, Ursa, and were helping teams set expectations around level of effort based on the state of their code (teams had varying levels of design system adoption at this point). We refered to this effort as 'Ursa-fication'.
+
+Having just joined Smartsheet, my first task was to build a scoped theming system, which would give product teams the ability to say "I want to be the old theme because I'm not ready for the new one" or "I want to be the new theme - I'm ready!". They needed this granular theming control because many teams simply weren't adopting the design system enough for us to simply flick the new theme on for everyone all at once - doing so before teams were ready would result in a very scattered and inconsistent platform UX that we didn't feel would be acceptable.
+
+Our current code allowed for global theming control, but with some unique constraints specific to the rest of our app architecture, so we had a long journey ahead of us to come up with a robust solution.
+
+<br />
+
+# 📝 Phase 1: Learn Stuff
+
+I started by working to understand the current setup of our theming system in code. And if you know me by now, you know that I cranked open a fresh Figjam file for an architecture diagram faster than you could say 'theme architecture refactor'! As I read through the code, I began to paint a picture of how things are currently working. Here's what I came up with in its fruition:
+
+<ContentImage
+  image="/projects/theme-refactor/current-approach.svg"
+  caption="A flowchart diagram of the current theme system in code"
+/>
+
+With a better understanding of the code, I wanted to map every color value in our theme and compare it to every color value in our design system tokens.
+
+This visual created a super noticeable diff at a glance and helped me identify exactly which values were out of sync.
+
+<ContentImage
+  image="/projects/color-palette-parity/current-figma.png"
+  caption="A flowchart diagram of the color palette structure in figma"
+/>
+
+The last piece - what does MUI’s Palette object look like out of the box?
+
+I documented the structure of the default MUI color Palette types here next. This helped me see the delta from what we need vs. what we get from MUI by default.
+
+<ContentImage
+  image="/projects/color-palette-parity/mui.png"
+  caption="A flowchart diagram of the color palette structure Material UI code"
+/>
+
+<br />
+
+# 🧠 Phase 2: Plan The Fix
+
+Time to plan out the implementation! I came up with 2 options after some deliberation:
+
+- Solution A: add on missing properties to the existing palette from MUI and adjust individual types as needed
+- Solution B: ignore all default palette properties, add the entire design system palette under 1 custom field to avoid overriding all the existing types
+
+<ContentImage
+  image="/projects/color-palette-parity/solutions.png"
+  caption="2 solutions side by side written out"
+/>
+
+We ended up deciding on Solution A to minimize customization, preventing as much future migration pain as possible should the MUI API change (which it has definitely done). Of course, things at scale are always more complicated than they may seem. For us here, we had to consider other questions like:
+
+- How can we continue to ensure design system flexibility and how can we make bug discovery and remediation easier?
+
+To address these constraints, we opted for some finishing touches in our solution:
+
+- Make all palette values required: if all values in the palette are required, all teams need to be specify a token for each value. Some themes didn't have tokens for all values though, which leads us to item 2 -->
+- Utilize an unusedColorValue token: for themes that don't need certain values, they can stick this value in its place. It defaults to an error red color, so if components eventually end up using values that certain themes don't specify, it should provide a glaringly obvious sign to the teams that the designers should assign a value for that field.
+
+<br />
+
+# 🚀 Phase 3: Ship it!
+
+I dove in and touched up the theme code and add in the missing color token values. I listed engineers from every product team as well as our UX Infra team for review. Great conversations / comments ensued. Some tokens could be easier to just change in Figma vs. code. I worked with the Design Systems designers to identify some color names to change - i.e. - ‘error.main’ vs ‘error.default’
+
+I moved on to getting any breaking CI tests (unit tests, integration tests, etc.) passing. Lots of incorrect or unexpected color implementations cropped up! I converted it from a draft PR to a normal PR, listed final reviewers, and...
+
+✅ MERGED!
+
+### Overcommunicating
+
+I sent out a product/eng/design-wide “Invisible Changes” email to notify all product teams about this change. I encouraged them to...
+
+- Be on the lookout for UI regressions!
+- Contact our team any time in the appropriate channels
+- Leverage the theme color palette ONLY for all future UI development.
+
+<ContentImage
+  image="/projects/color-palette-parity/email.png"
+  caption="An 'invisible changes' email sent to entire product org"
+/>
+
+Some of the pieces of product team UIs turned red out of nowhere! This was proof our unusedColorValue token was working to uncover incorrect theme color usage! I made fixes for teams and worked with their teams to merge them in.
+
+<ContentImage
+  image="/projects/color-palette-parity/bugs.png"
+  caption="A UI with an error red app bar, being restored to the expected grey background color"
+/>
+
+# 🚀 Impact
+
+### 🧠 Learnings
+
+- Cross-functional collaboration with product teams
+- Architecting scalable solutions to large, complex problems in code
+- Bridging gaps between Design and Engineering
+- Taking initiative and seeing something through from conception to implementation
+- Best practices with application UI theming, design tokens, etc.
+
+### 📝 Limitations
+
+- Utilities needed to quickly declare all color palette values on a new theme instance (vs. manually adding unusedColorValue tokens where colors weren’t needed/didn’t exist)
+- Components and UIs still needed to be migrated from any hard coding / manual color usage to centralize all components into consuming theme colors only
+
+This project was well received across orgs and I got some really kind feedback on this project during the peer review cycle we had just a month or so later. Here's some great quotes from colleagues who appreciated this effort:
+
+<br />
+<Note>
+  "Branon recently decided that Color’s color tokens were desperately in need of
+  a revamp. He brought me in as a design partner early on, and we talked through
+  a couple approaches. Once we aligned on a direction, Branon was able to
+  implement that direction in a way that not only improved our current state,
+  but made it possible for the system to grow and adapt more easily in the
+  future. During this effort, he absolutely brought his hard skills to bear, but
+  I was more impressed with his ability to explain why the work was valuable and
+  how he was approaching the work to a variety of audiences. It is RARE that an
+  engineer can explain something like this in a way that folks who don’t touch
+  code can walk away feeling like they understand it, and it’s a testament to
+  his own understanding that he was able to do that."
+  <br /> - Staff Product Designer, Design Systems
+</Note>
+<Note>
+  "I appreciate the engineering work that Branon did to standardize and update
+  the code across the Color platforms, which also required learning and
+  documenting some of the engineering bootstrapping for those projects. Branon
+  goes above and beyond to help others, and his effort really made everyone's
+  lives easier. I also appreciate Branon's ability to take on complex work in
+  the React codebase, and to ask for help when needed, along with taking that
+  feedback well." <br /> - Staff Software Engineer, UX Infrastructure
+</Note>
+
+If you made it this far - thanks for listening, I hope you enjoyed the project!
