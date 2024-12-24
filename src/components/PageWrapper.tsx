@@ -5,6 +5,7 @@ import { Wave } from "./Wave";
 import { AnimatePresence, motion } from "framer-motion";
 import { Nav } from "./Nav";
 import { MobileNav } from "./MobileNav";
+import { useParams } from "next/navigation";
 
 export const PageWrapper: React.FC<BoxProps> = ({
   bg,
