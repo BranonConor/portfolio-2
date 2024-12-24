@@ -66,17 +66,19 @@ export const PasswordForm = ({
         mt={8}
         borderRadius={16}
         bg={bg}
+        boxShadow="lg"
       >
-        <FancyHeading>Woah there! 🤓</FancyHeading>
+        <FancyHeading>Password Check 🔓</FancyHeading>
         <Text mb={4}>
           This one's pretty detailed - check with me and I'll get you a
-          password, which you can enter here. 🔓
+          password, which you can enter here.
         </Text>
         <FormLabel htmlFor="password">Enter super secret password</FormLabel>
         <Input
           onChange={(e) => setPassword(e.target.value)}
           value={password}
           name="password"
+          boxShadow="sm"
         />
         {!!hasError ? (
           <Text mt={2} color="red.500">

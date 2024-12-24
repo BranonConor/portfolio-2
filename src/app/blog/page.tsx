@@ -38,7 +38,7 @@ export default function Home() {
         <FancyHeading as="h2">Updates, thoughts, and more!</FancyHeading>
         <Grid
           width="100%"
-          gridGap={4}
+          gridGap={[4, 4, 8]}
           gridTemplateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr", "1fr 1fr"]}
         >
           {posts.map((post) => (

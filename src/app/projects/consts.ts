@@ -28,6 +28,7 @@ export const designSystemsProjects = [
     image: "/projects/theme-refactor/cover.png",
     link: "/projects/posts/theme-refactor",
     date: "June 2024",
+    hasPassword: true,
   },
   {
     title: "Design System Maturation @ Endpoint",

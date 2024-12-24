@@ -122,7 +122,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -139,6 +139,7 @@ export default function Home() {
                   link={project.link}
                   category={project.category}
                   date={project.date}
+                  hasPassword={project.hasPassword}
                 />
               ))}
             </Grid>
@@ -160,7 +161,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -198,7 +199,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -236,7 +237,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",

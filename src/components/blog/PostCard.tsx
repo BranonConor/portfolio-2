@@ -20,6 +20,7 @@ interface IPostCardProps {
   buttonText?: string;
   useExternalLink?: boolean;
   hoverIcon?: string;
+  hasPassword?: boolean;
 }
 
 export const PostCard: React.FC<IPostCardProps> = ({
@@ -31,6 +32,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
   useExternalLink = false,
   buttonText = "Read more",
   hoverIcon = "👀",
+  hasPassword = false,
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
@@ -57,7 +59,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
       minHeight="300px"
       _hover={{
         "@media only screen and (min-width: 450px)": {
-          img: {
+          "> img": {
             "&:first-of-type": {
               transform: `scale(1.2) translateX(${xRotationValue}px) translateY(${yRotationValue}px) rotateX(${
                 xRotationValue * 1.5
@@ -141,16 +143,35 @@ export const PostCard: React.FC<IPostCardProps> = ({
         height="100%"
       >
         <Box>
-          <Text
-            as="span"
-            fontSize="12px"
-            paddingY={1}
-            paddingX={2}
-            bg="brand.blue"
-            borderRadius={120}
-          >
-            {category}
-          </Text>
+          <Flex>
+            <Text
+              as="span"
+              display="inline-flex"
+              alignItems="center"
+              fontSize="12px"
+              paddingY={1}
+              paddingX={2}
+              bg="brand.blue"
+              borderRadius={120}
+              mr={2}
+            >
+              {category}
+            </Text>
+            {hasPassword ? (
+              <Text
+                as="span"
+                fontSize="12px"
+                paddingY={1}
+                paddingX={2}
+                bg="brand.pink"
+                borderRadius={120}
+                display="inline-flex"
+                alignItems="center"
+              >
+                🔓 Password Required
+              </Text>
+            ) : null}
+          </Flex>
           <Heading as="h3" size="md" mt={3} mb={1}>
             {title}
           </Heading>
