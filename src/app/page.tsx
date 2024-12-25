@@ -39,18 +39,14 @@ export default function Home() {
           accessible, and scalable software that delights users and propels
           businesses forward.
         </Text>
-        <Flex
-          flexDirection={["column", "column", "row"]}
-          width={["100%", "auto", "auto"]}
-          mb={[8, 10, 12]}
-        >
+        <Flex flexDirection={["column", "column", "row"]} mb={[8, 10, 12]}>
           <Button
             variant="primary"
             as={Link}
             href="/projects"
             mr={[0, 0, 4]}
             mb={[4, 4, 0]}
-            width={["100%", "100%", "auto"]}
+            width={["auto"]}
           >
             <Image src="/icons/projects-light.svg" mr={2} width={4} />
             See my work
@@ -60,7 +56,7 @@ export default function Home() {
             as="a"
             download
             href="/resume.pdf"
-            width={["100%", "100%", "auto"]}
+            width={["auto"]}
           >
             <DownloadIcon mr={2} width={4} />
             Download resume

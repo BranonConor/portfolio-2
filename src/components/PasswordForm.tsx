@@ -34,8 +34,6 @@ export const PasswordForm = ({
   const [hasError, setHasError] = useState(false);
   const [message, setMessage] = useState("");
 
-  console.log(one, two, three, four);
-
   const focusNextElement = (element: HTMLElement) => {
     const nextSibling = element.nextElementSibling;
 
@@ -67,8 +65,8 @@ export const PasswordForm = ({
       <Box padding={8} mt={8} borderRadius={16} bg={bg} boxShadow="lg">
         <FancyHeading>Password Check 🔓</FancyHeading>
         <Text mb={4}>
-          This one's pretty detailed - check with me and I'll get you a PIN,
-          which you can enter here.
+          This project is pretty detailed and not entirely public - check with
+          me and I'll get you a PIN.
         </Text>
         <FormLabel htmlFor="password">Enter super secret PIN 👇🏽</FormLabel>
         <Flex gap={2} width="300px">
