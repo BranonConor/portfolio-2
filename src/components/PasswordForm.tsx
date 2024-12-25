@@ -47,14 +47,11 @@ export const PasswordForm = ({
   const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
 
   const errorMessages = [
-    "Wrong password!",
+    "Wrong password! ❌",
     "Nope! Try again.",
-    "Incorrect - who gave you that one?",
+    "Incorrect - who gave you that one? 🤨",
+    "Wrong 🫢",
   ];
-
-  useEffect(() => {
-    setMessage(errorMessages[Math.floor(Math.random() * 3)]);
-  }, [hasError]);
 
   useEffect(() => {
     if (one + two + three + four === "") {
@@ -73,7 +70,7 @@ export const PasswordForm = ({
           This one's pretty detailed - check with me and I'll get you a PIN,
           which you can enter here.
         </Text>
-        <FormLabel htmlFor="password">Enter super secret PIN</FormLabel>
+        <FormLabel htmlFor="password">Enter super secret PIN 👇🏽</FormLabel>
         <Flex gap={2} width="300px">
           <Input
             onChange={(e) => {
@@ -130,10 +127,10 @@ export const PasswordForm = ({
                     "1738" ||
                   one + two + three + four === "1738"
                 ) {
-                  console.log("Password accepted!");
                   setHasPassword(true);
                 } else {
                   setHasError(true);
+                  setMessage(errorMessages[Math.floor(Math.random() * 3)]);
                   (firstInputRef.current as HTMLInputElement)?.focus();
                 }
               }
