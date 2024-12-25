@@ -1,5 +1,7 @@
 import {
   Box,
+  Button,
+  Flex,
   FormLabel,
   Input,
   Text,
@@ -12,6 +14,7 @@ import {
   ReactNode,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { FancyHeading } from "./FancyHeading";
@@ -24,17 +27,20 @@ export const PasswordForm = ({
   preview,
   setHasPassword,
 }: PasswordFormProps) => {
-  const [password, setPassword] = useState("");
+  const [one, setOne] = useState("");
+  const [two, setTwo] = useState("");
+  const [three, setThree] = useState("");
+  const [four, setFour] = useState("");
   const [hasError, setHasError] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
+  console.log(one, two, three, four);
 
-    if (password === "raybran") {
-      setHasPassword(true);
-    } else {
-      setHasError(true);
+  const focusNextElement = (element: HTMLElement) => {
+    const nextSibling = element.nextElementSibling;
+
+    if (nextSibling) {
+      (nextSibling as HTMLElement).focus();
     }
   };
 
@@ -51,35 +57,95 @@ export const PasswordForm = ({
   }, [hasError]);
 
   useEffect(() => {
-    if (password === "") {
+    if (one + two + three + four === "") {
       setHasError(false);
     }
-  }, [password]);
+  }, [one, two, three, four]);
+
+  const firstInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <>
       {preview}
-      <Box
-        as="form"
-        onSubmit={handleSubmit}
-        padding={8}
-        mt={8}
-        borderRadius={16}
-        bg={bg}
-        boxShadow="lg"
-      >
+      <Box padding={8} mt={8} borderRadius={16} bg={bg} boxShadow="lg">
         <FancyHeading>Password Check 🔓</FancyHeading>
         <Text mb={4}>
-          This one's pretty detailed - check with me and I'll get you a
-          password, which you can enter here.
+          This one's pretty detailed - check with me and I'll get you a PIN,
+          which you can enter here.
         </Text>
-        <FormLabel htmlFor="password">Enter super secret password</FormLabel>
-        <Input
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          name="password"
-          boxShadow="sm"
-        />
+        <FormLabel htmlFor="password">Enter super secret PIN</FormLabel>
+        <Flex gap={2} width="300px">
+          <Input
+            onChange={(e) => {
+              setOne(e.target.value[e.target.value.length - 1]);
+              if (e.target.value) {
+                focusNextElement(e.target);
+              }
+            }}
+            value={one}
+            name="one"
+            boxShadow="sm"
+            padding={2}
+            type="number"
+            width={12}
+            ref={firstInputRef}
+          />
+          <Input
+            onChange={(e) => {
+              setTwo(e.target.value[e.target.value.length - 1]);
+              if (e.target.value) {
+                focusNextElement(e.target);
+              }
+            }}
+            value={two}
+            name="two"
+            boxShadow="sm"
+            padding={2}
+            type="number"
+            width={12}
+          />
+          <Input
+            onChange={(e) => {
+              setThree(e.target.value[e.target.value.length - 1]);
+              if (e.target.value) {
+                focusNextElement(e.target);
+              }
+            }}
+            value={three}
+            name="two"
+            boxShadow="sm"
+            padding={2}
+            type="number"
+            width={12}
+          />
+          <Input
+            onChange={(e) => {
+              setFour(e.target.value[e.target.value.length - 1]);
+              if (e.target.value && !!one && !!two && !!three) {
+                if (
+                  one +
+                    two +
+                    three +
+                    e.target.value[e.target.value.length - 1] ===
+                    "1738" ||
+                  one + two + three + four === "1738"
+                ) {
+                  console.log("Password accepted!");
+                  setHasPassword(true);
+                } else {
+                  setHasError(true);
+                  (firstInputRef.current as HTMLInputElement)?.focus();
+                }
+              }
+            }}
+            value={four}
+            name="two"
+            boxShadow="sm"
+            padding={2}
+            type="number"
+            width={12}
+          />
+        </Flex>
         {!!hasError ? (
           <Text mt={2} color="red.500">
             {message}
