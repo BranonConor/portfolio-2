@@ -32,142 +32,122 @@ The same project data can be dynamically viewed in various different ways (card/
 - Architect a new solution that meets new requirements for the design system delivery across product teams, and propose how to bridge the gap from current state to future state.
 - Ship it!
 
-### 👯‍♂️ The Team
-
-- 2 Design Engineers (spearheaded by me), later 4 design engineers as our team grew! ✨
-
 <br />
 
 # 💭 Introduction: A Huge Product Redesign Effort
 
-When I first joined Smartsheet's Ursa Design System team at the beginning of 2024, we were well on our way in shipping a complete redesign of the product. We were in the midst of meeting with teams to discuss migration to our new design system theme, Ursa, and were helping teams set expectations around level of effort based on the state of their code (teams had varying levels of design system adoption at this point). We refered to this effort as 'Ursa-fication'.
+When I first joined Smartsheet's Ursa Design System 🐻 team at the beginning of 2024, we were well on our way in shipping a complete redesign of the product. We were meeting with teams to discuss migration to our new design system theme, Ursa, and we were helping teams set expectations around level of effort based on the state of their code (teams had varying levels of design system adoption at this point). We refered to this effort as `Ursa-fication`.
 
-Having just joined Smartsheet, my first task was to build a scoped theming system, which would give product teams the ability to say "I want to be the old theme because I'm not ready for the new one" or "I want to be the new theme - I'm ready!". They needed this granular theming control because many teams simply weren't adopting the design system enough for us to simply flick the new theme on for everyone all at once - doing so before teams were ready would result in a very scattered and inconsistent platform UX that we didn't feel would be acceptable.
+Having just joined Smartsheet, my first task was to build a `✨ scoped theming system ✨`, which would give product teams the ability to say "I want to be the old theme because I'm not ready for the new one" or "I want to be the new theme - I'm ready!". They needed this granular theming control because many teams didn't have enough design system adoption for us to simply flick the new theme on for everyone all at once - doing so before they were ready would result in a very scattered and inconsistent platform UX that we didn't feel would be acceptable.
 
-Our current code allowed for global theming control, but with some unique constraints specific to the rest of our app architecture, so we had a long journey ahead of us to come up with a robust solution.
+Our current code allowed for global theming control, but with some unique constraints specific to the rest of our app architecture, so we had a long journey ahead of us to come up with a robust solution. Let's dive in! 🐬
 
 <br />
 
 # 📝 Phase 1: Learn Stuff
 
-I started by working to understand the current setup of our theming system in code. And if you know me by now, you know that I cranked open a fresh Figjam file for an architecture diagram faster than you could say 'theme architecture refactor'! As I read through the code, I began to paint a picture of how things are currently working. Here's what I came up with in its fruition:
+I started by working to understand the current setup of our theming system in code. And if you know me by now, it should be no surprise that I started by cranking open a fresh Figjam file for an architecture diagram faster than you could say 'theme architecture refactor'! As I read through the code, I began to paint a picture of how things are currently working. Here's what I came up with:
 
 <ContentImage
   image="/projects/theme-refactor/current-approach.svg"
   caption="A flowchart diagram of the current theme system in code"
 />
 
-With a better understanding of the code, I wanted to map every color value in our theme and compare it to every color value in our design system tokens.
+## Current theming system - global only!
 
-This visual created a super noticeable diff at a glance and helped me identify exactly which values were out of sync.
+At a glance, we've got:
+
+- `CommonTokenInjector` Component: it stores tons of tokens, for each of the 2 themes (the old one and our new one). It sets a `data-theme-key` attribute on the `<body />` in the DOM which corresponds to a theme name - it'll be referenced later. It also injects all the vars for whichever theme is active at the `:root` level.
+- `useThemeKey()`: a hook to grab the `themeKey` string from the body element's `data-theme-key` attribute
+
+The result is a global theme configuration at the page level, where components can use a hook to see what the current theme is. If they use valid semantic tokens, they'll get the values for the active theme via the `:root` level tokens, and if they need any non-tokenized styles they can conditionally render styles based on the theme key.
+
+<Note>
+  But this is the big problem ‼️ - if components currently look to the global
+  theme, they don't have a system in place for scoped theming.
+</Note>
+<br />
+
+## A first attempt at scoped theming
+
+My first approach to scoped theming was to work within the confines of the current system - the path of least resistance. The idea was to have some similar stuff (see the purple box in the above diagram for the visual here):
+
+- `ScopedTokenInjector` Component: behaves just like the `CommonTokenInjector` but sets a `data-theme-key` attribute on a `<div />` wrapper instead of the `<body />`, which all nested children can reference in that area of the app UI. And instead of injecting tokens at the `:root` level of the page, this injector will set tokens on the div as well, overriding the `:root` for any children of the div.
+
+The rest is virtually the same as the current global solution - components use a hook to access the nearest parent with a `data-theme-key` attribute and that theme key will tell the component what styles / token values to render.
+
+<Note>
+  BUT - the new problem is: how do the components know what parent might have
+  that attribute?
+</Note>
+
+Well, if you have the DOM element you can use the `element.closest()` method to find any parent with a particular selector, like so:
+
+```jsx
+//simplified example :)
+const buttonComponent = document.querySelector("button");
+
+buttonComponent.closest("[data-theme-key]");
+```
+
+Although this works, I began to recognize a couple problems here:
+
+1. `.closest()` is not the most performant thing in the world if there are perhaps dozens, or even hundreds, of design system components on a page all looking to see what their current theme is. At worst this operation has a time complexity of `O(n)`, where `n` is the number of DOM nodes needed to traverse upward in the tree to find a parent element with a theme key.
+2. In this approach, we're basically replicating the functionality of a React Context Provider 🤔 And on the performance topic, a simple lookup of a context value by a child component is a mere `O(1)` time complexity operation, making it vastly more performant than the current iteration at scale.
+
+Now, I began to think about the possibility of using context providers for theme delivery. But it seemed so obvious - why wasn't it already like that? Turns out there was a reason.
+
+<br />
+
+## A problem with Context Providers
+
+The wider app architecture can give us some hints as to why we weren't currently using context providers. 😬 Our frontend theming architecture was a bit more complex than I'd expected, and not very React-y. We have a special, pseudo-micro-services frontend app structure, where a bunch of product areas render themselves in separate React instances, all making their own `ReactDOM.render() calls!
+
+```jsx
+const SomePartOfTheProduct = () => {
+  ...
+  ReactDOM.render(
+    <BunchOfReactComponents>
+      ...
+    </BunchOfReactComponents>
+  );
+}
+```
+
+Eventually, the entirety of the UI is comprised of these separate chunks of React code, stitched together (like different panels, navigations, dashboards, etc. which are usually owned by specific teams). This works - but it does make theming in a React app a bit complicated. If each piece of a page is made up of a bunch of separate `ReactDOM.render()` calls, you can't share any React context providers across those boundaries! They're entirely separate React trees. 😵 So it seems context providers were ruled out early on as a viable theming solution.
+
+<Note>
+  Thinking about it more, I wondered about a simple solution to this problem:
+  what if each team just added a `ThemeProvider` at the top-level of their chunk
+  of the code?
+</Note>
+
+This would allow for scoped theming in a more React-based approach, leveraging better performance and more predictability in our frontend code! Teams that aren't ready for the new `Ursa` theme can set their theme provider to the old theme, and teams that are all ready for the new theme can set it to an `ursa` theme key. From there, we can reconfigure components to use a `useTheme()` hook that makes a `useContext` call behind the scenes, to easily access the theme key in that sweet, sweet `0(1)` time.
+
+I created a 'north star' architectural diagram for this new approach so we can see the moving parts at a glance and share it out to any stakeholders. Here's what I came up with:
 
 <ContentImage
-  image="/projects/color-palette-parity/current-figma.png"
-  caption="A flowchart diagram of the color palette structure in figma"
+  image="/projects/theme-refactor/north-star.svg"
+  caption="A flowchart diagram of the new, proposed theme system in code"
 />
 
-The last piece - what does MUI’s Palette object look like out of the box?
-
-I documented the structure of the default MUI color Palette types here next. This helped me see the delta from what we need vs. what we get from MUI by default.
-
-<ContentImage
-  image="/projects/color-palette-parity/mui.png"
-  caption="A flowchart diagram of the color palette structure Material UI code"
-/>
+You can already see how much simpler it is! After discussing this approach with the brilliant frontend minds at our company's biweekly `Frontend Guild` meeting, we had consensus that this would be a big improvement. Time to make it happen.
 
 <br />
 
 # 🧠 Phase 2: Plan The Fix
 
-Time to plan out the implementation! I came up with 2 options after some deliberation:
-
-- Solution A: add on missing properties to the existing palette from MUI and adjust individual types as needed
-- Solution B: ignore all default palette properties, add the entire design system palette under 1 custom field to avoid overriding all the existing types
-
-<ContentImage
-  image="/projects/color-palette-parity/solutions.png"
-  caption="2 solutions side by side written out"
-/>
-
-We ended up deciding on Solution A to minimize customization, preventing as much future migration pain as possible should the MUI API change (which it has definitely done). Of course, things at scale are always more complicated than they may seem. For us here, we had to consider other questions like:
-
-- How can we continue to ensure design system flexibility and how can we make bug discovery and remediation easier?
-
-To address these constraints, we opted for some finishing touches in our solution:
-
-- Make all palette values required: if all values in the palette are required, all teams need to be specify a token for each value. Some themes didn't have tokens for all values though, which leads us to item 2 -->
-- Utilize an unusedColorValue token: for themes that don't need certain values, they can stick this value in its place. It defaults to an error red color, so if components eventually end up using values that certain themes don't specify, it should provide a glaringly obvious sign to the teams that the designers should assign a value for that field.
-
-<br />
-
 # 🚀 Phase 3: Ship it!
-
-I dove in and touched up the theme code and add in the missing color token values. I listed engineers from every product team as well as our UX Infra team for review. Great conversations / comments ensued. Some tokens could be easier to just change in Figma vs. code. I worked with the Design Systems designers to identify some color names to change - i.e. - ‘error.main’ vs ‘error.default’
-
-I moved on to getting any breaking CI tests (unit tests, integration tests, etc.) passing. Lots of incorrect or unexpected color implementations cropped up! I converted it from a draft PR to a normal PR, listed final reviewers, and...
-
-✅ MERGED!
-
-### Overcommunicating
-
-I sent out a product/eng/design-wide “Invisible Changes” email to notify all product teams about this change. I encouraged them to...
-
-- Be on the lookout for UI regressions!
-- Contact our team any time in the appropriate channels
-- Leverage the theme color palette ONLY for all future UI development.
-
-<ContentImage
-  image="/projects/color-palette-parity/email.png"
-  caption="An 'invisible changes' email sent to entire product org"
-/>
-
-Some of the pieces of product team UIs turned red out of nowhere! This was proof our unusedColorValue token was working to uncover incorrect theme color usage! I made fixes for teams and worked with their teams to merge them in.
-
-<ContentImage
-  image="/projects/color-palette-parity/bugs.png"
-  caption="A UI with an error red app bar, being restored to the expected grey background color"
-/>
 
 # 🚀 Impact
 
 ### 🧠 Learnings
 
-- Cross-functional collaboration with product teams
-- Architecting scalable solutions to large, complex problems in code
-- Bridging gaps between Design and Engineering
-- Taking initiative and seeing something through from conception to implementation
+- Driving large, complex technical initiatives with large system-wide impact
+- Understanding legacy systems and hammering out improved architectures
 - Best practices with application UI theming, design tokens, etc.
+- Grokking the deeper quirks of React, the DOM, browser APIs, and more
 
 ### 📝 Limitations
-
-- Utilities needed to quickly declare all color palette values on a new theme instance (vs. manually adding unusedColorValue tokens where colors weren’t needed/didn’t exist)
-- Components and UIs still needed to be migrated from any hard coding / manual color usage to centralize all components into consuming theme colors only
-
-This project was well received across orgs and I got some really kind feedback on this project during the peer review cycle we had just a month or so later. Here's some great quotes from colleagues who appreciated this effort:
-
-<br />
-<Note>
-  "Branon recently decided that Color’s color tokens were desperately in need of
-  a revamp. He brought me in as a design partner early on, and we talked through
-  a couple approaches. Once we aligned on a direction, Branon was able to
-  implement that direction in a way that not only improved our current state,
-  but made it possible for the system to grow and adapt more easily in the
-  future. During this effort, he absolutely brought his hard skills to bear, but
-  I was more impressed with his ability to explain why the work was valuable and
-  how he was approaching the work to a variety of audiences. It is RARE that an
-  engineer can explain something like this in a way that folks who don’t touch
-  code can walk away feeling like they understand it, and it’s a testament to
-  his own understanding that he was able to do that."
-  <br /> - Staff Product Designer, Design Systems
-</Note>
-<Note>
-  "I appreciate the engineering work that Branon did to standardize and update
-  the code across the Color platforms, which also required learning and
-  documenting some of the engineering bootstrapping for those projects. Branon
-  goes above and beyond to help others, and his effort really made everyone's
-  lives easier. I also appreciate Branon's ability to take on complex work in
-  the React codebase, and to ask for help when needed, along with taking that
-  feedback well." <br /> - Staff Software Engineer, UX Infrastructure
-</Note>
 
 If you made it this far - thanks for listening, I hope you enjoyed the project!
