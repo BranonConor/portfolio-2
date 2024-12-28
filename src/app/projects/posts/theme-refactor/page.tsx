@@ -12,6 +12,7 @@ const Page = () => {
   const codeColor = useColorModeValue("brand.darkPink", "brand.pink");
   return (
     <Box
+      width="100%"
       sx={{
         "code:not(pre > code)": {
           color: codeColor,

@@ -37,6 +37,7 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
             controlsList="nodownload"
             playsInline
             webkit-playsinline="true"
+            width="100%"
           />
         </AspectRatio>
       </Box>
