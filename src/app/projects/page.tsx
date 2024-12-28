@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Flex,
-  Text,
-  Box,
-  Grid,
-  Heading,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Flex, Text, Grid, Heading, useColorModeValue } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PostCard } from "@/components/blog/PostCard";
@@ -129,7 +122,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -146,6 +139,7 @@ export default function Home() {
                   link={project.link}
                   category={project.category}
                   date={project.date}
+                  hasPassword={project.hasPassword}
                 />
               ))}
             </Grid>
@@ -167,7 +161,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -205,7 +199,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",
@@ -243,7 +237,7 @@ export default function Home() {
             </Heading>
             <Grid
               width="100%"
-              gridGap={4}
+              gridGap={[4, 4, 8]}
               mb={8}
               gridTemplateColumns={[
                 "1fr",

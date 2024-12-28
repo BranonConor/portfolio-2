@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  Box,
   Flex,
   Heading,
   useColorModeValue,
   Text,
   Button,
   Image,
+  Box,
 } from "@chakra-ui/react";
 import { DownloadIcon } from "@chakra-ui/icons";
 import Link from "next/link";
@@ -15,6 +15,9 @@ import { Technologies } from "@/components/sections/Technologies";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PageWrapper } from "@/components/PageWrapper";
 import { Showcase } from "@/components/sections/Showcase";
+import { motion } from "framer-motion";
+import { designSystemsProjects } from "./projects/consts";
+import { PostCard } from "@/components/blog/PostCard";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
@@ -39,18 +42,14 @@ export default function Home() {
           accessible, and scalable software that delights users and propels
           businesses forward.
         </Text>
-        <Flex
-          flexDirection={["column", "column", "row"]}
-          width={["100%", "auto", "auto"]}
-          mb={[8, 10, 12]}
-        >
+        <Flex flexDirection={["column", "column", "row"]} mb={[8, 10, 12]}>
           <Button
             variant="primary"
             as={Link}
             href="/projects"
             mr={[0, 0, 4]}
             mb={[4, 4, 0]}
-            width={["100%", "100%", "auto"]}
+            width={["auto"]}
           >
             <Image src="/icons/projects-light.svg" mr={2} width={4} />
             See my work
@@ -60,7 +59,7 @@ export default function Home() {
             as="a"
             download
             href="/resume.pdf"
-            width={["100%", "100%", "auto"]}
+            width={["auto"]}
           >
             <DownloadIcon mr={2} width={4} />
             Download resume

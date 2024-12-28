@@ -33,7 +33,7 @@ export const Photography = () => {
   );
 
   return (
-    <Box width="100%" borderRadius={10} padding={4} mt={8} bg={cardBg}>
+    <Box width="100%" borderRadius={16} padding={4} mt={8} bg={cardBg}>
       <Heading as="h3" size="xl" mb={4}>
         Photography & Digital Art
       </Heading>
@@ -49,7 +49,7 @@ export const Photography = () => {
           bg={cardBg}
           width="100%"
           gridGap={4}
-          borderRadius={8}
+          borderRadius={16}
           gridTemplateColumns={["1fr", "1fr 1fr", "1fr 1fr 1fr"]}
         >
           {photos.map((photo) => (

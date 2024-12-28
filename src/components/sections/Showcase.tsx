@@ -59,7 +59,7 @@ export const Showcase: React.FC = () => {
       width="100%"
       padding={4}
       marginY={[8, 10, 12]}
-      borderRadius={8}
+      borderRadius={16}
       color="white"
       flexDirection="column"
     >
