@@ -30,7 +30,14 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
         boxShadow={shadow}
       >
         <AspectRatio maxW="100%" ratio={2 / 1}>
-          <video src={url} loop autoPlay />
+          <video
+            src={url}
+            loop
+            autoPlay
+            controlsList="nodownload"
+            playsInline
+            webkit-playsinline="true"
+          />
         </AspectRatio>
       </Box>
       {caption && (
