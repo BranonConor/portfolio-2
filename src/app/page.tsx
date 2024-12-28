@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  Box,
   Flex,
   Heading,
   useColorModeValue,
   Text,
   Button,
   Image,
+  Box,
 } from "@chakra-ui/react";
 import { DownloadIcon } from "@chakra-ui/icons";
 import Link from "next/link";
@@ -15,6 +15,9 @@ import { Technologies } from "@/components/sections/Technologies";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PageWrapper } from "@/components/PageWrapper";
 import { Showcase } from "@/components/sections/Showcase";
+import { motion } from "framer-motion";
+import { designSystemsProjects } from "./projects/consts";
+import { PostCard } from "@/components/blog/PostCard";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
