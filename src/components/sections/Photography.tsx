@@ -49,7 +49,7 @@ export const Photography = () => {
           bg={cardBg}
           width="100%"
           gridGap={4}
-          borderRadius={8}
+          borderRadius={16}
           gridTemplateColumns={["1fr", "1fr 1fr", "1fr 1fr 1fr"]}
         >
           {photos.map((photo) => (
