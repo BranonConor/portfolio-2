@@ -36,19 +36,41 @@ The same project data can be dynamically viewed in various different ways (card/
 <hr />
 <br />
 
-# 💭 Introduction: A Huge Product Redesign Effort
+# 💭 Introduction: Toolbar isn't cuttin' it!
 
-When I first joined Smartsheet's Ursa Design System 🐻 team at the beginning of 2024, we were well on our way in shipping a complete redesign of the product. We were meeting with teams to discuss migration to our new design system theme, Ursa, and we were helping teams set expectations around level of effort based on the state of their code (teams had varying levels of design system adoption at this point). We refered to this effort as `Ursa-fication`.
+As our product evolved massively over 2024, our Toolbar was a common painpoint. It's shared across some of the most important pieces of the Smartsheet platform, and consumers were having a lot of issues with it:
 
-Having just joined Smartsheet, my first task was to build a `✨ scoped theming system ✨`, which would give product teams the ability to say "I want to be the old theme because I'm not ready for the new one" or "I want to be the new theme - I'm ready!". They needed this granular theming control because many teams didn't have enough design system adoption for us to simply flick the new theme on for everyone all at once - doing so before they were ready would result in a very scattered and inconsistent platform UX that we didn't feel would be acceptable.
+### ↔️ Responsiveness
 
-Our current code allowed for global theming control, but with some unique constraints specific to the rest of our app architecture, so we had a long journey ahead of us to come up with a robust solution. Let's dive in! 🐬
+The `Toolbar` handles its own responsiveness, automatically moving child groups of items into an overflow kebab menu when the rightmost Toolbar boundary hits the rightmost toolbar group. This worked nicely, but as teams were adding more things to the Toolbar overtime, they found themselves wanting more control over the responsive behavior, and what they came to need was rather complex:
+
+- As the right-most Toolbar group hits the edge of the toolbar wrapper, it should hide its labels resulting in icon-only buttons (of the same function).
+- As the Toolbar continues to contract, each item group will successively hide their button labels until the entire toolbar is rendering icon-only buttons.
+- If it <em>keeps contracting</em> from there, the toolbar groups will then be moved to an overflow kebab menu, similar to its current behavior.
+
+Consumers can't do any of this themselves as well, because the responsiveness is built into the Toolbar code, making it a bit more opinionated than they'd need. The requirement for dynamic built-in responsiveness is still there too - some toolbars may be dynamically rendering buttons and other child items, so teams can't just leverage `media queries` that cater to their specific UI, since it could be ever-changing.
+
+### ⌨️ Focus management
+
+As such a crucial component for the user's interaction with various Smartsheet views, the Toolbar needs to nail its focus management. And since so many teams use this component, it's focus / keyboard navigation capabilities should work out of the box to avoid a lot of duplicate effort/code. The current Toolbar had a lot of code for this, and it worked well. BUT there was one problem with it:
+
+<Note>
+  The Toolbar's focus code identified a list of interactable children in the
+  Toolbar, by doing a `querySelectorAll()` call with a hard-coded list of
+  interactable element names, like `a, button, link, etc`.
+</Note>
+
+As you may imagine, this is a rather rigid way to look for interactable children of the toolbar, and it's far from a coveted 'declarative' approach. Some teams were trying to do reasonable things with the toolbar that were incompatible with this system, such as:
+
+- Add a `div` wrapper of custom buttons as a child of the toolbar
+- The `div` wrapper should be focusable in the normal order of the toolbar, and if a user wants to skip it (thus avoiding traversing all its child buttons to get through the toolbar), they can go past it
+- otherwise, they can `ENTER` into it and traverse the children, like a `listbox` per se.
+
+This granular control was not possible as-is - we needed to open that API up for more flexibility.
 
 <br />
 
 # 📝 Phase 1: Learn Stuff
-
-I started by working to understand the current setup of our theming system in code. And if you know me by now, it should be no surprise that I started by cranking open a fresh Figjam file for an architecture diagram faster than you could say 'theme architecture refactor'! As I read through the code, I began to paint a picture of how things are currently working. Here's what I came up with:
 
 <ContentImage
   image="/projects/theme-refactor/current-approach.svg"
@@ -57,72 +79,13 @@ I started by working to understand the current setup of our theming system in co
 
 ### Current theming system - global only! 🌎
 
-At a glance, we've got:
-
-- `CommonTokenInjector` Component: it stores tons of tokens, for each of the 2 themes (the old one and our new one). It sets a `data-theme-key` attribute on the `<body />` in the DOM which corresponds to a theme name - it'll be referenced later. It also injects all the vars for whichever theme is active at the `:root` level.
-- `useThemeKey()`: a hook to grab the `themeKey` string from the body element's `data-theme-key` attribute
-
-The result is a global theme configuration at the page level, where components can use a hook to see what the current theme is. If they use valid semantic tokens, they'll get the values for the active theme via the `:root` level tokens, and if they need any non-tokenized styles they can conditionally render styles based on the theme key.
-
-<Note>
-  But this is the big problem ‼️ - if components currently look to the global
-  theme, they don't have a system in place for scoped theming.
-</Note>
-<br />
-
-### A first attempt at scoped theming 🔬
-
-My first approach to scoped theming was to work within the confines of the current system - the path of least resistance. The idea was to have some similar stuff (see the purple box in the above diagram for the visual here):
-
-- `ScopedTokenInjector` Component: behaves just like the `CommonTokenInjector` but sets a `data-theme-key` attribute on a `<div />` wrapper instead of the `<body />`, which all nested children can reference in that area of the app UI. And instead of injecting tokens at the `:root` level of the page, this injector will set tokens on the div as well, overriding the `:root` for any children of the div.
-
-The rest is virtually the same as the current global solution - components use a hook to access the nearest parent with a `data-theme-key` attribute and that theme key will tell the component what styles / token values to render.
-
-<Note>
-  BUT - the new problem is: how do the components know what parent might have
-  that attribute?
-</Note>
-
-Well, if you have the DOM element you can use the `element.closest()` method to find any parent with a particular selector, like so:
+TBD
 
 ```jsx
-//simplified example :)
-const buttonComponent = document.querySelector("button");
-
-buttonComponent.closest("[data-theme-key]");
+TBD;
 ```
 
-Although this works, I began to recognize a couple problems here:
-
-1. `.closest()` is not the most performant thing in the world if there are perhaps dozens, or even hundreds, of design system components on a page all looking to see what their current theme is. At worst this operation has a time complexity of `O(n)`, where `n` is the number of DOM nodes needed to traverse upward in the tree to find a parent element with a theme key.
-2. In this approach, we're basically replicating the functionality of a React Context Provider 🤔 And on the performance topic, a simple lookup of a context value by a child component is a mere `O(1)` time complexity operation, making it vastly more performant than the current iteration at scale.
-
-Now, I began to think about the possibility of using context providers for theme delivery. But it seemed so obvious - why wasn't it already like that? Turns out there was a reason.
-
-<br />
-
-### A problem with Context Providers 😵
-
-The wider app architecture can give us some hints as to why we weren't currently using context providers. 😬 Our frontend theming architecture was a bit more complex than I'd expected, and not very React-y. We have a special, pseudo-micro-services frontend app structure, where a bunch of product areas render themselves in separate React instances, all making their own `ReactDOM.render() calls!
-
-```jsx
-const SomePartOfTheProduct = () => {
-  ...
-  ReactDOM.render(
-    <BunchOfReactComponents>
-      ...
-    </BunchOfReactComponents>
-  );
-}
-```
-
-Eventually, the entirety of the UI is comprised of these separate chunks of React code, stitched together (like different panels, navigations, dashboards, etc. which are usually owned by specific teams). This works - but it does make theming in a React app a bit complicated. If each piece of a page is made up of a bunch of separate `ReactDOM.render()` calls, you can't share any React context providers across those boundaries! They're entirely separate React trees. 😵 So it seems context providers were ruled out early on as a viable theming solution.
-
-<Note>
-  Thinking about it more, I wondered about a simple solution to this problem:
-  what if each team just added a `ThemeProvider` at the top-level of their chunk
-  of the code?
-</Note>
+<Note>TBD</Note>
 
 This would allow for scoped theming in a more React-based approach, leveraging better performance and more predictability in our frontend code! Teams that aren't ready for the new `Ursa` theme can set their theme provider to the old theme, and teams that are all ready for the new theme can set it to an `ursa` theme key. From there, we can reconfigure components to use a `useTheme()` hook that makes a `useContext` call behind the scenes, to easily access the theme key in that sweet, sweet `0(1)` time.
 
@@ -141,65 +104,14 @@ You can already see how much simpler it is! After discussing this approach with 
 
 # 💪🏽 Phase 2: Build out the new theming system!
 
-### Building a ThemeProvider 🎨
+### TBD
 
-Refactor time! I started by creating a context provider for the theme. It sets the theme based on a prop, and each theme is just a big object with a bunch of important stuff for components to use:
-
-- `themeKey`: a string that corresponds to one of the theme names
-- `colors`, and other tokenized style values
-- Eventually, the plan would be to add certain component styles to the theme object as well, which would set us up to ship custom theming for consumers and much more (like Material UI, Styled Components, and other standard theming systems!)
-
-To take it one step at a time, we simply started by adding the `themeKey` field and some basic styles, etc. Components could then access the context provider values using a simple `useContext()` hook, and voila - instant access to the theme!
-
-```jsx
-// this is not real code, but rather a super
-// simplified example of how the new system works :)
-const DesignSystemButton = () => {
-  //grab stuff from the theme!
-  const { colors, themeKey } = useTheme();
-
-  return (
-    <button
-      styles={{
-        background: colors.button.default,
-        borderRadius: themeKey === "ursa" ? "16px" : "6px",
-      }}
-    >
-      {children}
-    </button>
-  );
-};
-
-const AppSection = () => {
-  return (
-    //render a provider set to a specific theme
-    <ThemeProvider theme="ursa">
-      <DesignSystemButton>Submit</DesignSystemButton>
-    </ThemeProvider>
-  );
-};
-```
-
-### Unwinding dependencies and breaking stuff 🛠️
-
-Our design system code lives in a few different packages, and in order to get this right we'd have to shift around some of the imports/exports across these packages. Generally, the components need to access this theme provider and the theme provider needs to store certain tokens and other stuff, so to make it all work without circular dependencies, some rearranging was required. Can you take a wild guess at how I decided to start unwinding this stuff?
+TBD
 
 <ContentImage
   image="/projects/theme-refactor/deps.svg"
   caption="A flowchart diagram of the dependencies across packages in code"
 />
-
-That's right - Figjam diagram 😌🤝
-
-With an approachable understanding of what different utilities, modules, styles, etc. are coming and going from what packages, I managed to move stuff around avoiding circular deps. It got quite complex - so many packages had tokens, utilities to read tokens, access theme values, ship test utilities that wrap tests in themes, and much more.
-
-Unfortunately, at times this required copying and pasting certain utilities and whatnot across packages, adding deprecation warnings to them in their old locations. In doing this, we moved toward consolidating a lot more of our code in our `core` package, as opposed to separating certain concerns across packages, but we had consensus on our team that this was actually the favored approach. At times, we even felt we had a few too many packages anyway.
-
-### Configuring components to use the theme provider 🔌
-
-Now it was time for the last piece of the puzzle - the components themselves! To get them working with the theme, we had to import and use the `useTheme()` hook to pull the `themeKey` off of the nearest parent `ThemeProvider`.
-
-This part was cumbersome due to the number of components, but luckily the components were already rigged up to render all their styles based on that simple `themeKey` string, so we didn't have to do much else in the components to get them working!
 
 <br />
 <hr />
@@ -207,35 +119,11 @@ This part was cumbersome due to the number of components, but luckily the compon
 
 # 🧹 Phase 3: Cleanup and ship!
 
-With the theme provider in place, the deps sorted out, and the components all hooked up to the context provider, we had some final items to nail down.
-
-### #️⃣ Versioning
-
-We tooootally broke stuff along the way here, so these changes were inevitably requiring a major release of our design system for code consumers. It had been a while since our last major release so lucky for us, this one was somewhat timely, and we had plenty of conversations with engineers, product managers, and more to make sure this wouldn't be too disruptive to their current plans. Ultimately, it was time to ship this as a major release so folks could insulate their product area's theming!
-
-We use [Changeset](https://github.com/changesets/changesets) to adhere to `semver` in our design system code, so we executed on this by creating a `V3` feature branch in code off of our `main` branch, contributing to it over time in various PRs, each with their own `changeset` files. By the time we were done, we had a single branch containing all of the aforementioned `V3` changes to the theming system, and we were ready to rock and roll.
-
-### 📚 Documentation
-
-Before we could officially ship the changes though, we had to make sure we documented everything. This included a lot of different touchpoints, and we had to be thorough:
-
-- Storybook: our Storybook instance is hosted and available internally for all product teams to reference. We made sure to update any theming setup examples with tons of info on our new `ThemeProvider` system.
-- Docs Site: `Ursa` has a dedicated internal documentation site, so we made sure to add tons of thorough info on the new `ThemeProvider` in our `app setup/getting started` guides for developers.
-- `V3` Migration Guide: we always spin up a migration doc to highlight what changes happened across what design system packages anytime we ship a major release. Here in our V3 doc, we highlighted to shifting of stuff across our packages, noting which ones you should/shouldn't use, and of course, how our new theming system works, with links to the architectural diagrams, code in our repo, and more.
-
-### 🚢 SHIP IT
-
-With all of these docs updated, we shipped our release and shared it out across tons of different Slack channels and more!
+TBD
 
 # 🚀 Outcomes
 
-### 🤔 Mysterious React bugs
-
-As consumers began migrating to the new major version of the design system, some teams began to see super weird bugs around the `themeKey` from the `ThemeProvider` coming back `undefined`, despite them clearly and obviously adding in the `ThemeProvider` to their part of the app.
-
-We had to put our heads together on this one. After tons of debugging, we solved this mystery after stumbling across some blogs on the web about `symbol names` in React. It turns out that despite each section of the UI code, divided by their separate `ReactDOM.render()` calls, all declaring their own `ThemeProvider` thus avoiding the loss of context across React boundaries, the components were actually getting confused as they look up their React tree, since each instance of React was declaring identical `ThemeProvider` symbol names 😵‍💫
-
-To solve this issue, we actually found an old utility in our codebase that initiates contexts and registers their symbol names in the `globalThis` object to avoid multiple instances of the same context symbol name. It appears engineers before us ran into similar issues given our unique frontend app infrastructure! 👀 Instantiating the context provider with this special `createContext()` call stopped those issues for consumers.
+### TBD
 
 ### 🧠 Learnings
 
