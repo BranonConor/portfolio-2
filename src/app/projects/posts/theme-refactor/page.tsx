@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import Content from "./theme-refactor.mdx";
 import { useState } from "react";
 import HeroStrip from "@/components/blog/HeroStrip";
@@ -8,22 +8,9 @@ import { PasswordForm } from "@/components/PasswordForm";
 
 const Page = () => {
   const [hasPassword, setHasPassword] = useState(false);
-  const codeBg = useColorModeValue("brand.lightGrey", "brand.darkBg");
-  const codeColor = useColorModeValue("brand.darkPink", "brand.pink");
+
   return (
-    <Box
-      width="100%"
-      sx={{
-        "code:not(pre > code)": {
-          color: codeColor,
-          bg: codeBg,
-          padding: "1px 4px",
-          borderRadius: "8px",
-          fontSize: "14px",
-          fontWeight: "bold",
-        },
-      }}
-    >
+    <Box width="100%">
       {hasPassword ? (
         <Content />
       ) : (
