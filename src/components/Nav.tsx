@@ -85,7 +85,7 @@ export const Nav = () => {
         margin={0}
       >
         <Tooltip
-          borderRadius={6}
+          borderRadius={10}
           label="Home"
           fontSize="md"
           placement="right"
@@ -133,7 +133,7 @@ export const Nav = () => {
         </Tooltip>
         <Tooltip
           display={["none", "none", "block"]}
-          borderRadius={6}
+          borderRadius={10}
           label="About"
           fontSize="md"
           placement="right"
@@ -181,7 +181,7 @@ export const Nav = () => {
         </Tooltip>
         <Tooltip
           display={["none", "none", "block"]}
-          borderRadius={6}
+          borderRadius={10}
           label="Projects"
           fontSize="md"
           placement="right"
@@ -229,7 +229,7 @@ export const Nav = () => {
         </Tooltip>
         <Tooltip
           display={["none", "none", "block"]}
-          borderRadius={6}
+          borderRadius={10}
           label="Engagements"
           fontSize="md"
           placement="right"
@@ -277,7 +277,7 @@ export const Nav = () => {
         </Tooltip>
         <Tooltip
           display={["none", "none", "block"]}
-          borderRadius={6}
+          borderRadius={10}
           label="Blog"
           fontSize="md"
           placement="right"

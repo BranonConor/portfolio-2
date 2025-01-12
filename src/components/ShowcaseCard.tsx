@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   Heading,
   Link,
@@ -40,7 +39,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
   return (
     <Flex
       padding={4}
-      borderRadius={8}
+      borderRadius={16}
       bg={bg}
       flexDirection="column"
       justifyContent="space-between"
@@ -50,6 +49,8 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
         boxShadow: "lg",
         transform: "translateY(-4px)",
       }}
+      position="relative"
+      zIndex={1}
     >
       <Heading as="h4" size="md" mb={2}>
         {title}
@@ -60,7 +61,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
       <Text as="p" mb={6}>
         {description}
       </Text>
-      <Flex bg={buttonGroupBg} borderRadius={6} overflow="hidden">
+      <Flex bg={buttonGroupBg} borderRadius={16} overflow="hidden">
         <Link
           as={motion.a}
           width="50%"
@@ -70,34 +71,38 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
           cursor="pointer"
           padding={2}
           whileHover={{
-            scale: Boolean(codeLink) ? 1.2 : 1,
-            opacity: 0.75,
+            scale: !!link ? 1.2 : 1,
+            opacity: !!link ? 0.75 : 0.4,
             transition: { duration: 0.05, type: "spring" },
           }}
           whileTap={{
             scale: 1.2,
             transition: { duration: 0.1 },
           }}
+          opacity={!!link ? 1 : 0.45}
+          pointerEvents={!!link ? "auto" : "none"}
         >
           <Image src={linkIcon} draggable="false" />
         </Link>
         <Link
           as={motion.a}
-          cursor={Boolean(codeLink) ? "pointer" : "not-allowed"}
+          cursor={!!codeLink ? "pointer" : "not-allowed"}
           width="50%"
           href={codeLink}
           display="flex"
           justifyContent="center"
           padding={2}
           whileHover={{
-            scale: Boolean(codeLink) ? 1.2 : 1,
-            opacity: 0.75,
+            scale: !!codeLink ? 1.2 : 1,
+            opacity: !!codeLink ? 0.75 : 0.4,
             transition: { duration: 0.05, type: "spring" },
           }}
           whileTap={{
             scale: 1.2,
             transition: { duration: 0.1 },
           }}
+          opacity={!!codeLink ? 1 : 0.45}
+          pointerEvents={!!codeLink ? "auto" : "none"}
         >
           <Image src={codeIcon} draggable="false" />
         </Link>
