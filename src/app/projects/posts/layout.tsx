@@ -12,6 +12,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
+  const codeBg = useColorModeValue("brand.lightGrey", "brand.darkBg");
+  const codeColor = useColorModeValue("brand.darkPink", "brand.pink");
 
   const handleScroll = () => {
     if (typeof global?.window !== "undefined") {
@@ -68,6 +70,16 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           maxWidth="950px"
           alignItems="flex-start"
           justifyContent="flex-start"
+          sx={{
+            "code:not(pre > code)": {
+              color: codeColor,
+              bg: codeBg,
+              padding: "1px 4px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontWeight: "bold",
+            },
+          }}
         >
           <AnimatePresence>
             {scrollPosition > 128 && (

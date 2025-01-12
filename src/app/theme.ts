@@ -15,6 +15,8 @@ const colors = {
     darkPink: "#980059",
     blue: "#0080c7",
     gradient: "linear-gradient(124.41deg,#0072b1,#fd36ab 95.2%)",
+    newGradient:
+      "linear-gradient(147.41deg, #0080C7 21.35%, #FF0096 59.41%, #FFFFFF 97.97%)",
   },
   shadows: {
     neon: "0px 4px 15px 0px rgba(226,175,255, 0.6)",

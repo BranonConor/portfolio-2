@@ -79,7 +79,7 @@ export const Technologies = () => {
           return (
             <Tooltip
               id={item.name}
-              borderRadius={6}
+              borderRadius={10}
               label={item.name}
               fontSize="md"
               placement="top"
@@ -91,7 +91,7 @@ export const Technologies = () => {
               <Image
                 draggable="false"
                 as={motion.img}
-                borderRadius={6}
+                borderRadius={12}
                 src={`/logos/${item.image}`}
                 padding={1}
                 boxSizing="border-box"

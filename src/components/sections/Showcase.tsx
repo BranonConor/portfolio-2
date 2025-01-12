@@ -1,4 +1,4 @@
-import { Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { ShowcaseCard } from "../ShowcaseCard";
 
 export const Showcase: React.FC = () => {
@@ -15,21 +15,21 @@ export const Showcase: React.FC = () => {
         "I've launched my web app, ListRocket, a productivity tool for bootstrapping every-day events with friends and family, in beta, fully free! Check it out 👇",
       role: "Software Engineer",
       link: "https://listrocket.app",
-      codeLink: "#",
+      codeLink: "https://github.com/BranonConor/list-rocket",
     },
     {
       title: "Co-Created an online HTML/CSS Bootcamp 🎨",
       description:
         "I teamed up with word-class tech instructor, Colt Steele, again to build an HTML/CSS bootcamp for tens of thousands of students!",
       role: "Tech Instructor",
-      link: "#",
+      link: "https://www.udemy.com/course/html-and-css-bootcamp",
     },
     {
       title: "Co-Created an online Typescript Course 🎨",
       description:
         "I teamed up with word-class tech instructor, Colt Steele, to help build/launch a Typescript course on Udemy for tens of thousands of students!",
       role: "Tech Instructor",
-      link: "#",
+      link: "https://www.udemy.com/course/learn-typescript",
     },
     {
       title: "Built a new site for an Optometry Clinic 👀",
@@ -55,14 +55,29 @@ export const Showcase: React.FC = () => {
   ];
   return (
     <Flex
-      bg="brand.gradient"
+      bg="brand.newGradient"
       width="100%"
       padding={4}
       marginY={[8, 10, 12]}
       borderRadius={16}
       color="white"
       flexDirection="column"
+      position="relative"
+      boxSizing="border-box"
+      overflow="hidden"
+      boxShadow="lg"
     >
+      <Box
+        as="img"
+        src="/noise.png"
+        position="absolute"
+        width="100%"
+        height="100%"
+        zIndex={0}
+        top={0}
+        left={0}
+        opacity={0.2}
+      />
       <Heading as="h3" size="xl" fontWeight={700} mb={2}>
         Showcase
       </Heading>

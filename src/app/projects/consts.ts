@@ -22,6 +22,14 @@ export const brandingProjects = [
   },
 ];
 export const designSystemsProjects = [
+  // {
+  //   title: "Toolbar Component Rebuild @ Smartsheet",
+  //   category: "Design Systems",
+  //   image: "/projects/toolbar/cover.png",
+  //   link: "/projects/posts/toolbar",
+  //   date: "December 2024",
+  //   hasPassword: true,
+  // },
   {
     title: "Theme Architecture Refactor @ Smartsheet",
     category: "Design Systems",
