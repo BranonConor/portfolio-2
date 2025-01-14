@@ -1,4 +1,4 @@
-import { Flex, Heading } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import React from "react";
 import HeaderImage from "./HeaderImage";
 import MetadataBar from "./MetadataBar";
@@ -26,7 +26,19 @@ const HeroStrip: React.FC<HeroStripProps> = ({
       borderRadius={16}
       overflow="hidden"
       boxShadow="lg"
+      position="relative"
     >
+      <Box
+        as="img"
+        src="/noise.png"
+        position="absolute"
+        width="100%"
+        height="100%"
+        zIndex={0}
+        top={0}
+        left={0}
+        opacity={0.2}
+      />
       <HeaderImage image={image} />
       <Heading as="h1" size="xl" mt={[1, 2, 3]} color="white" mx={4}>
         {title}

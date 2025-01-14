@@ -1,4 +1,4 @@
-import { Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
 import { PostCard } from "../blog/PostCard";
 export const Music = () => {
   const items: {
@@ -39,14 +39,26 @@ export const Music = () => {
   ];
   return (
     <Flex
-      bg="brand.gradient"
+      bg="brand.newGradient"
       width="100%"
       padding={4}
       marginY={[8, 10, 12]}
       borderRadius={16}
       color="white"
       flexDirection="column"
+      position="relative"
     >
+      <Box
+        as="img"
+        src="/noise.png"
+        position="absolute"
+        width="100%"
+        height="100%"
+        zIndex={0}
+        top={0}
+        left={0}
+        opacity={0.2}
+      />
       <Heading as="h3" size="xl" fontWeight={700} mb={2}>
         Music Production
       </Heading>
