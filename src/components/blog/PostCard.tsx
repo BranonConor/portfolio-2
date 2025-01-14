@@ -121,17 +121,6 @@ export const PostCard: React.FC<IPostCardProps> = ({
         zIndex={0}
         transition="0.15s ease all"
       />
-      <Box
-        as="img"
-        src="/noise.png"
-        position="absolute"
-        width="100%"
-        height="100%"
-        zIndex={0}
-        top={0}
-        left={0}
-        opacity={0.2}
-      />
       <Image
         draggable="false"
         src="/blog/gradient-dark.svg"
