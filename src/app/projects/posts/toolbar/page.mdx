@@ -21,9 +21,9 @@ The same project data can be dynamically viewed in various different ways (card/
 
 ### ⚠️ The Problems
 
-- Smartsheet's core views (Board, Table, Timeline, etc.) are some of the most widely used surfaces in the entire platform. They all have one thing in common: a complex `Toolbar` component that offers some of the most important user actions in the platform.
-- Our existing `Toolbar` had some limitations: its responsive behavior, focus management, and flexibility were all falling short of meeting teams' needs.
-- Toolbar Buttons and other subcomponents were not built upon our basic `Button` component / existing components, leading to API drift and maintainability problems
+- Smartsheet's core views (Board, Table, Timeline, etc.) are some of the most widely used surfaces in the entire platform. They all have one thing in common: a complex `Toolbar` component that offers some of the most important user actions.
+- Our existing `Toolbar` had some limitations: its responsive behavior, focus management, and API flexibility were all falling short of meeting teams' needs.
+- Toolbar Buttons and other subcomponents were not built upon our basic `Button` component / existing components, leading to API drift, duplicate code, and maintainability problems
 - Lots of tech debt led to buggy code and a high incidence of reported issues from consumers
 
 ### ✨ The Solutions
@@ -70,37 +70,40 @@ This granular control was not possible as-is - we needed to open that API up for
 
 <br />
 
-# 📝 Phase 1: Learn Stuff
+# 📝 Phase 1: Learn & Plan
 
-<ContentImage
-  image="/projects/theme-refactor/current-approach.svg"
-  caption="A flowchart diagram of the current theme system in code"
-/>
+First, I wanted to figure out how our current `Toolbar` component was architected and built, and then I'd be able to figure out what we could keep and what we could improve. I began to see this as 2 workstreams:
 
-### Current theming system - global only! 🌎
-
-TBD
-
-```jsx
-TBD;
-```
-
-<Note>TBD</Note>
-
-This would allow for scoped theming in a more React-based approach, leveraging better performance and more predictability in our frontend code! Teams that aren't ready for the new `Ursa` theme can set their theme provider to the old theme, and teams that are all ready for the new theme can set it to an `ursa` theme key. From there, we can reconfigure components to use a `useTheme()` hook that makes a `useContext` call behind the scenes, to easily access the theme key in that sweet, sweet `0(1)` time.
-
-I created a 'north star' architectural diagram for this new approach so we can see the moving parts at a glance and share it out to any stakeholders. Here's what I came up with:
-
-<ContentImage
-  image="/projects/theme-refactor/north-star.svg"
-  caption="A flowchart diagram of the new, proposed theme system in code"
-/>
-
-You can already see how much simpler it is! After discussing this approach with the brilliant frontend minds at our company's biweekly `Frontend Guild` meeting, we had consensus that this would be a big improvement. Time to make it happen.
+1. Toolbar wrapper
+2. Toolbar Buttons/subcomponents
 
 <br />
-<hr />
+
+### Toolbar Wrapper
+
+Let's start with the wrapper. I began to dive into the wrapper code and visualize my findings in a LucidChart diagram (we had briefly forfeited access to Figjam, it pains me to have to show you this).
+
+<ContentImage
+  image="/projects/toolbar/wrapper.png"
+  caption="A (lucidchart 😔) diagram of the current toolbarw wrapper architecture in code"
+/>
+
+At a high level, we've got some context providers wrapping some wrappers that handle presentation, etc. Between all these components, things like top-level `Toolbar` props are stored for all subcomponents to easily access, and things like focus management / keyboard nav + responsive behavior are all built in. Nice.
+
 <br />
+
+### Toolbar Buttons
+
+What about our buttons? Well turns out there were a ton in existence, all with highly redundant button-like APIs (but with no shared `Button` ancestry). After many discussions as a team we decided on moving away from the current buttons and instead building a new set of Toolbar-specific buttons built atop our atomic `Button` component to reap all kinds of benefits.
+
+So I set out to map that solution out next. After studying the `Button` API & looking around at the existing toolbar button use cases I came up with a set of new buttons that could service all consumer needs, as far as toolbar actions go.
+
+<ContentImage
+  image="/projects/toolbar/buttons.png"
+  caption="A (lucidchart 😔) diagram of a new button component family for the toolbar"
+/>
+
+With `Button` as a base for all these new toolbar buttons, we can cut down on code redundancy, simplify button updates, and introduce far more flexibility for consumers, since the old toolbar buttons were much more opinionated and limited. We chose to create a basic `ToolbarButtonV2`, and some more molecular components atop of it that include built-in `Menu` or `Flyout` dropdowns or split button groups, as these are commonly used in Smartsheet toolbars.
 
 # 💪🏽 Phase 2: Build out the new ToolbarV2 stuff!
 
