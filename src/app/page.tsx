@@ -63,6 +63,7 @@ export default function Home() {
             "rotate(-10deg)",
             "rotate(-20deg)",
           ]}
+          draggable={false}
         />
 
         <Flex
