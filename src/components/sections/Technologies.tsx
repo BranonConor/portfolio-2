@@ -57,6 +57,8 @@ export const Technologies = () => {
       bg={bg}
       width="100%"
       padding={4}
+      position="relative"
+      zIndex={1}
     >
       <Heading as="h3" size="l" fontWeight={700} mb={4}>
         My Tools and Tech

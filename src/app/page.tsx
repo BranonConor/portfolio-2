@@ -15,13 +15,11 @@ import { Technologies } from "@/components/sections/Technologies";
 import { FancyHeading } from "@/components/FancyHeading";
 import { PageWrapper } from "@/components/PageWrapper";
 import { Showcase } from "@/components/sections/Showcase";
-import { motion } from "framer-motion";
-import { designSystemsProjects } from "./projects/consts";
-import { PostCard } from "@/components/blog/PostCard";
 import AdplistReviews from "@/components/blog/AdplistReviews";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
+  const me = useColorModeValue("/me-dark.png", "/me-light.png");
 
   return (
     <PageWrapper bg={bg}>
@@ -30,12 +28,17 @@ export default function Home() {
         flexDirection="column"
         alignItems="flex-start"
         justifyContent="flex-start"
+        position="relative"
       >
         <Heading as="h1" size="2xl" mb={4}>
           Hi, I'm Branon! 👋
         </Heading>
         <FancyHeading>I'm a UX-focused software engineer.</FancyHeading>
-        <Text as="p" mb={8}>
+        <Text
+          as="p"
+          mb={8}
+          maxWidth={["100%", "100%", "50%", "60%", "60%", "70%"]}
+        >
           With a degree in behavioral neuroscience, a seasoned eye for
           best-in-class UX/UI, and a powerful command of modern technologies to
           build quality interfaces and experiences, my strengths lie at the
@@ -43,7 +46,31 @@ export default function Home() {
           accessible, and scalable software that delights users and propels
           businesses forward.
         </Text>
-        <Flex flexDirection={["column", "column", "row"]} mb={[8, 10, 12]}>
+
+        <Box
+          as="img"
+          src={me}
+          position="absolute"
+          maxWidth={["230px", "250px", "400px", "400px", "400px", "400px"]}
+          zIndex={0}
+          top={["360px", "264px", "180px", "64px", "0px", "-50px"]}
+          right={["-32px", "-16px", "-48px", "-24px", "0px", "-64px"]}
+          transform={[
+            "rotate(-25deg)",
+            "rotate(-20deg)",
+            "rotate(0deg)",
+            "rotate(0deg)",
+            "rotate(-10deg)",
+            "rotate(-20deg)",
+          ]}
+        />
+
+        <Flex
+          flexDirection={["column", "column", "row"]}
+          mb={[8, 10, 12]}
+          position="relative"
+          zIndex={1}
+        >
           <Button
             variant="primary"
             as={Link}

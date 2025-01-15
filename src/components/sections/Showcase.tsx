@@ -66,6 +66,7 @@ export const Showcase: React.FC = () => {
       boxSizing="border-box"
       overflow="hidden"
       boxShadow="lg"
+      zIndex={1}
     >
       <Box
         as="img"
