@@ -19,7 +19,7 @@ import AdplistReviews from "@/components/blog/AdplistReviews";
 
 export default function Home() {
   const bg = useColorModeValue("white", "brand.grey");
-  const me = useColorModeValue("/me-dark.png", "/me-light.png");
+  const me = useColorModeValue("/me-dark.png", "/me-dark.png");
 
   return (
     <PageWrapper bg={bg}>

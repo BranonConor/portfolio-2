@@ -27,6 +27,7 @@ export const PageWrapper: React.FC<BoxProps> = ({
         boxSizing="border-box"
         position="relative"
         zIndex={1}
+        overflowX="hidden"
         {...otherProps}
       >
         <Nav />
