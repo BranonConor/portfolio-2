@@ -35,7 +35,6 @@ export const PageWrapper: React.FC<BoxProps> = ({
           as={motion.div}
           maxWidth="1440px"
           position="relative"
-          overflowX="hidden"
           paddingY={[12, 14, 16]}
           paddingX={[4, 4, 8]}
           width="100%"
