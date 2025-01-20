@@ -75,9 +75,12 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
               color: codeColor,
               bg: codeBg,
               padding: "1px 4px",
-              borderRadius: "8px",
+              borderRadius: "6px",
               fontSize: "14px",
               fontWeight: "bold",
+            },
+            "pre[class*='language-']": {
+              borderRadius: "16px",
             },
           }}
         >

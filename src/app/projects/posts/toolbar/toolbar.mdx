@@ -1,0 +1,358 @@
+import ContentImage from "@/components/blog/ContentImage";
+import ContentVideo from "@/components/blog/ContentVideo";
+import Note from "@/components/blog/Note";
+import HeroStrip from "@/components/blog/HeroStrip";
+
+<HeroStrip
+  title="Toolbar Component Rebuild @ Smartsheet"
+  subtitle="Improving one of Smartsheet's most widely-used design system components"
+  image="/projects/toolbar/cover.png"
+  date="December 2024"
+  category="Design Systems"
+/>
+
+### ✍🏽 About Smartsheet
+
+Smartsheet is an industry-leading enterprise work management platform, boasting millions of passionate users!
+
+The same project data can be dynamically viewed in various different ways (card/boards, timelines/gantt charts, and tables/grids). Content/asset management, workflows, mini-apps, dashboards, and more make for a robust CWM ecosystem capable of servicing large enterprise customers and small nimble customers alike.
+
+<ContentVideo url="/projects/theme-refactor/smar-views.mp4" />
+
+### ⚠️ The Problems
+
+- Smartsheet's core views (Board, Table, Timeline, etc.) are some of the most widely used surfaces in the entire platform. They all have one thing in common: a complex `Toolbar` component that offers some of the most important user actions.
+- Our existing `Toolbar` had some limitations: its responsive behavior, focus management, and API flexibility were all falling short of meeting teams' needs.
+- Toolbar Buttons and other subcomponents were not built upon our basic `Button` component / existing components, leading to API drift, duplicate code, and maintainability problems
+- Lots of tech debt led to buggy code and a high incidence of reported issues from consumers
+
+### ✨ The Solutions
+
+- Ship a ToolbarV2 with a whole host of new subcomponents, building atop existing atomic components
+- Improve focus management code, making the Toolbar far more flexible
+- Rebuild the Toolbar's out-of-the-box responsiveness system to achieve a new and improved design
+
+<br />
+<hr />
+<br />
+
+# 💭 Introduction: Toolbar isn't cuttin' it!
+
+As our product evolved massively over 2024, our Toolbar was a common painpoint. It's shared across some of the most important pieces of the Smartsheet platform, and consumers were having a lot of issues with it:
+
+### ↔️ Responsiveness
+
+The `Toolbar` handles its own responsiveness, automatically moving child groups of items into an overflow kebab menu when the rightmost Toolbar boundary hits the rightmost toolbar group. This worked nicely, but as teams were adding more things to the Toolbar overtime, they found themselves wanting more control over the responsive behavior, and what they came to need was rather complex:
+
+- As the right-most Toolbar group hits the edge of the toolbar wrapper, it should hide its labels resulting in icon-only buttons (of the same function).
+- As the Toolbar continues to contract, each item group will successively hide their button labels until the entire toolbar is rendering icon-only buttons.
+- If it <em>keeps contracting</em> from there, the toolbar groups will then be moved to an overflow kebab menu, similar to its current behavior.
+
+<ContentImage
+  image="/projects/toolbar/responsive-specs.png"
+  caption="Figma mocks detailing the new, complex responsive behavior of ToolbarV2"
+/>
+
+Consumers can't do any of this themselves as well, because the responsiveness is built into the Toolbar code, making it a bit more opinionated than they'd need. The requirement for dynamic built-in responsiveness is still there too - some toolbars may be dynamically rendering buttons and other child items, so teams can't just leverage `media queries` that cater to their specific UI, since it could be ever-changing.
+
+### ⌨️ Focus management
+
+As such a crucial component for the user's interaction with various Smartsheet views, the Toolbar needs to nail its focus management. And since so many teams use this component, it's focus / keyboard navigation capabilities should work out of the box to avoid a lot of duplicate effort/code. The current Toolbar had a lot of code for this, and it worked well. BUT there was one problem with it:
+
+<Note>
+  The Toolbar's focus code identified a list of interactable children in the
+  Toolbar, by doing a `querySelectorAll()` call with a hard-coded list of
+  interactable element names, like `a, button, link, etc`.
+</Note>
+
+As you may imagine, this is a rather rigid way to look for interactable children of the toolbar, and it's far from a coveted 'declarative' approach. Some teams were trying to do reasonable things with the toolbar that were incompatible with this system, such as:
+
+- Add a `div` wrapper of custom buttons as a child of the toolbar
+- The `div` wrapper should be focusable in the normal order of the toolbar, and if a user wants to skip it (thus avoiding traversing all its child buttons to get through the toolbar), they can go past it
+- otherwise, they can `ENTER` into it and traverse the children, like a `listbox` per se.
+
+This granular control was not possible as-is - we needed to open that API up for more flexibility.
+
+<br />
+<hr />
+<br />
+
+# 📝 Phase 1: Learn, Plan, & SPIKE
+
+First, I wanted to figure out how our current `Toolbar` component was architected and built, and then I'd be able to figure out what we could keep and what we could improve. I began to see this as 2 workstreams:
+
+1. Toolbar Wrapper
+2. Toolbar Buttons/Subcomponents
+
+<br />
+
+### Toolbar Wrapper
+
+Let's start with the wrapper. I began to dive into the wrapper code and visualize my findings in a LucidChart diagram (we had briefly forfeited access to Figjam, it pains me to have to show you this).
+
+<ContentImage
+  image="/projects/toolbar/wrapper.png"
+  caption="A (lucidchart 😔) diagram of the current toolbar wrapper architecture in code"
+/>
+
+At a high level, we've got some context providers wrapping some wrappers that handle presentation, etc. Between all these wrappers/providers, things like top-level `Toolbar` props are stored for all subcomponents to easily access, and other stuff like focus management / keyboard nav + responsive behavior are all built in. Nice.
+
+I also took a detour to do a quick SPIKE on the focus management system built into the toolbar as it's quite complex - more on that later.
+
+<br />
+
+### Toolbar Buttons/Subcomponents
+
+What about our buttons? Well turns out there were a ton in existence, all with highly redundant button-like APIs (but with no shared `Button` ancestry). After many discussions as a team we decided on moving away from the current buttons and instead building a new set of Toolbar-specific buttons built atop our atomic `Button` component to reap all kinds of benefits.
+
+So I set out to map that solution out next. After studying the `Button` API & looking around at the existing toolbar button use cases I came up with a set of new buttons that could service all consumer needs, as far as toolbar actions go.
+
+<ContentImage
+  image="/projects/toolbar/buttons.png"
+  caption="A (lucidchart 😔) diagram of a new button component family for the toolbar"
+/>
+
+With `Button` as a base for all these new toolbar buttons, we can cut down on code redundancy, simplify button updates, and introduce far more flexibility for consumers, since the old toolbar buttons were much more opinionated and limited. We chose to create a basic `ToolbarButtonV2`, and some more molecular components atop of it that include built-in `Menu` or `Flyout` dropdowns or split button groups, as these are commonly used in Smartsheet toolbars.
+
+Aside from buttons, we had a couple other subcomponents that we updated/built, but nothing too crazy, so more on that in the implementation section!
+
+<br />
+<hr />
+<br />
+
+# 💪🏽 Phase 2: Building ToolbarV2 Subcomponents
+
+After presenting to the team on my Toolbar findings and ideas, the team felt good about the proposed direction. Time to build new stuff, all as `ToolbarV2` components in order to avoid breaking changes!
+
+### V2 Buttons
+
+We chose to start with the buttons, so that as we built out the wrapper toward the end, we had all the subcomponents available to throw inside of it for testing.
+
+I started by building `ToolbarButtonV2` from scratch as a toolbar-styled button that utilizes essentially all of the underlying `Button` API. This makes it super easily customizable with props like:
+
+- `onClick`
+- `clientId` - easy targeting in testing
+- `iconBefore/iconAfter` - icons
+- `children` - any labels, strings default to the toolbar text styles but you can pass a custom text component if you need other styles
+- `appearance` - omitted from types and readded to limit it to only `secondary` button appearances, per toolbar button designs
+- much more! ✨
+
+```tsx
+//super, super duper simplified example :)
+import { Button, ButtonProps } from "@/components/button";
+
+interface ToolbarButtonV2Props extends Omit<ButtonProps, "appearance"> {
+  appearance?: ToolbarButtonAppearances;
+  ...
+}
+
+const ToolbarButtonV2 = ({
+  appearance = "secondary-empty",
+  ...otherProps
+}: ToolbarButtonV2Props) => {
+  return <Button appearance={appearance} {...otherProps} />;
+};
+```
+
+I also had to make sure these new buttons were compatible with the focus management code! Because the toolbar v1 looks for all interactable children based on a hard-coded list of element type matchers, the buttons worked as-is. This would change in the future but for now, we were good.
+
+Once merged in, my other teammates tackled the other buttons built on top of this: `ToolbarMenuButtonV2`, `ToolbarFlyoutButtonV2`, and `ToolbarSplitButtonV2` - and they all killed it 💯 While they did that, I set out to tackle a couple other important pieces of the ToolbarV2 ecosystem.
+
+### ToolbarGroupV2
+
+The `ToolbarGroupV2` is a just a container wrapping a set of child items in the toolbar, usually buttons. During the toolbar's responsive behavior, these groups are also the most basic units of breakdown, and they move themselves one by one into an overflow menu when the space gets tight enough.
+
+They also include a separator at the end of the group, and I built a revamped `ToolbarSeparatorV2` to accomplish that, with some basic CSS that targets the last `ToolbarGroupV2` sibling and hides its separator so the end of the toolbar looks normal.
+
+Each group is also a `flex` container with a simple `gap` property to handle consistent spacing out of the box.
+
+With these things done, it was finally time to tackle the `ToolbarV2` wrapper. It's so special and complex we'll break it down in its own Phase :)
+
+<br />
+<hr />
+<br />
+
+# 🧠 Phase 3: Building A Super Cool, Intelligent Wrapper
+
+Time for the showstopper - the `ToolbarV2` wrapper that ties this all together! With all the child components in good shape, the wrapper component could be built with robust testing and QA using real children. I'll break its construction down into 3 parts here:
+
+- `ToolbarContextV2` - provides props to the entire toolbar system
+- `FocusContextV2` - implements focus management
+- `Responsiveness` - the responsive breakdown system
+
+### ToolbarContextV2
+
+The `ToolbarContextV2` at this time was simply a provider of top-level prop values which child components could reference with a simple `useToolbarContextV2()` hook. It stores `ToolbarV2` data such as:
+
+```tsx
+...
+export interface ToolbarContextV2Props {
+  /**
+   * An optional boolean prop that when `true` prevents the built-in responsive/collapsing behavior
+   * in the `ToolbarV2`
+  */
+  isCollapsible?: boolean;
+  /**
+   * An optional, top-level prop that tells all buttons in the `ToolbarV2` what size they should render.
+   * Defaults to `small` and mirrors the native `Button` size prop options.
+  */
+  buttonSizes?: ToolbarV2ButtonSizes;
+  /**
+   * An optional height value that will control the heights of all `ToolbarSeparatorV2` components
+   * within the `ToolbarV2`, defaults to '16px'
+  */
+  separatorHeights?: string | number;
+  /**
+    * An optional boolean prop that when true will hide all the separators in the `ToolbarV2`.
+    * Defaults to `false`.
+  */
+  hideSeparators?: boolean;
+  ...
+  ...
+}
+...
+```
+
+The various toolbar subcomponents (`ToolbarButtonV2` & other buttons, `ToolbarGroupV2`, `ToolbarSeparator`, etc.) make calls to the context provider and pluck these values out, pulling them into their styled components code to conditionally render things and work their magic. Nothing ground breaking here.
+
+### FocusContextV2
+
+I'm particularly excited to break this one down. As I mentioned, the current V1 toolbar looks at a hardcoded list of interactable elements as its children and stores those DOM nodes as a list. It has a set of utilities and `keyDown` handlers that enable the traversal of those elements in the toolbar, etc.
+
+But this was a very inflexible API for consumers. So I came up with a new solution! In `ToolbarV2`, we built a new `FocusContextV2`, which basically copies over many of the utilities from the v1 focus context (because `keyDown` handlers and functions that move focus to next, prev., etc. elements don't need changing!), but with a crucial change to the way the toolbar identifies its interactable children - it will now look for a special `data` attribute:
+
+```tsx
+import { TOOLBAR_FOCUSABLE_ID } from "./consts";
+
+export const focusableToolbarChildren = toolbar.querySelectorAll(
+  `[data-focusable-item="${TOOLBAR_FOCUSABLE_ID}"]`
+);
+```
+
+With this change, all of our `ToolbarV2` subcomponents (like `ToolbarButtonV2`, etc.) can have this data attribute added to their code, which adds them to the focus order by default (with an optional opt-out prop `removeFromFocus`).
+
+For consumers who want to manage their own custom components in the `ToolbarV2`, they can simply add that data attribute to their component and the toolbar now includes them in the focus order. They can also simply leave it off if they don't want their custom component to be in the focus order. Nice!
+
+<ContentVideo url="/projects/toolbar/keynav.mov" />
+
+### Responsive Behavior
+
+This one's also a wild one, so buckle up. Our current toolbar collapses groups as the edge of the toolbar hits the edge of the right-most group, and moves them into an overflow menu. In the introduction section above, I detailed the new responsive behavior that we needed to implement. To figure out how to get from point A to B, I worked to understand the current responsive toolbar code:
+
+- The `Toolbar` wrapper component has an inner wrapper around the child groups that get rendered
+- That wrapper uses refs to calculates the total width of all the child groups, and compares it to the total width of the outermost toolbar wrapper
+- This gives us the `toolbarSpace` and helps us calculate an `overflowIndex` - basically a pointer that tells the toolbar which group should be the last one to be visible based on the space available, and which ones should be moved to the overflow menu.
+- Finally, the wrapper uses `React.cloneElement()` to render `visibleChildren` into the toolbar and `overflowChildren` into the menu flyout
+
+```tsx
+//yet another simplified example :)
+
+...
+const visibleChildren = Children.map(children, (child, index) => {
+  if(index <= overFlowIndex) {
+    return child;
+  }
+})
+const overflowChildren = Children.map(children, (child, index) => {
+  if(index > overflowIndex) {
+    return child
+  }
+})
+
+return (
+  <>
+    <ToolbarWrapper>
+      {visibleChildren}
+    </ToolbarWrapper>
+    <Menu>
+      {overflowChildren}
+    </Menu>
+  </>
+)
+...
+```
+
+Once I understood what was going on here, it made sense and seemed like a reasonable solution to this component's responsive needs. But as mentioned earlier, the new `ToolbarV2` needs all the labels in each group to truncate group by group from right to left <em>before</em> this overflow behavior kicks in. That was my next challenge.
+
+So I started building that out first in the new `ToolbarV2` responsiveness system. Between the label collapsing and the overflow menu, here's what I came up overall:
+
+- `ToolbarV2` has an outer wrapper ref and an inner wrapper ref, and the difference between the two can be calculated and sent to the `ToolbarContextV2` as `toolbarSpace`, or the available space in the toolbar.
+- The `ToolbarGroupV2` children of the toolbar can each have a ref as well, and calculate their widths individually, sending them up to the `ToolbarContextV2` as well. These will be the `childWidths`.
+- The `ToolbarGroupV2` also renders all its child buttons twice - once normally for presentation, and once invisibly off-screen with the label truncated using a prop, `labelIsHidden={true}`.
+- The widths of the invisible icon-only buttons will also be sent to the `ToolbarContextV2` similarly, as `childrenWithoutLabelWidths`.
+- These widths are used in the `ToolbarContextV2` to create a `possibleLayouts` - a data structure that maps out all possible width scenarios for the children in the toolbar, accounting for all combinations of buttons with/without labels.
+- The `possibleLayouts` data structure is created both as a flat arr of possible widths + a map, where each width # possibility contains an arr of boolean arrays, where each boolean is simply an ON or OFF type value for the labels in each group of the toolbar (called `labelState`)
+- As the `toolbarSpace` changes, the toolbar can loop over the `possibleLayouts` options and find the largest one that fits in the available space
+- Once it finds that, it will also do a direct 0(1) access of the `possibleLayouts` map to get the `labelState` that fits that possibility.
+- The toolbar's `labelState` will be updated to that labelState value, and the wrapper that renders all the groups will render them with a prop to either turn their label on or off in order of the groups (doing so with `React.cloneElement()` to force that prop)
+- The cloned `ToolbarGroupV2` components will pass that prop into their children (the `ToolbarButtonV2 and other toolbar action components) and they will hide/show labels!
+
+<Note>
+  🥵 Are you still with me? If not - let me bring you back with a simple `"It
+  worked!"` and a nice easy-to-digest GIF
+</Note>
+
+<ContentVideo url="/projects/toolbar/optout.mp4" />
+
+OKAY - last part! With label truncation working, now we need to tie in the existing overflow menu behavior. I created a new context state value - `labelsAreAllHidden` - a simple boolean that turns ON once all labels are hidden (i.e. the `labelState` arr values are all `false`). Once this is true, the overflow index begins to get calculated just like before. The inner toolbar wrapper that renders the cloned `ToolbarGroupV2` components now simply checks the children against the `overflowIndex`, rendering `visible` or `overflow` children in the toolbar or overflow menu respectively. 💪🏽
+
+<Note>
+  The result: a responsive system that breaks labels down group by group, and
+  then begins to move groups into an overflow menu thereafter. 🚀
+</Note>
+
+### That's a Wrap... on the Wrapper! 😉 (I'm so sorry)
+
+```tsx
+//Again, simplifying things. And lots of '...'s where more detailed stuff
+//would otherwise go :)
+export const ToolbarV2 = ({...}: ToolbarV2Props) => {
+  return (
+    <FocusContextV2 {...}>
+      <ToolbarContextV2 {...}>
+        <ToolbarWrapper {...}>
+            {children}
+        </ToolbarWrapper>
+      </ToolbarContextV2>
+    </FocusContextV2>
+  )
+}
+...
+```
+
+<br />
+<hr />
+<br />
+
+# 🚀 Outcomes
+
+### Optimizations
+
+With such heavy calculations being done on every render via updates from a `ResizeObserver` on the toolbar width, performance degrades fast. At every step, I optimized by leveraging React best-practices such as `useMemo()` to cache heavy calculations across general rerenders, unless key data changed. Maps in our data structures such as `possibleLayouts` help us cut down on `O(n)` time complexity operations for data access during calculations, and much more.
+
+A more UI/UX optimization I came up with was a clever `styled components` trick where I have a local boolean value called `keyToolbarDataIsReady`. When certain data from the context provider is loaded, we can flick it to true, and it gets consumed in the styled components code to pull the opacity from 0 👉🏽 1. This prevents jumpy truncations as the toolbar renders for the first time, and adds a delightful opacity render animation effectively replacing jankiness with UI delight ✨
+
+### Documenting EVERYTHING
+
+One of the BIGGEST priorities here was nailing our documentation for this component. I wanted to make it crystal clear how this component differed from the V1 `Toolbar`, and how consumers can use this new one without the woes of the past. I also wanted to make it clear to consumers how to compose real product experiences with it. I did all of the following:
+
+- Built out robust storybook stories (some of which you've seen in the above writeup!)
+- Built out an entire new ecosystem of documentation for `ToolbarV2` in our internal docs site
+- Built out a realistic implementation of the `Table View` toolbar in our live product right now, and added it to storybook and the docs site
+
+<ContentVideo url="/projects/toolbar/done.mov" />
+
+### 🧠 Learnings
+
+- Driving large, complex technical initiatives with large system-wide impact
+- Understanding legacy systems and hammering out improved architectures
+- Grokking the deeper quirks of React, the DOM, browser APIs, and more
+- Perpetuating scalable React practices, like building complex molecules and organisms atop simpler atoms, etc.
+
+### 🔮 Future Work
+
+To finish this work off, we had an engineer from a product team contribute the final piece of the puzzle - the actual overflow menu itself where child items are rendered during responsive breakdown of the toolbar. I made sure to schedule a handoff meeting, share how this all worked, and identify what needs to be done and how we recommend doing it. Our `federated` design system model at its best 🤓
+
+# Conclusion
+
+Phew, that was dense. Thanks for sticking with me to the end here, I hope you enjoyed learning about one of the most technically challenging engineering accomplishments of my career so far! In the end, it was super rewarding to lead the rearchitecture of a one of Smartsheet's most crucial UI components - flexing my engineering muscles to come up with a crafty accessible, responsive, flexible, and scalable solution. Cheers 😌
