@@ -99,3 +99,12 @@ export const otherProjects = [
     date: "August 2022",
   },
 ];
+export const motionProjects = [
+  {
+    title: "Loading Screen Animation @ Smartsheet",
+    category: "Motion",
+    image: "/projects/loading-screen/cover.png",
+    link: "/projects/posts/loading-screen",
+    date: "March 2025",
+  },
+];

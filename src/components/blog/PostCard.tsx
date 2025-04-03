@@ -42,6 +42,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
 
   return (
     <Flex
+      key={title}
       as={useExternalLink ? "a" : Link}
       aria-label={`${buttonText} - ${title}`}
       href={link}
