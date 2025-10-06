@@ -23,6 +23,7 @@ export default function Home() {
       date: "August 2022",
     },
   ];
+  const filtersBg = useColorModeValue("brand.lightBg", "brand.darkBg");
 
   return (
     <PageWrapper bg={bg} pb={8}>
@@ -36,21 +37,42 @@ export default function Home() {
           Blog ✍🏼
         </Heading>
         <FancyHeading as="h2">Updates, thoughts, and more!</FancyHeading>
-        <Grid
+
+        <Flex
           width="100%"
-          gridGap={[4, 4, 8]}
-          gridTemplateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr", "1fr 1fr"]}
+          bg={filtersBg}
+          borderRadius="16px"
+          pt={[4, 4, 8]}
+          pl={[4, 4, 8]}
+          pr={[4, 4, 8]}
+          pb={[4, 4, 8]}
+          boxSizing="border-box"
+          overflow="hidden"
+          flexDirection="column"
+          gap={8}
         >
-          {posts.map((post) => (
-            <PostCard
-              title={post.title}
-              image={post.image}
-              link={post.link}
-              category={post.category}
-              date={post.date}
-            />
-          ))}
-        </Grid>
+          <Grid
+            width="100%"
+            gridGap={[4, 4, 8]}
+            gridTemplateColumns={[
+              "1fr",
+              "1fr",
+              "1fr 1fr",
+              "1fr 1fr",
+              "1fr 1fr",
+            ]}
+          >
+            {posts.map((post) => (
+              <PostCard
+                title={post.title}
+                image={post.image}
+                link={post.link}
+                category={post.category}
+                date={post.date}
+              />
+            ))}
+          </Grid>
+        </Flex>
       </Flex>
     </PageWrapper>
   );

@@ -83,7 +83,6 @@ export default function Home() {
             }}
             borderRadius={120}
             onClick={() => setCurrentFilter("Design Systems")}
-            _whileClick
           >
             🎨 Design Systems
           </Text>
@@ -101,7 +100,6 @@ export default function Home() {
             }}
             borderRadius={120}
             onClick={() => setCurrentFilter("A11y")}
-            _whileClick
           >
             🤝 Accessibility
           </Text>
@@ -119,7 +117,6 @@ export default function Home() {
             }}
             borderRadius={120}
             onClick={() => setCurrentFilter("Motion")}
-            _whileClick
           >
             💫 Motion{" "}
           </Text>
@@ -137,7 +134,6 @@ export default function Home() {
             }}
             borderRadius={120}
             onClick={() => setCurrentFilter("Other")}
-            _whileClick
           >
             🚀 Miscellaneous
           </Text>
@@ -155,254 +151,44 @@ export default function Home() {
             }}
             borderRadius={120}
             onClick={() => setCurrentFilter("Brand Design")}
-            _whileClick
           >
             🌈 Brand Design
           </Text>
         </Flex>
 
-        <AnimatePresence mode="wait">
-          {currentFilter === "Design Systems" && (
-            <motion.div
-              key="designSystems"
-              initial={{ x: -180, opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: { ease: "easeIn", duration: 0.5, type: "spring" },
-              }}
-              exit={{
-                x: 100,
-                opacity: 0,
-                transition: { ease: "easeIn", duration: 0.25, type: "spring" },
-              }}
-              style={{ width: "100%" }}
-            >
-              <Heading as="h3" size="md" my={4}>
-                🎨 Design Systems
-              </Heading>
-              <Grid
-                width="100%"
-                gridGap={[4, 4, 8]}
-                mb={8}
-                gridTemplateColumns={[
-                  "1fr",
-                  "1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                ]}
-              >
-                {designSystemsProjects.map((project) => (
-                  <PostCard
-                    title={project.title}
-                    image={project.image}
-                    link={project.link}
-                    category={project.category}
-                    date={project.date}
-                    hasPassword={project.hasPassword}
-                  />
-                ))}
-              </Grid>
-            </motion.div>
-          )}
-
-          {currentFilter === "A11y" && (
-            <motion.div
-              key="a11y"
-              initial={{ x: -180, opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: { ease: "easeIn", duration: 0.5, type: "spring" },
-              }}
-              exit={{
-                x: 100,
-                opacity: 0,
-                transition: { ease: "easeIn", duration: 0.25, type: "spring" },
-              }}
-              style={{ width: "100%" }}
-            >
-              <Heading as="h3" size="md" my={4}>
-                🤝 Accessibility
-              </Heading>
-              <Grid
-                width="100%"
-                gridGap={[4, 4, 8]}
-                mb={8}
-                gridTemplateColumns={[
-                  "1fr",
-                  "1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                ]}
-              >
-                {a11yProjects.map((project) => (
-                  <PostCard
-                    title={project.title}
-                    image={project.image}
-                    link={project.link}
-                    category={project.category}
-                    date={project.date}
-                  />
-                ))}
-              </Grid>
-            </motion.div>
-          )}
-
-          {currentFilter === "Motion" && (
-            <motion.div
-              key="motion"
-              initial={{ x: -180, opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: { ease: "easeIn", duration: 0.5, type: "spring" },
-              }}
-              exit={{
-                x: 100,
-                opacity: 0,
-                transition: { ease: "easeIn", duration: 0.25, type: "spring" },
-              }}
-              style={{ width: "100%" }}
-            >
-              <Heading as="h3" size="md" my={4}>
-                💫 Motion
-              </Heading>
-              <Grid
-                width="100%"
-                gridGap={[4, 4, 8]}
-                mb={8}
-                gridTemplateColumns={[
-                  "1fr",
-                  "1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                ]}
-              >
-                {motionProjects.map((project) => (
-                  <PostCard
-                    title={project.title}
-                    image={project.image}
-                    link={project.link}
-                    category={project.category}
-                    date={project.date}
-                  />
-                ))}
-              </Grid>
-            </motion.div>
-          )}
-
-          {currentFilter === "Other" && (
-            <motion.div
-              key="miscellaneous"
-              initial={{ x: -180, opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: { ease: "easeIn", duration: 0.5, type: "spring" },
-              }}
-              exit={{
-                x: 100,
-                opacity: 0,
-                transition: { ease: "easeIn", duration: 0.25, type: "spring" },
-              }}
-              style={{ width: "100%" }}
-            >
-              <Heading as="h3" size="md" my={4}>
-                🚀 Miscellaneous
-              </Heading>
-              <Grid
-                width="100%"
-                gridGap={[4, 4, 8]}
-                mb={8}
-                gridTemplateColumns={[
-                  "1fr",
-                  "1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                ]}
-              >
-                {otherProjects.map((project) => (
-                  <PostCard
-                    title={project.title}
-                    image={project.image}
-                    link={project.link}
-                    category={project.category}
-                    date={project.date}
-                  />
-                ))}
-              </Grid>
-            </motion.div>
-          )}
-
-          {currentFilter === "Brand Design" && (
-            <motion.div
-              key="brandDesign"
-              initial={{ x: -180, opacity: 0 }}
-              animate={{
-                x: 0,
-                opacity: 1,
-                transition: { ease: "easeIn", duration: 0.5, type: "spring" },
-              }}
-              exit={{
-                x: 100,
-                opacity: 0,
-                transition: { ease: "easeIn", duration: 0.25, type: "spring" },
-              }}
-              style={{ width: "100%" }}
-            >
-              <Heading as="h3" size="md" my={4}>
-                🌈 Brand Design
-              </Heading>
-              <Grid
-                width="100%"
-                gridGap={[4, 4, 8]}
-                mb={8}
-                gridTemplateColumns={[
-                  "1fr",
-                  "1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                  "1fr 1fr",
-                ]}
-              >
-                {brandingProjects.map((project) => (
-                  <PostCard
-                    title={project.title}
-                    image={project.image}
-                    link={project.link}
-                    category={project.category}
-                    date={project.date}
-                  />
-                ))}
-              </Grid>
-            </motion.div>
-          )}
-
-          {currentFilter === "all" && (
-            <Box width="100%">
+        <Flex
+          width="100%"
+          bg={filtersBg}
+          borderRadius="16px"
+          pt={[2]}
+          pl={[4, 4, 8]}
+          pr={[4, 4, 8]}
+          pb={[4, 4, 8]}
+          boxSizing="border-box"
+          overflow="hidden"
+          flexDirection="column"
+          gap={12}
+        >
+          <AnimatePresence mode="wait">
+            {currentFilter === "Design Systems" && (
               <motion.div
-                key="designSystemsAll"
-                initial={{ x: -200, opacity: 0 }}
+                key="designSystems"
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: 0,
                   opacity: 1,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.35,
                     type: "spring",
                   },
                 }}
                 exit={{
-                  x: 200,
+                  x: 80,
                   opacity: 0,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.25,
                     type: "spring",
                   },
                 }}
@@ -414,7 +200,6 @@ export default function Home() {
                 <Grid
                   width="100%"
                   gridGap={[4, 4, 8]}
-                  mb={8}
                   gridTemplateColumns={[
                     "1fr",
                     "1fr",
@@ -435,24 +220,27 @@ export default function Home() {
                   ))}
                 </Grid>
               </motion.div>
+            )}
+
+            {currentFilter === "A11y" && (
               <motion.div
-                key="a11yAll"
-                initial={{ x: -200, opacity: 0 }}
+                key="a11y"
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: 0,
                   opacity: 1,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.35,
                     type: "spring",
                   },
                 }}
                 exit={{
-                  x: 200,
+                  x: 80,
                   opacity: 0,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.25,
                     type: "spring",
                   },
                 }}
@@ -464,7 +252,6 @@ export default function Home() {
                 <Grid
                   width="100%"
                   gridGap={[4, 4, 8]}
-                  mb={8}
                   gridTemplateColumns={[
                     "1fr",
                     "1fr",
@@ -484,24 +271,27 @@ export default function Home() {
                   ))}
                 </Grid>
               </motion.div>
+            )}
+
+            {currentFilter === "Motion" && (
               <motion.div
-                key="motionAll"
-                initial={{ x: -200, opacity: 0 }}
+                key="motion"
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: 0,
                   opacity: 1,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.35,
                     type: "spring",
                   },
                 }}
                 exit={{
-                  x: 200,
+                  x: 80,
                   opacity: 0,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.25,
                     type: "spring",
                   },
                 }}
@@ -513,7 +303,6 @@ export default function Home() {
                 <Grid
                   width="100%"
                   gridGap={[4, 4, 8]}
-                  mb={8}
                   gridTemplateColumns={[
                     "1fr",
                     "1fr",
@@ -533,24 +322,27 @@ export default function Home() {
                   ))}
                 </Grid>
               </motion.div>
+            )}
+
+            {currentFilter === "Other" && (
               <motion.div
-                key="miscellaneousAll"
-                initial={{ x: -200, opacity: 0 }}
+                key="miscellaneous"
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: 0,
                   opacity: 1,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.35,
                     type: "spring",
                   },
                 }}
                 exit={{
-                  x: 200,
+                  x: 80,
                   opacity: 0,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.25,
                     type: "spring",
                   },
                 }}
@@ -562,7 +354,6 @@ export default function Home() {
                 <Grid
                   width="100%"
                   gridGap={[4, 4, 8]}
-                  mb={8}
                   gridTemplateColumns={[
                     "1fr",
                     "1fr",
@@ -582,25 +373,27 @@ export default function Home() {
                   ))}
                 </Grid>
               </motion.div>
+            )}
 
+            {currentFilter === "Brand Design" && (
               <motion.div
-                key="brandDesignAll"
-                initial={{ x: -200, opacity: 0 }}
+                key="brandDesign"
+                initial={{ x: -80, opacity: 0 }}
                 animate={{
                   x: 0,
                   opacity: 1,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.35,
                     type: "spring",
                   },
                 }}
                 exit={{
-                  x: 200,
+                  x: 80,
                   opacity: 0,
                   transition: {
                     ease: "easeIn",
-                    duration: 0.55,
+                    duration: 0.25,
                     type: "spring",
                   },
                 }}
@@ -612,7 +405,6 @@ export default function Home() {
                 <Grid
                   width="100%"
                   gridGap={[4, 4, 8]}
-                  mb={8}
                   gridTemplateColumns={[
                     "1fr",
                     "1fr",
@@ -632,9 +424,256 @@ export default function Home() {
                   ))}
                 </Grid>
               </motion.div>
-            </Box>
-          )}
-        </AnimatePresence>
+            )}
+
+            {currentFilter === "all" && (
+              <Flex flexDirection="column" gap={8} width="100%">
+                <motion.div
+                  key="designSystemsAll"
+                  initial={{ x: -80, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.35,
+                      type: "spring",
+                    },
+                  }}
+                  exit={{
+                    x: 80,
+                    opacity: 0,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.25,
+                      type: "spring",
+                    },
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  <Heading as="h3" size="md" my={4}>
+                    🎨 Design Systems
+                  </Heading>
+                  <Grid
+                    width="100%"
+                    gridGap={[4, 4, 8]}
+                    gridTemplateColumns={[
+                      "1fr",
+                      "1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                    ]}
+                  >
+                    {designSystemsProjects.map((project) => (
+                      <PostCard
+                        title={project.title}
+                        image={project.image}
+                        link={project.link}
+                        category={project.category}
+                        date={project.date}
+                        hasPassword={project.hasPassword}
+                      />
+                    ))}
+                  </Grid>
+                </motion.div>
+                <motion.div
+                  key="a11yAll"
+                  initial={{ x: -80, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.35,
+                      type: "spring",
+                    },
+                  }}
+                  exit={{
+                    x: 80,
+                    opacity: 0,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.25,
+                      type: "spring",
+                    },
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  <Heading as="h3" size="md" my={4}>
+                    🤝 Accessibility
+                  </Heading>
+                  <Grid
+                    width="100%"
+                    gridGap={[4, 4, 8]}
+                    gridTemplateColumns={[
+                      "1fr",
+                      "1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                    ]}
+                  >
+                    {a11yProjects.map((project) => (
+                      <PostCard
+                        title={project.title}
+                        image={project.image}
+                        link={project.link}
+                        category={project.category}
+                        date={project.date}
+                      />
+                    ))}
+                  </Grid>
+                </motion.div>
+                <motion.div
+                  key="motionAll"
+                  initial={{ x: -80, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.35,
+                      type: "spring",
+                    },
+                  }}
+                  exit={{
+                    x: 80,
+                    opacity: 0,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.25,
+                      type: "spring",
+                    },
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  <Heading as="h3" size="md" my={4}>
+                    💫 Motion
+                  </Heading>
+                  <Grid
+                    width="100%"
+                    gridGap={[4, 4, 8]}
+                    gridTemplateColumns={[
+                      "1fr",
+                      "1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                    ]}
+                  >
+                    {motionProjects.map((project) => (
+                      <PostCard
+                        title={project.title}
+                        image={project.image}
+                        link={project.link}
+                        category={project.category}
+                        date={project.date}
+                      />
+                    ))}
+                  </Grid>
+                </motion.div>
+                <motion.div
+                  key="miscellaneousAll"
+                  initial={{ x: -80, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.35,
+                      type: "spring",
+                    },
+                  }}
+                  exit={{
+                    x: 80,
+                    opacity: 0,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.25,
+                      type: "spring",
+                    },
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  <Heading as="h3" size="md" my={4}>
+                    🚀 Miscellaneous
+                  </Heading>
+                  <Grid
+                    width="100%"
+                    gridGap={[4, 4, 8]}
+                    gridTemplateColumns={[
+                      "1fr",
+                      "1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                    ]}
+                  >
+                    {otherProjects.map((project) => (
+                      <PostCard
+                        title={project.title}
+                        image={project.image}
+                        link={project.link}
+                        category={project.category}
+                        date={project.date}
+                      />
+                    ))}
+                  </Grid>
+                </motion.div>
+
+                <motion.div
+                  key="brandDesignAll"
+                  initial={{ x: -80, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.35,
+                      type: "spring",
+                    },
+                  }}
+                  exit={{
+                    x: 80,
+                    opacity: 0,
+                    transition: {
+                      ease: "easeIn",
+                      duration: 0.25,
+                      type: "spring",
+                    },
+                  }}
+                  style={{ width: "100%" }}
+                >
+                  <Heading as="h3" size="md" my={4}>
+                    🌈 Brand Design
+                  </Heading>
+                  <Grid
+                    width="100%"
+                    gridGap={[4, 4, 8]}
+                    gridTemplateColumns={[
+                      "1fr",
+                      "1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                      "1fr 1fr",
+                    ]}
+                  >
+                    {brandingProjects.map((project) => (
+                      <PostCard
+                        title={project.title}
+                        image={project.image}
+                        link={project.link}
+                        category={project.category}
+                        date={project.date}
+                      />
+                    ))}
+                  </Grid>
+                </motion.div>
+              </Flex>
+            )}
+          </AnimatePresence>
+        </Flex>
       </Flex>
     </PageWrapper>
   );
