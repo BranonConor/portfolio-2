@@ -34,7 +34,6 @@ export const PostCard: React.FC<IPostCardProps> = ({
   hoverIcon = "👀",
   hasPassword = false,
 }) => {
-  const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
   const [yRotationValue, setYRotationValue] = useState<number>(0);
   const [xRotationValue, setXRotationValue] = useState<number>(0);
@@ -42,6 +41,7 @@ export const PostCard: React.FC<IPostCardProps> = ({
 
   return (
     <Flex
+      key={title}
       as={useExternalLink ? "a" : Link}
       aria-label={`${buttonText} - ${title}`}
       href={link}
@@ -50,12 +50,10 @@ export const PostCard: React.FC<IPostCardProps> = ({
       flexDirection="column"
       alignItems="flex-start"
       justifyContent="flex-start"
-      bg={bg}
       borderRadius={16}
       padding={4}
       position="relative"
       overflow="hidden"
-      boxShadow="lg"
       minHeight="300px"
       _hover={{
         "@media only screen and (min-width: 450px)": {
