@@ -33,7 +33,7 @@ export default function Home() {
         <Heading as="h1" size="2xl" mb={4}>
           Hi, I'm Branon! 👋
         </Heading>
-        <FancyHeading>I'm a UX-focused software engineer.</FancyHeading>
+        <FancyHeading>I'm a user-obsessed design engineer.</FancyHeading>
         <Text
           as="p"
           mb={8}
