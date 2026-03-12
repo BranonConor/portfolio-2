@@ -1,78 +1,161 @@
 "use client";
 
-import { Flex, Heading, Grid, useColorModeValue } from "@chakra-ui/react";
+import { Flex, Heading, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
-import { FancyHeading } from "@/components/FancyHeading";
-import { PostCard } from "@/components/blog/PostCard";
+import { PaintStroke } from "@/components/PaintStroke";
+import Link from "next/link";
 
-export default function Home() {
-  const bg = useColorModeValue("white", "brand.grey");
+export default function Blog() {
   const posts = [
     {
       title: "Creating an A11y Auditing Kit",
-      category: "A11y",
-      image: "/blog/creating-an-a11y-auditing-kit/cover.png",
+      category: "Accessibility",
       link: "/blog/posts/creating-an-a11y-auditing-kit",
       date: "June 2022",
+      description:
+        "How I established an accessibility auditing program that combined UX research with systematic a11y evaluation.",
     },
     {
       title: "My strengths, as told by others",
       category: "Culture",
-      image: "/blog/my-strengths-as-told-by-others/cover.png",
       link: "/blog/posts/my-strengths-as-told-by-others",
       date: "August 2022",
+      description:
+        "A reflection on feedback from colleagues and what it reveals about my approach to collaboration and craft.",
     },
   ];
-  const filtersBg = useColorModeValue("brand.lightBg", "brand.darkBg");
 
   return (
-    <PageWrapper bg={bg} pb={8}>
+    <PageWrapper>
       <Flex
         flexDirection="column"
         width="100%"
         alignItems="flex-start"
         justifyContent="flex-start"
       >
-        <Heading as="h1" size="2xl" mb={4}>
-          Blog ✍🏼
-        </Heading>
-        <FancyHeading as="h2">Updates, thoughts, and more!</FancyHeading>
-
-        <Flex
-          width="100%"
-          bg={filtersBg}
-          borderRadius="16px"
-          pt={[4, 4, 8]}
-          pl={[4, 4, 8]}
-          pr={[4, 4, 8]}
-          pb={[4, 4, 8]}
-          boxSizing="border-box"
+        <Box
+          border="1px solid"
+          borderColor="brand.border"
+          borderRadius="12px"
+          bg="rgba(20, 20, 22, 0.6)"
+          backdropFilter="blur(16px)"
           overflow="hidden"
-          flexDirection="column"
-          gap={8}
+          width="100%"
         >
-          <Grid
+          {/* Paint stroke header area */}
+          <Box
+            position="relative"
             width="100%"
-            gridGap={[4, 4, 8]}
-            gridTemplateColumns={[
-              "1fr",
-              "1fr",
-              "1fr 1fr",
-              "1fr 1fr",
-              "1fr 1fr",
-            ]}
+            height={["80px", "100px", "120px"]}
+            overflow="hidden"
+            borderBottom="1px solid"
+            borderBottomColor="brand.border"
           >
+            <PaintStroke
+              variant={3}
+              top="-30px"
+              left="-50px"
+              width={["200px", "260px", "320px"]}
+              opacity={0.35}
+            />
+            <PaintStroke
+              variant={5}
+              top="-20px"
+              right="-40px"
+              width={["180px", "220px", "280px"]}
+              opacity={0.25}
+            />
+            <PaintStroke
+              variant={2}
+              bottom="-50px"
+              left="40%"
+              width={["160px", "200px", "240px"]}
+              opacity={0.2}
+              rotate={10}
+            />
+          </Box>
+
+          <Box p={5} pb={3}>
+            <Heading
+              as="h1"
+              fontSize={["28px", "36px"]}
+              fontWeight="700"
+              letterSpacing="-0.03em"
+              mb={2}
+            >
+              Blog
+            </Heading>
+            <Text fontSize="15px" color="brand.textMuted">
+              Updates, thoughts, and more.
+            </Text>
+          </Box>
+
+          <Flex flexDirection="column" width="100%" gap={0} px={5} pb={5}>
             {posts.map((post) => (
-              <PostCard
-                title={post.title}
-                image={post.image}
-                link={post.link}
-                category={post.category}
-                date={post.date}
-              />
+              <ChakraLink
+                key={post.title}
+                as={Link}
+                href={post.link}
+                display="flex"
+                flexDirection={["column", "row"]}
+                justifyContent="space-between"
+                alignItems={["flex-start", "center"]}
+                paddingY={5}
+                borderBottom="1px solid"
+                borderBottomColor="brand.border"
+                _first={{
+                  borderTop: "1px solid",
+                  borderTopColor: "brand.border",
+                }}
+                _hover={{
+                  textDecoration: "none",
+                  bg: "brand.surface",
+                  marginX: -4,
+                  paddingX: 4,
+                  borderRadius: "12px",
+                  borderColor: "transparent",
+                }}
+                transition="0.15s ease all"
+              >
+                <Box>
+                  <Flex alignItems="center" gap={3} mb={1}>
+                    <Text fontSize="15px" fontWeight="500" color="brand.text">
+                      {post.title}
+                    </Text>
+                    <Text
+                      fontSize="11px"
+                      color="brand.textMuted"
+                      bg="brand.surface"
+                      paddingX={2}
+                      paddingY={0.5}
+                      borderRadius="6px"
+                      display={["none", "block"]}
+                    >
+                      {post.category}
+                    </Text>
+                  </Flex>
+                  <Text
+                    fontSize="13px"
+                    color="brand.textMuted"
+                    maxWidth="500px"
+                  >
+                    {post.description}
+                  </Text>
+                </Box>
+                <Text
+                  fontSize="12px"
+                  color="brand.textMuted"
+                  opacity={0.6}
+                  flexShrink={0}
+                  ml={[0, 4]}
+                  mt={[2, 0]}
+                >
+                  {post.date}
+                </Text>
+              </ChakraLink>
             ))}
-          </Grid>
-        </Flex>
+          </Flex>
+        </Box>
       </Flex>
     </PageWrapper>
   );

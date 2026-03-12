@@ -1,329 +1,105 @@
-import {
-  Image,
-  UnorderedList,
-  ListItem,
-  Flex,
-  Box,
-  useColorModeValue,
-  Tooltip,
-} from "@chakra-ui/react";
+"use client";
+
+import { Flex, Text, Box, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
+  { label: "Engagements", href: "/engagements" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+];
 
 export const Nav = () => {
-  const homeIcon = useColorModeValue(
-    "/icons/home-dark.svg",
-    "/icons/home-light.svg"
-  );
-  const aboutIcon = useColorModeValue(
-    "/icons/user-dark.svg",
-    "/icons/user-light.svg"
-  );
-  const projectsIcon = useColorModeValue(
-    "/icons/projects-dark.svg",
-    "/icons/projects-light.svg"
-  );
-  const engagementsIcon = useColorModeValue(
-    "/icons/engagements-dark.svg",
-    "/icons/engagements-light.svg"
-  );
-  const blogIcon = useColorModeValue(
-    "/icons/blog-dark.svg",
-    "/icons/blog-light.svg"
-  );
-  const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
-  const brandBg = useColorModeValue("brand.lightGrey", "black");
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.10)"
-  );
-  const border = useColorModeValue("2px solid", "0px solid");
-  const borderColor = useColorModeValue("brand.lightGrey", "none");
-  const logo = useColorModeValue("/logo-dark.svg", "/logo-light.svg");
-  const itemShadow = useColorModeValue(
-    "0px 4px 15px 0px rgba(0,0,0, 0.2)",
-    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
-  );
-  const tooltipBg = useColorModeValue("brand.gradient", "brand.gradient");
-  const tooltipText = useColorModeValue("white", "white");
+  const pathname = usePathname();
 
   return (
     <Flex
-      display={["none", "none", "block"]}
       as="nav"
-      alignItems="flex-start"
-      justifyContent="flex-start"
-      flexDirection="column"
-      height="100%"
+      display={["none", "none", "flex"]}
       position="fixed"
-      left="0"
-      top="0"
-      zIndex={10}
-      width={16}
-      bg={bg}
-      boxShadow={shadow}
-      borderRight={border}
-      borderRightColor={borderColor}
-      overflow="hidden"
+      top={4}
+      left="50%"
+      transform="translateX(-50%)"
+      zIndex={100}
+      alignItems="center"
+      justifyContent="center"
+      gap={1}
+      bg="rgba(20, 20, 22, 0.6)"
+      backdropFilter="blur(16px)"
+      border="1px solid"
+      borderColor="brand.border"
+      borderRadius="14px"
+      paddingX={2}
+      paddingY={2}
+      overflow="visible"
     >
-      <Flex
+      <Box
+        as={Link}
+        href="/"
+        position="relative"
         display="flex"
-        width="100%"
         alignItems="center"
         justifyContent="center"
-        bg={brandBg}
-        boxShadow={shadow}
-        mb={8}
+        width="36px"
+        height="36px"
+        mr={1}
+        overflow="visible"
+        flexShrink={0}
+        _hover={{ opacity: 0.8 }}
+        transition="0.15s ease all"
       >
-        <Image draggable="false" src={logo} width="42px" marginY={4} />
-      </Flex>
-      <UnorderedList
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        width="100%"
-        margin={0}
-      >
-        <Tooltip
-          borderRadius={10}
-          label="Home"
-          fontSize="md"
-          placement="right"
-          bg={tooltipBg}
-          color={tooltipText}
-          fontWeight="bold"
-          gutter={16}
-        >
-          <ListItem
-            borderRadius="10px"
-            marginY={1}
-            as={motion.li}
-            listStyleType="none"
-            height={12}
-            cursor="pointer"
-            width="70%"
-            whileHover={{
-              scale: 1.1,
-              transition: { duration: 0.05, type: "spring" },
-              boxShadow: itemShadow,
-            }}
-            whileTap={{
-              scale: 1.2,
-              transition: { duration: 0.1 },
-            }}
+        <Image
+          src="/s0.png"
+          alt="Branon Eusebio"
+          position="absolute"
+          top="50%"
+          left="50%"
+          style={{
+            width: "76px",
+            height: "76px",
+            transform: "translate(-50%, -50%)",
+          }}
+          objectFit="contain"
+          pointerEvents="none"
+          maxWidth="none"
+        />
+      </Box>
+      {navItems.map((item) => {
+        const isActive =
+          pathname === item.href ||
+          (item.href !== "/" && pathname.startsWith(item.href));
+        return (
+          <Box
+            key={item.href}
+            as={motion.div}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <Box
+            <Text
               as={Link}
-              href="/"
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
+              href={item.href}
+              fontSize="13px"
+              fontWeight={isActive ? "500" : "400"}
+              color={isActive ? "brand.text" : "brand.textMuted"}
+              bg={isActive ? "brand.surface" : "transparent"}
+              paddingX={3}
+              paddingY={1.5}
+              borderRadius="10px"
+              transition="0.15s ease all"
+              _hover={{
+                color: "brand.text",
+                bg: "brand.surface",
+              }}
             >
-              <Image
-                draggable="false"
-                src={homeIcon}
-                width={6}
-                height={6}
-                boxSizing="border-box"
-              />
-            </Box>
-          </ListItem>
-        </Tooltip>
-        <Tooltip
-          display={["none", "none", "block"]}
-          borderRadius={10}
-          label="About"
-          fontSize="md"
-          placement="right"
-          bg={tooltipBg}
-          color={tooltipText}
-          fontWeight="bold"
-          gutter={16}
-        >
-          <ListItem
-            borderRadius="10px"
-            marginY={1}
-            as={motion.li}
-            listStyleType="none"
-            height={12}
-            cursor="pointer"
-            width="70%"
-            whileHover={{
-              scale: 1.1,
-              transition: { duration: 0.05, type: "spring" },
-              boxShadow: itemShadow,
-            }}
-            whileTap={{
-              scale: 1.2,
-              transition: { duration: 0.1 },
-            }}
-          >
-            <Box
-              as={Link}
-              href="/about"
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                draggable="false"
-                src={aboutIcon}
-                width={6}
-                height={6}
-                boxSizing="border-box"
-              />
-            </Box>
-          </ListItem>
-        </Tooltip>
-        <Tooltip
-          display={["none", "none", "block"]}
-          borderRadius={10}
-          label="Projects"
-          fontSize="md"
-          placement="right"
-          bg={tooltipBg}
-          color={tooltipText}
-          fontWeight="bold"
-          gutter={16}
-        >
-          <ListItem
-            borderRadius="10px"
-            marginY={1}
-            as={motion.li}
-            listStyleType="none"
-            height={12}
-            cursor="pointer"
-            width="70%"
-            whileHover={{
-              scale: 1.1,
-              transition: { duration: 0.05, type: "spring" },
-              boxShadow: itemShadow,
-            }}
-            whileTap={{
-              scale: 1.2,
-              transition: { duration: 0.1 },
-            }}
-          >
-            <Box
-              as={Link}
-              href="/projects"
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                draggable="false"
-                src={projectsIcon}
-                width={6}
-                height={6}
-                boxSizing="border-box"
-              />
-            </Box>
-          </ListItem>
-        </Tooltip>
-        <Tooltip
-          display={["none", "none", "block"]}
-          borderRadius={10}
-          label="Engagements"
-          fontSize="md"
-          placement="right"
-          bg={tooltipBg}
-          color={tooltipText}
-          fontWeight="bold"
-          gutter={16}
-        >
-          <ListItem
-            borderRadius="10px"
-            marginY={1}
-            as={motion.li}
-            listStyleType="none"
-            height={12}
-            cursor="pointer"
-            width="70%"
-            whileHover={{
-              scale: 1.1,
-              transition: { duration: 0.05, type: "spring" },
-              boxShadow: itemShadow,
-            }}
-            whileTap={{
-              scale: 1.2,
-              transition: { duration: 0.1 },
-            }}
-          >
-            <Box
-              as={Link}
-              href="/engagements"
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                draggable="false"
-                src={engagementsIcon}
-                width={6}
-                height={6}
-                boxSizing="border-box"
-              />
-            </Box>
-          </ListItem>
-        </Tooltip>
-        <Tooltip
-          display={["none", "none", "block"]}
-          borderRadius={10}
-          label="Blog"
-          fontSize="md"
-          placement="right"
-          bg={tooltipBg}
-          color={tooltipText}
-          fontWeight="bold"
-          gutter={16}
-        >
-          <ListItem
-            borderRadius="10px"
-            marginY={1}
-            as={motion.li}
-            listStyleType="none"
-            height={12}
-            cursor="pointer"
-            width="70%"
-            whileHover={{
-              scale: 1.1,
-              transition: { duration: 0.05, type: "spring" },
-              boxShadow: itemShadow,
-            }}
-            whileTap={{
-              scale: 1.2,
-              transition: { duration: 0.1 },
-            }}
-          >
-            <Box
-              as={Link}
-              href="/blog"
-              width="100%"
-              height="100%"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                draggable="false"
-                src={blogIcon}
-                width={6}
-                height={6}
-                boxSizing="border-box"
-              />
-            </Box>
-          </ListItem>
-        </Tooltip>
-      </UnorderedList>
+              {item.label}
+            </Text>
+          </Box>
+        );
+      })}
     </Flex>
   );
 };

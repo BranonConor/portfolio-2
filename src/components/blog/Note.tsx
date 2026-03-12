@@ -1,29 +1,26 @@
 "use client";
-import { Box, BoxProps, useColorModeValue } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import React from "react";
 
 const Note: React.FC<BoxProps> = ({ children, ...otherProps }) => {
-  const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
-  );
   return (
     <Box
       paddingY={4}
       px={4}
-      bg={bg}
+      mx={[4, 5, 6]}
+      bg="rgba(255, 255, 255, 0.03)"
       borderRadius="10"
-      boxShadow={shadow}
+      border="1px solid"
+      borderColor="brand.border"
       fontStyle="italic"
       fontWeight={700}
       fontSize="sm"
+      color="brand.textMuted"
       {...otherProps}
       my={4}
       sx={{
         "& > p": {
           margin: 0,
-          borderLeft: "1px solid",
           paddingLeft: 2,
         },
       }}

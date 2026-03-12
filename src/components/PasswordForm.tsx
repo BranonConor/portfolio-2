@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormLabel,
-  Input,
-  Text,
-  useColorModePreference,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, FormLabel, Input, Text } from "@chakra-ui/react";
 import {
   Dispatch,
   FormEventHandler,
@@ -42,7 +33,7 @@ export const PasswordForm = ({
     }
   };
 
-  const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
+  const bg = "brand.surface";
 
   const errorMessages = [
     "Wrong password! ❌",
@@ -62,7 +53,15 @@ export const PasswordForm = ({
   return (
     <>
       {preview}
-      <Box padding={8} mt={8} borderRadius={16} bg={bg} boxShadow="lg">
+      <Box
+        padding={8}
+        mx={[4, 5, 6]}
+        mt={8}
+        borderRadius={16}
+        bg="rgba(255, 255, 255, 0.03)"
+        border="1px solid"
+        borderColor="brand.border"
+      >
         <FancyHeading>Password Check 🔓</FancyHeading>
         <Text mb={4}>
           This project is pretty detailed and not entirely public - check with
@@ -79,7 +78,8 @@ export const PasswordForm = ({
             }}
             value={one}
             name="one"
-            boxShadow="sm"
+            border="1px solid"
+            borderColor="brand.border"
             padding={2}
             type="number"
             width={12}
@@ -94,7 +94,8 @@ export const PasswordForm = ({
             }}
             value={two}
             name="two"
-            boxShadow="sm"
+            border="1px solid"
+            borderColor="brand.border"
             padding={2}
             type="number"
             width={12}
@@ -108,7 +109,8 @@ export const PasswordForm = ({
             }}
             value={three}
             name="two"
-            boxShadow="sm"
+            border="1px solid"
+            borderColor="brand.border"
             padding={2}
             type="number"
             width={12}
@@ -135,7 +137,8 @@ export const PasswordForm = ({
             }}
             value={four}
             name="two"
-            boxShadow="sm"
+            border="1px solid"
+            borderColor="brand.border"
             padding={2}
             type="number"
             width={12}

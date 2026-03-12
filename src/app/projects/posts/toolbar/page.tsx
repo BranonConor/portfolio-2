@@ -19,7 +19,6 @@ const Page = () => {
             <HeroStrip
               title="Toolbar Component Rebuild @ Smartsheet"
               subtitle="Improving one of Smartsheet's most widely-used design system components"
-              image="/projects/toolbar/cover.png"
               date="December 2024"
               category="Design Systems"
             />

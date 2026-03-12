@@ -1,91 +1,94 @@
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
-import { PostCard } from "../blog/PostCard";
+import { Box, Flex, Heading, Text, Link as ChakraLink } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+
 export const Music = () => {
-  const items: {
-    title: string;
-    link: string;
-    date: string;
-    image: string;
-    category: string;
-  }[] = [
+  const items = [
     {
       title: "Adobo Tapes",
-      image: "/adobo-tapes.png",
       date: "2024",
       link: "https://open.spotify.com/album/1VwNNoVc3fJFH45PQ7yqTK?si=mnPFB9RHSaWKzikZa1SB7w",
-      category: "Hip hop Beats",
     },
     {
       title: "OVER THE YEARS",
-      image: "/over-the-years.png",
       date: "2023",
       link: "https://open.spotify.com/album/3sTnhMmZkSWRqwOjUd61Q8",
-      category: "Hip hop Beats",
     },
     {
       title: "Vancouver Loft",
-      image: "/vancouver-loft.png",
       date: "2022",
       link: "https://open.spotify.com/album/0jgqurG0HxAJipHhhxrgwg?si=3UnMP0ZEQtSyg4oA4Mb4aw",
-      category: "Hip hop Beats",
     },
     {
       title: "FEEL SOMETHING TAPES",
-      image: "/feel-something-tapes.png",
       date: "2021",
       link: "https://open.spotify.com/album/2Sd57YRcNyJDEEH4tyfBRb?si=PXu62aKAT--jt8-azOxXbg",
-      category: "Hip hop Beats",
     },
   ];
+
   return (
-    <Flex
-      bg="brand.newGradient"
+    <Box
       width="100%"
-      padding={4}
-      marginY={[8, 10, 12]}
-      borderRadius={16}
-      color="white"
-      flexDirection="column"
-      position="relative"
+      border="1px solid"
+      borderColor="brand.border"
+      borderRadius="12px"
+      bg="rgba(20, 20, 22, 0.6)"
+      backdropFilter="blur(16px)"
+      p={5}
+      mt={8}
     >
-      <Box
-        as="img"
-        src="/noise.png"
-        position="absolute"
-        width="100%"
-        height="100%"
-        zIndex={0}
-        top={0}
-        left={0}
-        opacity={0.2}
-      />
-      <Heading as="h3" size="xl" fontWeight={700} mb={2}>
+      <Heading
+        as="h3"
+        fontSize="18px"
+        fontWeight="600"
+        letterSpacing="-0.02em"
+        mb={2}
+      >
         Music Production
       </Heading>
-      <Text as="p" mb={8}>
-        I've been producing hip hop beats since I was in high school - over a
-        decade. I recently released my 3rd beat tape album on Spotify under my
-        producer name, @PancitPapi (a hearken to my Filipino heritage). Check it
-        out, alongside past albums!
+      <Text fontSize="13px" color="brand.textMuted" mb={4} lineHeight="1.6">
+        I&apos;ve been producing hip hop beats for over a decade under my
+        producer name @PancitPapi. Here are my albums on Spotify:
       </Text>
-      <Grid
-        gridGap={4}
-        gridTemplateColumns={["1fr", "1fr", "1fr 1fr ", "1fr 1fr", "1fr 1fr"]}
-      >
+      <Flex flexDirection="column" gap={0}>
         {items.map((item) => (
-          <PostCard
-            title={item.title}
-            category={item.category}
-            date={item.date}
-            link={item.link}
-            image={item.image}
-            useSecondaryButton
-            useExternalLink
-            buttonText="Listen"
-            hoverIcon="🎧"
-          />
+          <ChakraLink
+            key={item.title}
+            href={item.link}
+            isExternal
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingY={2.5}
+            borderBottom="1px solid"
+            borderBottomColor="brand.border"
+            _last={{ borderBottom: "none" }}
+            _hover={{
+              textDecoration: "none",
+              "& > span:first-of-type": { color: "brand.text" },
+            }}
+            transition="0.15s ease all"
+          >
+            <Flex alignItems="center" gap={2}>
+              <Text
+                as="span"
+                fontSize="13px"
+                color="brand.textMuted"
+                transition="0.15s ease all"
+              >
+                {item.title}
+              </Text>
+              <ExternalLinkIcon
+                boxSize={3}
+                color="brand.textMuted"
+                opacity={0.3}
+              />
+            </Flex>
+            <Text fontSize="12px" color="brand.textMuted" opacity={0.5}>
+              {item.date}
+            </Text>
+          </ChakraLink>
         ))}
-      </Grid>
-    </Flex>
+      </Flex>
+    </Box>
   );
 };

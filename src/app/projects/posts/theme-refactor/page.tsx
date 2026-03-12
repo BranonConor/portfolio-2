@@ -19,7 +19,6 @@ const Page = () => {
             <HeroStrip
               title="Theme Architecture Refactor @ Smartsheet"
               subtitle="Building a more scalable theming architecture for design system consumers"
-              image="/projects/theme-refactor/cover.png"
               date="June 2024"
               category="Design Systems"
             />

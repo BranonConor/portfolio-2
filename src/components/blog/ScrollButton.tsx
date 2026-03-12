@@ -1,7 +1,7 @@
 "use client";
 
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Flex, useColorModeValue, Text } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -16,23 +16,13 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
   scrollDirection = "up",
   bottomPosition,
   scrollPosition,
+  isEndOfPage,
 }) => {
-  const bg = useColorModeValue("brand.lightBg", "brand.darkBg");
-  const upIcon = useColorModeValue(
-    <TriangleUpIcon color="brand.grey" />,
-    <TriangleUpIcon />
-  );
-  const downIcon = useColorModeValue(
-    <TriangleDownIcon color="brand.grey" />,
-    <TriangleDownIcon />
-  );
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.10)"
-  );
+  const upIcon = <TriangleUpIcon />;
+  const downIcon = <TriangleDownIcon />;
 
-  const yPosition =
-    scrollDirection === "down" ? (scrollPosition > 128 ? 36 : 20) : 20;
+  const bothVisible = scrollPosition > 128 && !isEndOfPage;
+  const yPosition = scrollDirection === "down" && bothVisible ? "80px" : "16px";
 
   return (
     <Flex
@@ -42,8 +32,9 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       top={yPosition}
       transition="0.25s ease top"
       borderRadius="100%"
-      bg={bg}
-      boxShadow={shadow}
+      bg="brand.surface"
+      border="1px solid"
+      borderColor="brand.border"
       aria-label="scroll to top"
       width={12}
       height={12}

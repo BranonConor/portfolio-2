@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Image,
-  Text,
-  Box,
-  useColorModeValue,
-  AspectRatio,
-} from "@chakra-ui/react";
+import { Image, Text, Box, AspectRatio } from "@chakra-ui/react";
 
 interface ContentVideoProps {
   url: string;
@@ -14,20 +8,17 @@ interface ContentVideoProps {
 }
 
 const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
-  );
   return (
-    <>
+    <Box px={[4, 5, 6]}>
       <Box
         width="100%"
         position="relative"
         borderRadius={16}
         mt={8}
-        mb={4}
+        mb={caption ? 2 : 4}
         overflow="hidden"
-        boxShadow={shadow}
+        border="1px solid"
+        borderColor="brand.border"
       >
         <AspectRatio maxW="100%" ratio={2 / 1}>
           <video
@@ -42,11 +33,11 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
         </AspectRatio>
       </Box>
       {caption && (
-        <Text fontStyle="italic" mb={8} as="span" fontSize="12px">
+        <Text fontStyle="italic" mb={4} as="span" fontSize="12px" color="brand.textMuted">
           {caption}
         </Text>
       )}
-    </>
+    </Box>
   );
 };
 

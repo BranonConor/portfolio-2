@@ -1,6 +1,6 @@
 "use client";
 
-import { Image, Text, Box, useColorModeValue } from "@chakra-ui/react";
+import { Image, Text, Box } from "@chakra-ui/react";
 
 interface IContentImageProps {
   image: string;
@@ -8,29 +8,26 @@ interface IContentImageProps {
 }
 
 const ContentImage: React.FC<IContentImageProps> = ({ image, caption }) => {
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
-  );
   return (
-    <>
+    <Box px={[4, 5, 6]}>
       <Box
         width="100%"
         position="relative"
         borderRadius={16}
         mt={8}
-        mb={4}
+        mb={caption ? 2 : 4}
         overflow="hidden"
-        boxShadow={shadow}
+        border="1px solid"
+        borderColor="brand.border"
       >
         <Image src={image} objectFit="cover" minWidth="100%" alt={caption} />
       </Box>
       {caption && (
-        <Text fontStyle="italic" mb={8} as="span" fontSize="12px">
+        <Text fontStyle="italic" mb={4} as="span" fontSize="12px" color="brand.textMuted">
           {caption}
         </Text>
       )}
-    </>
+    </Box>
   );
 };
 export default ContentImage;

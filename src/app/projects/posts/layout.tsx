@@ -1,19 +1,18 @@
 "use client";
 
 import { PageWrapper } from "@/components/PageWrapper";
-import { Button, Flex, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import ScrollButton from "@/components/blog/ScrollButton";
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
-  const bg = useColorModeValue("white", "brand.grey");
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
-  const codeBg = useColorModeValue("brand.lightGrey", "brand.darkBg");
-  const codeColor = useColorModeValue("brand.darkPink", "brand.pink");
+  const codeBg = "brand.surface";
+  const codeColor = "brand.accent";
 
   const handleScroll = () => {
     if (typeof global?.window !== "undefined") {
@@ -53,8 +52,6 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <PageWrapper
-      bg={bg}
-      mt="-32px"
       pb={10}
       sx={{
         ".remark-highlight": {
@@ -104,7 +101,19 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
               />
             )}
           </AnimatePresence>
-          {children}
+          <Box
+            bg="rgba(20, 20, 22, 0.6)"
+            backdropFilter="blur(16px)"
+            style={{ WebkitBackdropFilter: "blur(16px)" }}
+            border="1px solid"
+            borderColor="brand.border"
+            borderRadius="12px"
+            overflow="hidden"
+            width="100%"
+            pb={[6, 8, 10]}
+          >
+            {children}
+          </Box>
           <Flex>
             <Button mt={8} variant="primary" as={Link} href="/projects">
               👈🏽 Back to Projects

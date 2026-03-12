@@ -4,32 +4,46 @@ import { extendTheme } from "@chakra-ui/react";
 import { buttonTheme } from "./componentOverrides/button";
 
 const colors = {
-  white: "#FFFFFF",
+  white: "#fafafa",
   black: "#000000",
   brand: {
-    grey: "#222",
-    lightGrey: "#e6e6e6",
-    darkBg: "#111",
-    lightBg: "#F6F6F6",
-    pink: "#FF0096",
-    darkPink: "#980059",
-    blue: "#0080c7",
-    gradient: "linear-gradient(124.41deg,#0072b1,#fd36ab 95.2%)",
-    newGradient:
-      "linear-gradient(147.41deg, #0080C7 21.35%, #FF0096 59.41%, #FFFFFF 97.97%)",
-  },
-  shadows: {
-    neon: "0px 4px 15px 0px rgba(226,175,255, 0.6)",
+    bg: "#09090b",
+    surface: "#141416",
+    surfaceHover: "#1c1c1f",
+    border: "rgba(255, 255, 255, 0.15)",
+    borderHover: "rgba(255, 255, 255, 0.22)",
+    text: "#fafafa",
+    textMuted: "#a1a1aa",
+    accent: "#60a5fa",
+    accentMuted: "#3b82f6",
+    pink: "#f472b6",
+    gradient: "linear-gradient(135deg, #60a5fa, #a78bfa)",
+    // Legacy aliases for MDX/post compatibility
+    grey: "#141416",
+    lightGrey: "#1c1c1f",
+    darkBg: "#09090b",
+    lightBg: "#141416",
+    blue: "#60a5fa",
+    darkPink: "#f472b6",
   },
 };
 
 const config = {
-  initialColorMode: "system",
-  useSystemColorMode: true,
+  initialColorMode: "dark" as const,
+  useSystemColorMode: false,
+};
+
+const styles = {
+  global: {
+    body: {
+      bg: "brand.bg",
+      color: "brand.text",
+    },
+  },
 };
 
 const components = {
   Button: buttonTheme,
 };
 
-export const theme = extendTheme({ colors, config, components });
+export const theme = extendTheme({ colors, config, styles, components });

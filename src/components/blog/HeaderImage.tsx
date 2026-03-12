@@ -1,6 +1,6 @@
 "use client";
 
-import { Image, Box, useColorModeValue } from "@chakra-ui/react";
+import { Image, Box } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
 interface IHeaderImageProps {
@@ -8,10 +8,6 @@ interface IHeaderImageProps {
 }
 
 const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
-  const shadow = useColorModeValue(
-    "lg",
-    "0px 4px 15px 0px rgba(226,175,255, 0.2)"
-  );
   return (
     <Box
       as={motion.div}
@@ -22,7 +18,8 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
       mb={8}
       overflow="hidden"
       height={["170px", "200px", "250px", "300px"]}
-      boxShadow={shadow}
+      border="1px solid"
+      borderColor="brand.border"
       initial={{ top: "-25%", scale: 1.1 }}
       animate={{
         top: 0,

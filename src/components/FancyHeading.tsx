@@ -7,12 +7,10 @@ export const FancyHeading: React.FC<HeadingProps> = ({
   return (
     <Heading
       as="h2"
-      size="xl"
-      color="brand.pink"
-      borderLeft="4px solid"
-      borderLeftColor="brand.pink"
-      pl={6}
-      mb={8}
+      size="lg"
+      color="brand.textMuted"
+      fontWeight="400"
+      mb={6}
       {...otherProps}
     >
       {children}

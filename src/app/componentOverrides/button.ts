@@ -1,65 +1,34 @@
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react";
 
 const primary = defineStyle({
-  borderRadius: "20px",
-  background: "brand.gradient",
-  color: "white",
-  fontWeight: "bold",
-  position: "relative",
-  overflow: "hidden",
-  zIndex: 1,
+  borderRadius: "8px",
+  background: "rgba(167, 139, 250, 0.1)",
+  color: "#a78bfa",
+  fontWeight: "600",
+  fontSize: "13px",
+  letterSpacing: "0.01em",
   _hover: {
-    opacity: 0.85,
-    transform: "translateY(-2px)",
-    _before: {
-      opacity: 0.5,
-    },
+    background: "rgba(167, 139, 250, 0.18)",
+    transform: "translateY(-1px)",
   },
-  _before: {
-    content: '""',
-    width: "100%",
-    height: "100%",
-    background: "brand.blue",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    zIndex: "-2",
-    transition: "0.4s ease all",
-    opacity: 0,
-    cursor: "pointer",
-  },
+  transition: "0.15s ease all",
 });
 
 const secondary = defineStyle({
-  borderRadius: "20px",
-  fontWeight: "bold",
-  position: "relative",
-  overflow: "hidden",
-  zIndex: 1,
-  _dark: {
-    color: "white",
-    background: "brand.darkBg",
-    boxShadow: "0px 4px 15px 0px rgba(226,175,255, 0.15)",
-    _hover: {
-      opacity: 0.85,
-      transform: "translateY(-1px)",
-      _before: {
-        opacity: 0.5,
-      },
-    },
+  borderRadius: "8px",
+  fontWeight: "500",
+  fontSize: "13px",
+  color: "brand.textMuted",
+  background: "rgba(255, 255, 255, 0.04)",
+  border: "1px solid",
+  borderColor: "brand.border",
+  _hover: {
+    background: "rgba(255, 255, 255, 0.07)",
+    borderColor: "brand.borderHover",
+    color: "brand.text",
+    transform: "translateY(-1px)",
   },
-  _light: {
-    color: "brand.grey",
-    background: "brand.lightBg",
-    boxShadow: "md",
-    _hover: {
-      opacity: 0.85,
-      transform: "translateY(-1px)",
-      _before: {
-        opacity: 0.5,
-      },
-    },
-  },
+  transition: "0.15s ease all",
 });
 
 export const buttonTheme = defineStyleConfig({
