@@ -6,11 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Projects", href: "/projects" },
-  { label: "Engagements", href: "/engagements" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
+  { label: "Home", href: "/", color: "#a78bfa" },
+  { label: "Projects", href: "/projects", color: "#da70d6" },
+  { label: "Engagements", href: "/engagements", color: "#22c55e" },
+  { label: "Blog", href: "/blog", color: "#61dafb" },
+  { label: "About", href: "/about", color: "#f05032" },
 ];
 
 export const Nav = () => {
@@ -82,17 +82,22 @@ export const Nav = () => {
             <Text
               as={Link}
               href={item.href}
+              display="flex"
+              alignItems="center"
               fontSize="13px"
               fontWeight={isActive ? "500" : "400"}
-              color={isActive ? "brand.text" : "brand.textMuted"}
-              bg={isActive ? "brand.surface" : "transparent"}
+              color={isActive ? item.color : "brand.textMuted"}
+              bg={isActive ? `${item.color}18` : "transparent"}
+              border="1px solid"
+              borderColor={isActive ? `${item.color}40` : "transparent"}
               paddingX={3}
               paddingY={1.5}
               borderRadius="10px"
               transition="0.15s ease all"
               _hover={{
-                color: "brand.text",
-                bg: "brand.surface",
+                color: item.color,
+                bg: `${item.color}18`,
+                borderColor: `${item.color}40`,
               }}
             >
               {item.label}

@@ -33,8 +33,29 @@ const config = {
   useSystemColorMode: false,
 };
 
+// Reusable text style tokens for list items
+const textStyles = {
+  listTitle: {
+    fontSize: "13px",
+    color: "brand.text",
+    lineHeight: "1.5",
+  },
+  listMeta: {
+    fontSize: "12px",
+    color: "brand.textMuted",
+  },
+};
+
 const styles = {
   global: {
+    ":root": {
+      "--sparkle-desktop": "none",
+      "--sparkle-mobile": "block",
+      "@media (min-width: 48em)": {
+        "--sparkle-desktop": "block",
+        "--sparkle-mobile": "none",
+      },
+    },
     body: {
       bg: "brand.bg",
       color: "brand.text",
@@ -46,4 +67,10 @@ const components = {
   Button: buttonTheme,
 };
 
-export const theme = extendTheme({ colors, config, styles, components });
+export const theme = extendTheme({
+  colors,
+  config,
+  styles,
+  components,
+  textStyles,
+});

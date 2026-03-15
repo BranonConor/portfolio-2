@@ -114,21 +114,20 @@ export default function Projects() {
                 paddingY={1.5}
                 paddingX={3}
                 color={
-                  currentFilter === cat.key ? "brand.text" : "brand.textMuted"
+                  currentFilter === cat.key ? "#da70d6" : "brand.textMuted"
                 }
-                bg={currentFilter === cat.key ? "brand.surface" : "transparent"}
+                bg={currentFilter === cat.key ? "#da70d615" : "transparent"}
                 border="1px solid"
                 borderColor={
-                  currentFilter === cat.key
-                    ? "brand.borderHover"
-                    : "brand.border"
+                  currentFilter === cat.key ? "#da70d640" : "brand.border"
                 }
                 borderRadius="8px"
                 onClick={() => setCurrentFilter(cat.key)}
-                transition="0.15s ease all"
+                transition="0.12s ease all"
                 _hover={{
-                  borderColor: "brand.borderHover",
-                  color: "brand.text",
+                  borderColor: "#da70d640",
+                  color: "#da70d6",
+                  bg: "#da70d615",
                 }}
                 cursor="pointer"
               >
@@ -138,7 +137,14 @@ export default function Projects() {
           </Flex>
 
           {/* Project List */}
-          <Flex flexDirection="column" width="100%" gap={0} px={5} pb={5}>
+          <Flex
+            flexDirection="column"
+            width="100%"
+            gap={0}
+            px={5}
+            pb={3}
+            sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+          >
             {filteredProjects.map((project) => (
               <ChakraLink
                 key={project.title}
@@ -149,21 +155,28 @@ export default function Projects() {
                 justifyContent="space-between"
                 alignItems={["flex-start", "center"]}
                 paddingY={4}
-                borderBottom="1px solid"
-                borderBottomColor="brand.border"
-                _first={{
-                  borderTop: "1px solid",
-                  borderTopColor: "brand.border",
+                position="relative"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  bg: "brand.border",
+                  transition: "0.18s ease all",
+                  transformOrigin: "center",
                 }}
                 _hover={{
                   textDecoration: "none",
-                  bg: "brand.surface",
-                  marginX: -4,
-                  paddingX: 4,
-                  borderRadius: "12px",
-                  borderColor: "transparent",
+                  bg: "brand.surfaceHover",
+                  marginX: -3,
+                  paddingX: 3,
+                  borderRadius: "10px",
+                  zIndex: 1,
+                  _after: { transform: "scaleX(0)" },
                 }}
-                transition="0.15s ease all"
+                transition="0.12s ease all"
               >
                 <Flex alignItems="center" gap={3}>
                   <Text fontSize="14px" fontWeight="500" color="brand.text">

@@ -51,22 +51,48 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Heading>
     ),
     h4: ({ children }) => (
-      <Heading as="h4" size="sm" fontWeight="bold" mt={6} color="brand.text" px={[4, 5, 6]}>
+      <Heading
+        as="h4"
+        size="sm"
+        fontWeight="bold"
+        mt={6}
+        color="brand.text"
+        px={[4, 5, 6]}
+      >
         {children}
       </Heading>
     ),
     p: ({ children }) => (
-      <Text as="p" size="s" mt={4} color="brand.textMuted" lineHeight="1.8" px={[4, 5, 6]}>
+      <Text
+        as="p"
+        size="s"
+        mt={4}
+        color="brand.textMuted"
+        lineHeight="1.8"
+        px={[4, 5, 6]}
+      >
         {children}
       </Text>
     ),
     ul: ({ children }) => (
-      <UnorderedList mt={4} size="md" color="brand.textMuted" lineHeight="1.8" px={[4, 5, 6]}>
+      <UnorderedList
+        mt={4}
+        size="md"
+        color="brand.textMuted"
+        lineHeight="1.8"
+        px={[4, 5, 6]}
+      >
         {children}
       </UnorderedList>
     ),
     ol: ({ children }) => (
-      <OrderedList mt={4} size="md" color="brand.textMuted" lineHeight="1.8" px={[4, 5, 6]}>
+      <OrderedList
+        mt={4}
+        size="md"
+        color="brand.textMuted"
+        lineHeight="1.8"
+        px={[4, 5, 6]}
+      >
         {children}
       </OrderedList>
     ),
@@ -121,6 +147,43 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <Text as="strong" fontWeight="700" color="brand.text">
         {children}
       </Text>
+    ),
+    code: ({ children, ...props }) => {
+      // If inside a <pre>, render plain code (no inline styling)
+      const isBlock = typeof children === "string" && children.includes("\n");
+      if (isBlock) return <code {...props}>{children}</code>;
+      return (
+        <Text
+          as="code"
+          fontSize="0.85em"
+          fontWeight="600"
+          color="#da70d6"
+          bg="#da70d615"
+          px={1.5}
+          py={0.5}
+          borderRadius="5px"
+          {...props}
+        >
+          {children}
+        </Text>
+      );
+    },
+    pre: ({ children, ...props }) => (
+      <Box px={[4, 5, 6]} mt={6} mb={4}>
+        <Box
+          as="pre"
+          overflow="auto"
+          borderRadius={16}
+          border="1px solid"
+          borderColor="brand.border"
+          p={5}
+          fontSize="14px"
+          lineHeight="1.7"
+          {...props}
+        >
+          {children}
+        </Box>
+      </Box>
     ),
     ...components,
   };

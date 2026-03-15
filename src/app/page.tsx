@@ -10,6 +10,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 
@@ -68,12 +69,6 @@ const otherExperience = [
     logo: "/glialabs.png",
     current: true,
   },
-  {
-    company: "ADPList",
-    role: "Design Engineering Mentor",
-    period: "Feb 2024 – Feb 2026",
-    logo: "/adplist.png",
-  },
 ];
 
 const education = [
@@ -127,12 +122,14 @@ const publications = [
     publisher: "Human Centered",
     date: "Dec 2022",
     tag: "Tech",
+    link: "https://medium.com/color-research-design/we-used-ux-research-after-an-accessibility-audit-heres-what-happened-e84ac05ae20a",
   },
   {
     title: "Making Tech Products More Accessible in 5 Simple Steps",
     publisher: "Human Centered",
     date: "May 2022",
     tag: "Tech",
+    link: "https://medium.com/color-research-design/making-tech-products-accessible-in-5-simple-steps-4dd09c1ceff4",
   },
   {
     title:
@@ -140,6 +137,7 @@ const publications = [
     publisher: "Psychiatry Research",
     date: "June 2021",
     tag: "Neuroscience",
+    link: "https://pubmed.ncbi.nlm.nih.gov/34144510/",
   },
   {
     title:
@@ -147,6 +145,7 @@ const publications = [
     publisher: "Neurological Sciences",
     date: "May 2020",
     tag: "Neuroscience",
+    link: "https://pubmed.ncbi.nlm.nih.gov/32358703/",
   },
 ];
 
@@ -266,7 +265,7 @@ const Section = ({
           fontSize="12px"
           color="brand.textMuted"
           _hover={{ color: "brand.text" }}
-          transition="0.15s ease all"
+          transition="0.12s ease all"
         >
           View all →
         </Text>
@@ -314,8 +313,99 @@ export default function Home() {
               lineHeight="1.6"
             >
               Design engineer currently building{" "}
-              <Text as="span" color="brand.text" fontWeight="500">
+              <Text
+                as="span"
+                color="brand.text"
+                fontWeight="500"
+                position="relative"
+                display="inline-block"
+                zIndex={1}
+              >
                 @ GitHub
+                {[
+                  {
+                    size: 16,
+                    top: 0,
+                    left: 16,
+                    delay: 0,
+                    dur: 2.4,
+                    x: [-6, -12],
+                    y: [-4, -22],
+                  },
+                  {
+                    size: 13,
+                    top: 2,
+                    left: 40,
+                    delay: 0.5,
+                    dur: 2.0,
+                    x: [3, 8],
+                    y: [-2, -26],
+                  },
+                  {
+                    size: 14,
+                    top: -2,
+                    left: 60,
+                    delay: 1.2,
+                    dur: 2.6,
+                    x: [4, 12],
+                    y: [-6, -16],
+                  },
+                  {
+                    size: 12,
+                    top: 4,
+                    left: 28,
+                    delay: 1.8,
+                    dur: 2.2,
+                    x: [-2, -8],
+                    y: [-2, -28],
+                  },
+                  {
+                    size: 15,
+                    top: 0,
+                    left: 50,
+                    delay: 2.5,
+                    dur: 2.3,
+                    x: [2, 6],
+                    y: [-4, -20],
+                  },
+                ].map((s, i) => (
+                  <motion.div
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      top: s.top,
+                      left: s.left,
+                      width: s.size,
+                      height: s.size,
+                      pointerEvents: "none",
+                      display: "var(--sparkle-desktop)",
+                      zIndex: -1,
+                    }}
+                    animate={{
+                      opacity: [0, 0, 0.55, 0.4, 0],
+                      x: s.x,
+                      y: s.y,
+                      scale: [0.3, 0.6, 1.15, 0.9, 0.2],
+                    }}
+                    transition={{
+                      duration: s.dur,
+                      delay: s.delay,
+                      repeat: Infinity,
+                      repeatDelay: 1.5,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <Image
+                      src="/github.png"
+                      alt=""
+                      aria-hidden="true"
+                      width="100%"
+                      height="100%"
+                      objectFit="contain"
+                      borderRadius="100%"
+                    />
+                  </motion.div>
+                ))}
               </Text>
               . I craft design systems, accessible interfaces, and tools that
               bridge design and engineering.
@@ -357,6 +447,171 @@ export default function Home() {
               height="100%"
               objectFit="contain"
             />
+            {/* Mobile sparkles — emanate from portrait */}
+            {[
+              {
+                size: 26,
+                top: "30%",
+                left: "10%",
+                delay: 0,
+                dur: 2.4,
+                x: [-14, -28],
+                y: [-10, -34],
+                gif: "/monacat.gif",
+              },
+              {
+                size: 22,
+                top: "20%",
+                left: "65%",
+                delay: 0.6,
+                dur: 2.0,
+                x: [10, 22],
+                y: [-8, -36],
+                gif: "/mona-laugh.gif",
+              },
+              {
+                size: 24,
+                top: "35%",
+                left: "78%",
+                delay: 1.3,
+                dur: 2.6,
+                x: [12, 28],
+                y: [-12, -26],
+                gif: "/mona-tongue.gif",
+              },
+              {
+                size: 20,
+                top: "18%",
+                left: "32%",
+                delay: 1.9,
+                dur: 2.2,
+                x: [-6, -18],
+                y: [-6, -38],
+                gif: "/mona-mindblown.gif",
+              },
+              {
+                size: 23,
+                top: "22%",
+                left: "50%",
+                delay: 2.6,
+                dur: 2.3,
+                x: [6, 16],
+                y: [-10, -30],
+                gif: "/monacat.gif",
+              },
+              {
+                size: 18,
+                top: "26%",
+                left: "22%",
+                delay: 3.3,
+                dur: 2.1,
+                x: [-12, -22],
+                y: [-8, -34],
+                gif: "/mona-laugh.gif",
+              },
+            ].map((s, i) => (
+              <motion.div
+                key={`mobile-${i}`}
+                style={{
+                  position: "absolute",
+                  top: s.top,
+                  left: s.left,
+                  width: s.size,
+                  height: s.size,
+                  pointerEvents: "none",
+                  display: "var(--sparkle-mobile)",
+                }}
+                animate={{
+                  opacity: [0, 0, 0.8, 0.65, 0],
+                  x: s.x,
+                  y: s.y,
+                  scale: [0.3, 0.55, 1.1, 0.9, 0.2],
+                }}
+                transition={{
+                  duration: s.dur,
+                  delay: s.delay,
+                  repeat: Infinity,
+                  repeatDelay: 1.5,
+                  ease: "easeOut",
+                }}
+              >
+                <Image
+                  src={s.gif}
+                  alt=""
+                  aria-hidden="true"
+                  width="100%"
+                  height="100%"
+                  objectFit="cover"
+                  borderRadius="100%"
+                />
+              </motion.div>
+            ))}
+            {/* Mobile GitHub logo sparkles — sparse, behind mona gifs */}
+            {[
+              {
+                size: 15,
+                top: "15%",
+                left: "72%",
+                delay: 0.3,
+                dur: 2.5,
+                x: [8, 18],
+                y: [-6, -20],
+              },
+              {
+                size: 13,
+                top: "38%",
+                left: "5%",
+                delay: 1.6,
+                dur: 2.3,
+                x: [-10, -20],
+                y: [-4, -18],
+              },
+              {
+                size: 14,
+                top: "24%",
+                left: "88%",
+                delay: 2.9,
+                dur: 2.1,
+                x: [6, 14],
+                y: [-8, -24],
+              },
+            ].map((s, i) => (
+              <motion.div
+                key={`mobile-gh-${i}`}
+                style={{
+                  position: "absolute",
+                  top: s.top,
+                  left: s.left,
+                  width: s.size,
+                  height: s.size,
+                  pointerEvents: "none",
+                  display: "var(--sparkle-mobile)",
+                  zIndex: -1,
+                }}
+                animate={{
+                  opacity: [0, 0, 0.5, 0.35, 0],
+                  x: s.x,
+                  y: s.y,
+                  scale: [0.3, 0.6, 1.15, 0.9, 0.2],
+                }}
+                transition={{
+                  duration: s.dur,
+                  delay: s.delay,
+                  repeat: Infinity,
+                  repeatDelay: 1.5,
+                  ease: "easeOut",
+                }}
+              >
+                <Image
+                  src="/github.png"
+                  alt=""
+                  aria-hidden="true"
+                  width="100%"
+                  height="100%"
+                  objectFit="contain"
+                />
+              </motion.div>
+            ))}
           </Box>
         </Flex>
       </Box>
@@ -405,7 +660,7 @@ export default function Home() {
                   </Box>
                   <Box>
                     <Flex alignItems="center" gap={2} mb={0.5}>
-                      <Text fontSize="14px" fontWeight="600" color="brand.text">
+                      <Text textStyle="listTitle">
                         {role.role} @ {role.company}
                       </Text>
                       {role.current && (
@@ -418,9 +673,7 @@ export default function Home() {
                         />
                       )}
                     </Flex>
-                    <Text fontSize="12px" color="brand.textMuted">
-                      {role.period}
-                    </Text>
+                    <Text textStyle="listMeta">{role.period}</Text>
                   </Box>
                 </Flex>
               ))}
@@ -471,11 +724,7 @@ export default function Home() {
                     </Box>
                     <Box>
                       <Flex alignItems="center" gap={2} mb={0.5}>
-                        <Text
-                          fontSize="14px"
-                          fontWeight="600"
-                          color="brand.text"
-                        >
+                        <Text textStyle="listTitle">
                           {role.role} @ {role.company}
                         </Text>
                         {role.current && (
@@ -488,9 +737,7 @@ export default function Home() {
                           />
                         )}
                       </Flex>
-                      <Text fontSize="12px" color="brand.textMuted">
-                        {role.period}
-                      </Text>
+                      <Text textStyle="listMeta">{role.period}</Text>
                     </Box>
                   </Flex>
                 ))}
@@ -500,9 +747,16 @@ export default function Home() {
 
           {/* Education */}
           <Section title="Education">
-            <Flex flexDirection="column" gap={4}>
+            <Flex flexDirection="column" gap={0}>
               {education.map((item) => (
-                <Flex key={item.program} gap={3} alignItems="flex-start">
+                <Flex
+                  key={item.program}
+                  gap={3}
+                  alignItems="flex-start"
+                  paddingY={2.5}
+                  borderTop="1px solid"
+                  borderTopColor="brand.border"
+                >
                   <Box
                     width="36px"
                     height="36px"
@@ -527,32 +781,25 @@ export default function Home() {
                     />
                   </Box>
                   <Box>
-                    <Text
-                      fontSize="14px"
-                      fontWeight="600"
-                      color="brand.text"
-                      mb={0.5}
-                    >
+                    <Text textStyle="listTitle">
                       {item.program} @ {item.institution}
                     </Text>
-                    <Text fontSize="12px" color="brand.accent" opacity={0.8}>
+                    <Text textStyle="listMeta" mt={0.5}>
                       {item.note}
                     </Text>
                   </Box>
                 </Flex>
               ))}
-              <Box>
-                <Text fontSize="12px" color="brand.textMuted" lineHeight="1.7">
-                  HTML, CSS, TypeScript, React, Copilot/AI, Figma, and tons more
-                  🙂
-                </Text>
-              </Box>
             </Flex>
           </Section>
 
-          {/* Speaking & Mentoring */}
-          <Section title="Speaking & Mentoring" href="/engagements">
-            <Flex flexDirection="column" gap={0}>
+          {/* Community Engagements */}
+          <Section title="Community Engagements" href="/engagements">
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            >
               {engagements.map((item) => (
                 <ChakraLink
                   key={item.title}
@@ -562,29 +809,38 @@ export default function Home() {
                   justifyContent="space-between"
                   alignItems="center"
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
                   _hover={{
                     textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
                     "& > span:first-of-type": { color: "brand.text" },
                   }}
-                  transition="0.15s ease all"
+                  transition="0.12s ease all"
                 >
                   <Text
                     as="span"
-                    fontSize="13px"
-                    color="brand.textMuted"
-                    transition="0.15s ease all"
+                    textStyle="listTitle"
+                    transition="0.12s ease all"
                   >
                     {item.title}
                   </Text>
-                  <Text
-                    fontSize="12px"
-                    color="brand.textMuted"
-                    flexShrink={0}
-                    ml={3}
-                  >
+                  <Text textStyle="listMeta" flexShrink={0} ml={3}>
                     {item.type}
                   </Text>
                 </ChakraLink>
@@ -596,17 +852,22 @@ export default function Home() {
                 justifyContent="space-between"
                 alignItems="center"
                 paddingY={2.5}
+                position="relative"
                 _hover={{
                   textDecoration: "none",
+                  bg: "brand.surfaceHover",
+                  marginX: -3,
+                  paddingX: 3,
+                  borderRadius: "10px",
+                  zIndex: 1,
                   "& > span:first-of-type": { color: "brand.text" },
                 }}
-                transition="0.15s ease all"
+                transition="0.12s ease all"
               >
                 <Text
                   as="span"
-                  fontSize="13px"
-                  color="brand.textMuted"
-                  transition="0.15s ease all"
+                  textStyle="listTitle"
+                  transition="0.12s ease all"
                 >
                   ADPList Mentoring
                 </Text>
@@ -617,14 +878,40 @@ export default function Home() {
 
           {/* Publications */}
           <Section title="Publications">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            >
               {publications.map((pub) => (
-                <Box
+                <ChakraLink
                   key={pub.title}
+                  href={pub.link}
+                  isExternal
+                  display="block"
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
+                  }}
+                  transition="0.12s ease all"
                 >
                   <Flex
                     justifyContent="space-between"
@@ -632,18 +919,12 @@ export default function Home() {
                     gap={3}
                   >
                     <Box flex={1} minWidth={0}>
-                      <Text
-                        fontSize="13px"
-                        color="brand.textMuted"
-                        lineHeight="1.5"
-                      >
-                        {pub.title}
-                      </Text>
-                      <Text fontSize="12px" color="brand.textMuted" mt={0.5}>
-                        {pub.publisher}
+                      <Text textStyle="listTitle">{pub.title}</Text>
+                      <Text textStyle="listMeta" mt={0.5}>
+                        {pub.publisher} · {pub.date}
                       </Text>
                     </Box>
-                    <Flex flexShrink={0} alignItems="center" gap={2}>
+                    <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
                       <Box
                         fontSize="10px"
                         fontWeight="600"
@@ -661,16 +942,10 @@ export default function Home() {
                       >
                         {pub.tag}
                       </Box>
-                      <Text
-                        fontSize="12px"
-                        color="brand.textMuted"
-                        whiteSpace="nowrap"
-                      >
-                        {pub.date}
-                      </Text>
+                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
                     </Flex>
                   </Flex>
-                </Box>
+                </ChakraLink>
               ))}
             </Flex>
           </Section>
@@ -685,7 +960,11 @@ export default function Home() {
         >
           {/* Selected Work */}
           <Section title="Selected Work" href="/projects">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            >
               {selectedWork.map((item) => (
                 <ChakraLink
                   key={item.title}
@@ -695,21 +974,35 @@ export default function Home() {
                   justifyContent="space-between"
                   alignItems="center"
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
                   _hover={{
                     textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
                     "& > div > span:first-of-type": { color: "brand.text" },
                   }}
-                  transition="0.15s ease all"
+                  transition="0.12s ease all"
                 >
                   <Box>
                     <Text
                       as="span"
-                      fontSize="13px"
-                      color="brand.textMuted"
-                      transition="0.15s ease all"
+                      textStyle="listTitle"
+                      transition="0.12s ease all"
                     >
                       {item.title}
                     </Text>
@@ -724,12 +1017,7 @@ export default function Home() {
                       </Text>
                     )}
                   </Box>
-                  <Text
-                    fontSize="12px"
-                    color="brand.textMuted"
-                    flexShrink={0}
-                    ml={3}
-                  >
+                  <Text textStyle="listMeta" flexShrink={0} ml={3}>
                     {item.company}
                   </Text>
                 </ChakraLink>
@@ -739,7 +1027,11 @@ export default function Home() {
 
           {/* Writing */}
           <Section title="Writing" href="/blog">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            >
               {writing.map((post) => (
                 <ChakraLink
                   key={post.title}
@@ -749,29 +1041,38 @@ export default function Home() {
                   justifyContent="space-between"
                   alignItems="center"
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
                   _hover={{
                     textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
                     "& > span:first-of-type": { color: "brand.text" },
                   }}
-                  transition="0.15s ease all"
+                  transition="0.12s ease all"
                 >
                   <Text
                     as="span"
-                    fontSize="13px"
-                    color="brand.textMuted"
-                    transition="0.15s ease all"
+                    textStyle="listTitle"
+                    transition="0.12s ease all"
                   >
                     {post.title}
                   </Text>
-                  <Text
-                    fontSize="12px"
-                    color="brand.textMuted"
-                    flexShrink={0}
-                    ml={3}
-                  >
+                  <Text textStyle="listMeta" flexShrink={0} ml={3}>
                     {post.date}
                   </Text>
                 </ChakraLink>
@@ -779,16 +1080,15 @@ export default function Home() {
             </Flex>
           </Section>
 
-          {/* Honors & Awards */}
-          <Section title="Honors & Awards">
+          {/* Honors & Accomplishments */}
+          <Section title="Honors & Accomplishments">
             <Flex flexDirection="column" gap={0}>
               {honors.map((item) => (
                 <Box
                   key={item.title}
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  borderTop="1px solid"
+                  borderTopColor="brand.border"
                 >
                   <Flex
                     justifyContent="space-between"
@@ -796,16 +1096,13 @@ export default function Home() {
                     gap={3}
                   >
                     <Box>
-                      <Text fontSize="13px" color="brand.text" fontWeight="500">
-                        {item.title}
-                      </Text>
-                      <Text fontSize="12px" color="brand.textMuted" mt={0.5}>
+                      <Text textStyle="listTitle">{item.title}</Text>
+                      <Text textStyle="listMeta" mt={0.5}>
                         {item.description}
                       </Text>
                     </Box>
                     <Text
-                      fontSize="12px"
-                      color="brand.textMuted"
+                      textStyle="listMeta"
                       flexShrink={0}
                       whiteSpace="nowrap"
                     >
@@ -819,7 +1116,11 @@ export default function Home() {
 
           {/* Showcase / Side Projects */}
           <Section title="Showcase">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            >
               {showcase.map((item) => (
                 <ChakraLink
                   key={item.title}
@@ -829,28 +1130,41 @@ export default function Home() {
                   justifyContent="space-between"
                   alignItems="center"
                   paddingY={2.5}
-                  borderBottom="1px solid"
-                  borderBottomColor="brand.border"
-                  _last={{ borderBottom: "none" }}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
                   _hover={{
                     textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
                     "& > div > span:first-of-type": { color: "brand.text" },
                   }}
-                  transition="0.15s ease all"
+                  transition="0.12s ease all"
                 >
                   <Box>
                     <Text
                       as="span"
-                      fontSize="13px"
-                      color="brand.textMuted"
-                      transition="0.15s ease all"
+                      textStyle="listTitle"
+                      transition="0.12s ease all"
                     >
                       {item.title}
                     </Text>
                     <Text
                       as="span"
-                      fontSize="12px"
-                      color="brand.textMuted"
+                      textStyle="listMeta"
                       ml={2}
                       display={["none", "inline"]}
                     >

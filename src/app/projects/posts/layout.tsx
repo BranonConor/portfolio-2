@@ -11,8 +11,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
-  const codeBg = "brand.surface";
-  const codeColor = "brand.accent";
+  const codeBg = "#da70d615";
+  const codeColor = "#da70d6";
 
   const handleScroll = () => {
     if (typeof global?.window !== "undefined") {
@@ -115,7 +115,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primary" as={Link} href="/projects">
+            <Button mt={8} variant="primaryPink" as={Link} href="/projects">
               👈🏽 Back to Projects
             </Button>
           </Flex>

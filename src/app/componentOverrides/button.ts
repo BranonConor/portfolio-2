@@ -1,18 +1,28 @@
 import { defineStyle, defineStyleConfig } from "@chakra-ui/react";
 
-const primary = defineStyle({
-  borderRadius: "8px",
-  background: "rgba(167, 139, 250, 0.1)",
-  color: "#a78bfa",
-  fontWeight: "600",
-  fontSize: "13px",
-  letterSpacing: "0.01em",
-  _hover: {
-    background: "rgba(167, 139, 250, 0.18)",
-    transform: "translateY(-1px)",
-  },
-  transition: "0.15s ease all",
-});
+const makePrimary = (color: string) =>
+  defineStyle({
+    borderRadius: "8px",
+    background: `${color}18`,
+    color: color,
+    fontWeight: "600",
+    fontSize: "13px",
+    letterSpacing: "0.01em",
+    border: "1px solid",
+    borderColor: `${color}40`,
+    _hover: {
+      background: `${color}2e`,
+      borderColor: `${color}66`,
+      transform: "translateY(-1px)",
+    },
+    transition: "0.15s ease all",
+  });
+
+const primary = makePrimary("#a78bfa");
+const primaryPink = makePrimary("#da70d6");
+const primaryGreen = makePrimary("#22c55e");
+const primaryBlue = makePrimary("#61dafb");
+const primaryOrange = makePrimary("#f05032");
 
 const secondary = defineStyle({
   borderRadius: "8px",
@@ -32,5 +42,12 @@ const secondary = defineStyle({
 });
 
 export const buttonTheme = defineStyleConfig({
-  variants: { primary, secondary },
+  variants: {
+    primary,
+    primaryPink,
+    primaryGreen,
+    primaryBlue,
+    primaryOrange,
+    secondary,
+  },
 });

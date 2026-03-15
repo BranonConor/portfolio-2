@@ -115,7 +115,12 @@ export default function About() {
               width={["100%", "auto", "auto"]}
               gap={3}
             >
-              <Button variant="primary" as={Link} href="/projects" size="sm">
+              <Button
+                variant="primaryOrange"
+                as={Link}
+                href="/projects"
+                size="sm"
+              >
                 See my work
               </Button>
               <Button variant="secondary" as={Link} href="/blog" size="sm">

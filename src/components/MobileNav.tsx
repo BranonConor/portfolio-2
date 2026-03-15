@@ -6,11 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Work", href: "/projects" },
-  { label: "Events", href: "/engagements" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
+  { label: "Home", href: "/", color: "#a78bfa" },
+  { label: "Work", href: "/projects", color: "#da70d6" },
+  { label: "Events", href: "/engagements", color: "#22c55e" },
+  { label: "Blog", href: "/blog", color: "#61dafb" },
+  { label: "About", href: "/about", color: "#f05032" },
 ];
 
 export const MobileNav = () => {
@@ -47,10 +47,14 @@ export const MobileNav = () => {
             <Text
               as={Link}
               href={item.href}
+              display="flex"
+              alignItems="center"
               fontSize="12px"
               fontWeight={isActive ? "500" : "400"}
-              color={isActive ? "brand.text" : "brand.textMuted"}
-              bg={isActive ? "brand.surface" : "transparent"}
+              color={isActive ? item.color : "brand.textMuted"}
+              bg={isActive ? `${item.color}18` : "transparent"}
+              border="1px solid"
+              borderColor={isActive ? `${item.color}40` : "transparent"}
               paddingX={3}
               paddingY={1.5}
               borderRadius="10px"

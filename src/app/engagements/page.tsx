@@ -100,21 +100,20 @@ export default function Engagements() {
                 paddingY={1.5}
                 paddingX={3}
                 color={
-                  currentFilter === cat.key ? "brand.text" : "brand.textMuted"
+                  currentFilter === cat.key ? "#22c55e" : "brand.textMuted"
                 }
-                bg={currentFilter === cat.key ? "brand.surface" : "transparent"}
+                bg={currentFilter === cat.key ? "#22c55e15" : "transparent"}
                 border="1px solid"
                 borderColor={
-                  currentFilter === cat.key
-                    ? "brand.borderHover"
-                    : "brand.border"
+                  currentFilter === cat.key ? "#22c55e40" : "brand.border"
                 }
                 borderRadius="8px"
                 onClick={() => setCurrentFilter(cat.key)}
-                transition="0.15s ease all"
+                transition="0.12s ease all"
                 _hover={{
-                  borderColor: "brand.borderHover",
-                  color: "brand.text",
+                  borderColor: "#22c55e40",
+                  color: "#22c55e",
+                  bg: "#22c55e15",
                 }}
                 cursor="pointer"
               >
@@ -124,7 +123,14 @@ export default function Engagements() {
           </Flex>
 
           {/* Engagement List */}
-          <Flex flexDirection="column" width="100%" gap={0} px={5} pb={5}>
+          <Flex
+            flexDirection="column"
+            width="100%"
+            gap={0}
+            px={5}
+            pb={3}
+            sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+          >
             {filteredEngagements.map((engagement) => (
               <ChakraLink
                 key={engagement.title}
@@ -135,21 +141,28 @@ export default function Engagements() {
                 justifyContent="space-between"
                 alignItems={["flex-start", "center"]}
                 paddingY={4}
-                borderBottom="1px solid"
-                borderBottomColor="brand.border"
-                _first={{
-                  borderTop: "1px solid",
-                  borderTopColor: "brand.border",
+                position="relative"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  bg: "brand.border",
+                  transition: "0.18s ease all",
+                  transformOrigin: "center",
                 }}
                 _hover={{
                   textDecoration: "none",
-                  bg: "brand.surface",
-                  marginX: -4,
-                  paddingX: 4,
-                  borderRadius: "12px",
-                  borderColor: "transparent",
+                  bg: "brand.surfaceHover",
+                  marginX: -3,
+                  paddingX: 3,
+                  borderRadius: "10px",
+                  zIndex: 1,
+                  _after: { transform: "scaleX(0)" },
                 }}
-                transition="0.15s ease all"
+                transition="0.12s ease all"
               >
                 <Flex alignItems="center" gap={3}>
                   <Text fontSize="14px" fontWeight="500" color="brand.text">
@@ -180,34 +193,6 @@ export default function Engagements() {
             ))}
           </Flex>
         </Box>
-
-        {/* ADPList CTA */}
-        <ChakraLink
-          href="https://adplist.org/mentors/branon-eusebio"
-          isExternal
-          mt={8}
-          display="flex"
-          alignItems="center"
-          gap={2}
-          fontSize="13px"
-          color="brand.textMuted"
-          border="1px solid"
-          borderColor="brand.border"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          borderRadius="10px"
-          paddingX={4}
-          paddingY={3}
-          _hover={{
-            textDecoration: "none",
-            borderColor: "brand.borderHover",
-            color: "brand.text",
-          }}
-          transition="0.15s ease all"
-        >
-          Book a mentoring session on ADPList
-          <ExternalLinkIcon boxSize={3} />
-        </ChakraLink>
       </Flex>
     </PageWrapper>
   );

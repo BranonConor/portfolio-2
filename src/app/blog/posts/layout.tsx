@@ -57,6 +57,19 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           maxWidth="950px"
           alignItems="flex-start"
           justifyContent="flex-start"
+          sx={{
+            "code:not(pre > code)": {
+              color: "#61dafb",
+              bg: "#61dafb15",
+              padding: "1px 4px",
+              borderRadius: "6px",
+              fontSize: "14px",
+              fontWeight: "bold",
+            },
+            "pre[class*='language-']": {
+              borderRadius: "16px",
+            },
+          }}
         >
           <AnimatePresence>
             {scrollPosition > 128 && (
@@ -92,7 +105,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primary" as={Link} href="/blog">
+            <Button mt={8} variant="primaryBlue" as={Link} href="/blog">
               👈🏽 Back to blog
             </Button>
           </Flex>
