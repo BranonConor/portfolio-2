@@ -407,8 +407,8 @@ export default function Home() {
                   </motion.div>
                 ))}
               </Text>
-              . I craft design systems, accessible interfaces, and tools that
-              bridge design and engineering.
+              . I craft elevated experiences on globally-loved platforms to
+              delight users and supercharge their tech tools.
             </Text>
 
             {/* CTAs */}
@@ -846,13 +846,24 @@ export default function Home() {
                 </ChakraLink>
               ))}
               <ChakraLink
-                href="https://adplist.org/mentors/branon-eusebio"
-                isExternal
+                as={Link}
+                href="/engagements/posts/adplist"
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
                 paddingY={2.5}
                 position="relative"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  bg: "brand.border",
+                  transition: "0.18s ease all",
+                  transformOrigin: "center",
+                }}
                 _hover={{
                   textDecoration: "none",
                   bg: "brand.surfaceHover",
@@ -860,6 +871,7 @@ export default function Home() {
                   paddingX: 3,
                   borderRadius: "10px",
                   zIndex: 1,
+                  _after: { transform: "scaleX(0)" },
                   "& > span:first-of-type": { color: "brand.text" },
                 }}
                 transition="0.12s ease all"
@@ -871,7 +883,9 @@ export default function Home() {
                 >
                   ADPList Mentoring
                 </Text>
-                <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                <Text textStyle="listMeta" flexShrink={0} ml={3}>
+                  Mentoring
+                </Text>
               </ChakraLink>
             </Flex>
           </Section>
