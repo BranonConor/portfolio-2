@@ -2,16 +2,26 @@
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { theme } from "./theme";
-import { Space_Grotesk, Poppins } from "next/font/google";
+import localFont from "next/font/local";
 
-const spaceGrotesk = Space_Grotesk({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
+const spaceGrotesk = localFont({
+  src: [
+    {
+      path: "../../public/fonts/space-grotesk-variable.woff2",
+      weight: "400 700",
+    },
+  ],
+  display: "swap",
 });
 
-const poppins = Poppins({
-  weight: ["300", "400", "500", "600"],
-  subsets: ["latin"],
+const poppins = localFont({
+  src: [
+    { path: "../../public/fonts/poppins-300.woff2", weight: "300" },
+    { path: "../../public/fonts/poppins-400.woff2", weight: "400" },
+    { path: "../../public/fonts/poppins-500.woff2", weight: "500" },
+    { path: "../../public/fonts/poppins-600.woff2", weight: "600" },
+  ],
+  display: "swap",
 });
 
 const fonts = {
