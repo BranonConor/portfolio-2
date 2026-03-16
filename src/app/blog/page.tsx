@@ -15,14 +15,6 @@ export default function Blog() {
       description:
         "How I established an accessibility auditing program that combined UX research with systematic a11y evaluation.",
     },
-    {
-      title: "My strengths, as told by others",
-      category: "Culture",
-      link: "/blog/posts/my-strengths-as-told-by-others",
-      date: "August 2022",
-      description:
-        "A reflection on feedback from colleagues and what it reveals about my approach to collaboration and craft.",
-    },
   ];
 
   return (

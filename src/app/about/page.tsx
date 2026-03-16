@@ -23,7 +23,7 @@ export default function About() {
           bg="rgba(20, 20, 22, 0.6)"
           backdropFilter="blur(16px)"
           overflow="hidden"
-          mb={[10, 12, 16]}
+          mb={4}
           width="100%"
         >
           {/* Paint stroke header area */}
@@ -69,10 +69,6 @@ export default function About() {
             >
               About Me
             </Heading>
-            <Text fontSize="15px" color="brand.textMuted" mb={6}>
-              I love people. I love technology.
-            </Text>
-
             <Text
               as="p"
               fontSize="14px"
@@ -80,23 +76,11 @@ export default function About() {
               mb={4}
               lineHeight="1.7"
             >
-              My love of people and my interest in the human experience are the
-              driving forces in my life. That&apos;s why I got my degree in
-              neuroscience and spent my first few years out of college as the
-              director of a neuropsychiatric clinic.
-            </Text>
-            <Text
-              as="p"
-              fontSize="14px"
-              color="brand.textMuted"
-              mb={4}
-              lineHeight="1.7"
-            >
-              Nowadays, I specialize in design + engineering in design systems,
-              accessibility, prototyping, and general frontend product work. I
-              love flexing creativity and systems-level thinking in building
-              beautiful and intuitive interfaces, and in constructing
-              world-class design systems + component libraries.
+              From neuroscience to building technology, my passion for the human
+              experience is the driving force in my life. As a design engineer,
+              I work at the forefront of AI-driven development of tech products,
+              specializing in design systems, accessibility, prototyping, and
+              general frontend product work.
             </Text>
             <Text
               as="p"
@@ -110,11 +94,7 @@ export default function About() {
               web design/development for small businesses, and much more!
             </Text>
 
-            <Flex
-              flexDirection={["column", "column", "row"]}
-              width={["100%", "auto", "auto"]}
-              gap={3}
-            >
+            <Flex flexDirection="row" width="auto" gap={3}>
               <Button
                 variant="primaryOrange"
                 as={Link}
@@ -130,21 +110,32 @@ export default function About() {
           </Box>
         </Box>
 
-        <Heading
-          as="h2"
-          fontSize={["20px", "24px"]}
-          fontWeight="600"
-          letterSpacing="-0.02em"
-          mb={2}
+        <Box
+          border="1px solid"
+          borderColor="brand.border"
+          borderRadius="12px"
+          bg="rgba(20, 20, 22, 0.6)"
+          backdropFilter="blur(16px)"
+          overflow="hidden"
+          width="100%"
+          p={5}
         >
-          More than just a tech worker
-        </Heading>
-        <Text fontSize="14px" color="brand.textMuted" mb={4}>
-          Life&apos;s too short to do anything but what you love. Here are some
-          of my other passions:
-        </Text>
-        <Music />
-        <Photography />
+          <Heading
+            as="h2"
+            fontSize={["20px", "24px"]}
+            fontWeight="600"
+            letterSpacing="-0.02em"
+            mb={2}
+          >
+            More than just a tech worker
+          </Heading>
+          <Text fontSize="14px" color="brand.textMuted" mb={4}>
+            Life&apos;s too short to do anything but what you love. Here are
+            some of my other passions:
+          </Text>
+          <Music />
+          <Photography />
+        </Box>
       </Flex>
     </PageWrapper>
   );

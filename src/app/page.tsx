@@ -149,18 +149,17 @@ const publications = [
   },
 ];
 
-const selectedWork = [
-  {
-    title: "Toolbar Component Rebuild",
-    company: "Smartsheet",
-    link: "/projects/posts/toolbar",
-    hasPassword: true,
-  },
+const projects = [
   {
     title: "Theme Architecture Refactor",
     company: "Smartsheet",
     link: "/projects/posts/theme-refactor",
     hasPassword: true,
+  },
+  {
+    title: "EZ Links",
+    company: "Smartsheet",
+    link: "/projects/posts/ez-links",
   },
   {
     title: "Dynamic Token Layers",
@@ -173,9 +172,9 @@ const selectedWork = [
     link: "/projects/posts/a11y-kit",
   },
   {
-    title: "UNIFY Design System",
-    company: "Charter",
-    link: "/projects/posts/unify",
+    title: "Branding & Digital",
+    company: "TIDAL Acupuncture",
+    link: "/projects/posts/tidal",
   },
 ];
 
@@ -184,11 +183,6 @@ const writing = [
     title: "Creating an A11y Auditing Kit",
     date: "June 2022",
     link: "/blog/posts/creating-an-a11y-auditing-kit",
-  },
-  {
-    title: "My strengths, as told by others",
-    date: "August 2022",
-    link: "/blog/posts/my-strengths-as-told-by-others",
   },
 ];
 
@@ -746,7 +740,11 @@ export default function Home() {
 
           {/* Education */}
           <Section title="Education">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:first-child": { borderTop: "none" } }}
+            >
               {education.map((item) => (
                 <Flex
                   key={item.program}
@@ -977,8 +975,8 @@ export default function Home() {
           flex={1}
           width={["100%", "100%", "50%"]}
         >
-          {/* Selected Work */}
-          <Section title="Selected Work" href="/projects">
+          {/* Projects */}
+          <Section title="Projects" href="/projects">
             <Flex
               flexDirection="column"
               gap={0}
@@ -987,7 +985,7 @@ export default function Home() {
                 "& > *:hover + *::after": { transform: "scaleX(0)" },
               }}
             >
-              {selectedWork.map((item) => (
+              {projects.map((item) => (
                 <ChakraLink
                   key={item.title}
                   as={Link}
@@ -1107,7 +1105,11 @@ export default function Home() {
 
           {/* Honors & Accomplishments */}
           <Section title="Honors & Accomplishments">
-            <Flex flexDirection="column" gap={0}>
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{ "& > *:first-child": { borderTop: "none" } }}
+            >
               {honors.map((item) => (
                 <Box
                   key={item.title}

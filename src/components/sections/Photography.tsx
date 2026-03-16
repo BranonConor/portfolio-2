@@ -15,16 +15,7 @@ export const Photography = () => {
   ];
 
   return (
-    <Box
-      width="100%"
-      border="1px solid"
-      borderColor="brand.border"
-      borderRadius="12px"
-      bg="rgba(20, 20, 22, 0.6)"
-      backdropFilter="blur(16px)"
-      p={5}
-      mt={6}
-    >
+    <Box width="100%" mt={10}>
       <Heading
         as="h3"
         fontSize="18px"

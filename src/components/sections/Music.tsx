@@ -26,16 +26,7 @@ export const Music = () => {
   ];
 
   return (
-    <Box
-      width="100%"
-      border="1px solid"
-      borderColor="brand.border"
-      borderRadius="12px"
-      bg="rgba(20, 20, 22, 0.6)"
-      backdropFilter="blur(16px)"
-      p={5}
-      mt={8}
-    >
+    <Box width="100%" mt={8}>
       <Heading
         as="h3"
         fontSize="18px"
@@ -49,7 +40,14 @@ export const Music = () => {
         I&apos;ve been producing hip hop beats for over a decade under my
         producer name @PancitPapi. Here are my albums on Spotify:
       </Text>
-      <Flex flexDirection="column" gap={0}>
+      <Flex
+        flexDirection="column"
+        gap={0}
+        sx={{
+          "& > *:first-child::after": { display: "none" },
+          "& > *:hover + *::after": { transform: "scaleX(0)" },
+        }}
+      >
         {items.map((item) => (
           <ChakraLink
             key={item.title}
@@ -59,31 +57,37 @@ export const Music = () => {
             justifyContent="space-between"
             alignItems="center"
             paddingY={2.5}
-            borderBottom="1px solid"
-            borderBottomColor="brand.border"
-            _last={{ borderBottom: "none" }}
+            position="relative"
+            _after={{
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "1px",
+              bg: "brand.border",
+              transition: "0.18s ease all",
+              transformOrigin: "center",
+            }}
             _hover={{
               textDecoration: "none",
+              bg: "brand.surfaceHover",
+              marginX: -3,
+              paddingX: 3,
+              borderRadius: "10px",
+              zIndex: 1,
+              _after: { transform: "scaleX(0)" },
               "& > span:first-of-type": { color: "brand.text" },
             }}
-            transition="0.15s ease all"
+            transition="0.12s ease all"
           >
             <Flex alignItems="center" gap={2}>
-              <Text
-                as="span"
-                fontSize="13px"
-                color="brand.textMuted"
-                transition="0.15s ease all"
-              >
+              <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
               </Text>
-              <ExternalLinkIcon
-                boxSize={3}
-                color="brand.textMuted"
-                opacity={0.3}
-              />
+              <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
             </Flex>
-            <Text fontSize="12px" color="brand.textMuted" opacity={0.5}>
+            <Text textStyle="listMeta" flexShrink={0}>
               {item.date}
             </Text>
           </ChakraLink>
