@@ -621,7 +621,6 @@ export default function Home() {
         gap={4}
         flexDirection={["column", "column", "row"]}
         alignItems="flex-start"
-        mb={4}
       >
         {/* Left column */}
         <Flex
