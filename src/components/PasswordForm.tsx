@@ -57,6 +57,7 @@ export const PasswordForm = ({
         padding={8}
         mx={[4, 5, 6]}
         mt={8}
+        mb={[-2, -3, -4]}
         borderRadius={16}
         bg="rgba(255, 255, 255, 0.03)"
         border="1px solid"

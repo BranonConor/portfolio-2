@@ -12,8 +12,6 @@ export default function Blog() {
       category: "Accessibility",
       link: "/blog/posts/creating-an-a11y-auditing-kit",
       date: "June 2022",
-      description:
-        "How I established an accessibility auditing program that combined UX research with systematic a11y evaluation.",
     },
   ];
 
@@ -99,10 +97,9 @@ export default function Blog() {
                 as={Link}
                 href={post.link}
                 display="flex"
-                flexDirection={["column", "row"]}
                 justifyContent="space-between"
-                alignItems={["flex-start", "center"]}
-                paddingY={4}
+                alignItems="center"
+                paddingY={2.5}
                 position="relative"
                 _after={{
                   content: '""',
@@ -123,42 +120,31 @@ export default function Blog() {
                   borderRadius: "10px",
                   zIndex: 1,
                   _after: { transform: "scaleX(0)" },
+                  "& > span:first-of-type": { color: "brand.text" },
                 }}
                 transition="0.12s ease all"
               >
-                <Box>
-                  <Flex alignItems="center" gap={3} mb={1}>
-                    <Text fontSize="15px" fontWeight="500" color="brand.text">
-                      {post.title}
-                    </Text>
-                    <Text
-                      fontSize="11px"
-                      color="brand.textMuted"
-                      bg="brand.surface"
-                      paddingX={2}
-                      paddingY={0.5}
-                      borderRadius="6px"
-                      display={["none", "block"]}
-                    >
-                      {post.category}
-                    </Text>
-                  </Flex>
+                <Flex alignItems="center" gap={3}>
                   <Text
-                    fontSize="13px"
-                    color="brand.textMuted"
-                    maxWidth="500px"
+                    as="span"
+                    textStyle="listTitle"
+                    transition="0.12s ease all"
                   >
-                    {post.description}
+                    {post.title}
                   </Text>
-                </Box>
-                <Text
-                  fontSize="12px"
-                  color="brand.textMuted"
-                  opacity={0.6}
-                  flexShrink={0}
-                  ml={[0, 4]}
-                  mt={[2, 0]}
-                >
+                  <Text
+                    fontSize="11px"
+                    color="brand.textMuted"
+                    bg="brand.surface"
+                    paddingX={2}
+                    paddingY={0.5}
+                    borderRadius="6px"
+                    display={["none", "block"]}
+                  >
+                    {post.category}
+                  </Text>
+                </Flex>
+                <Text textStyle="listMeta" flexShrink={0} ml={3}>
                   {post.date}
                 </Text>
               </ChakraLink>
