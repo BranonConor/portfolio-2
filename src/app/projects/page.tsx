@@ -9,23 +9,23 @@ import {
   designSystemsProjects,
   a11yProjects,
   otherProjects,
-  motionProjects,
+  productProjects,
 } from "./consts";
 import { useState } from "react";
 
 const categories = [
   { key: "all", label: "All" },
   { key: "Design Systems", label: "Design Systems" },
+  { key: "Product", label: "Product" },
   { key: "A11y", label: "Accessibility" },
-  { key: "Motion", label: "Motion" },
-  { key: "Other", label: "Miscellaneous" },
   { key: "Brand Design", label: "Brand Design" },
+  { key: "Hackweek", label: "Hackweek" },
 ];
 
 const allProjects = [
   ...designSystemsProjects,
+  ...productProjects,
   ...a11yProjects,
-  ...motionProjects,
   ...otherProjects,
   ...brandingProjects,
 ];
@@ -143,7 +143,10 @@ export default function Projects() {
             gap={0}
             px={5}
             pb={3}
-            sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            sx={{
+              "& > *:first-child::after": { display: "none" },
+              "& > *:hover + *::after": { transform: "scaleX(0)" },
+            }}
           >
             {filteredProjects.map((project) => (
               <ChakraLink

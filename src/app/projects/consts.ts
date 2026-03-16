@@ -1,24 +1,10 @@
 export const brandingProjects = [
   {
-    title: "Rebranding @ Etch AI",
-    category: "Brand Design",
-    image: "/projects/etch/cover.png",
-    link: "/projects/posts/etch",
-    date: "March 2024",
-  },
-  {
     title: "Branding & Digital @ TIDAL Acupuncture",
     category: "Brand Design",
     image: "/projects/tidal/cover.png",
     link: "/projects/posts/tidal",
     date: "December 2023",
-  },
-  {
-    title: "Rebranding @ Charter Healthcare",
-    category: "Brand Design",
-    image: "/projects/charter/cover.png",
-    link: "/projects/posts/charter",
-    date: "May 2020",
   },
 ];
 export const designSystemsProjects = [
@@ -99,10 +85,10 @@ export const otherProjects = [
     date: "August 2022",
   },
 ];
-export const motionProjects = [
+export const productProjects = [
   {
     title: "Loading Screen Animation @ Smartsheet",
-    category: "Motion",
+    category: "Product",
     image: "/projects/loading-screen/cover.png",
     link: "/projects/posts/loading-screen",
     date: "March 2025",

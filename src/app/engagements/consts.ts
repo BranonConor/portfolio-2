@@ -24,7 +24,7 @@ export const publicSpeaking = [
 
 export const mentoring = [
   {
-    title: "Mentoring on ADPList",
+    title: "Design Engineer Mentoring @ ADPList",
     category: "Mentoring",
     image: "/engagements/adplist/cover.png",
     link: "/engagements/posts/adplist",

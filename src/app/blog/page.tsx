@@ -96,7 +96,10 @@ export default function Blog() {
             gap={0}
             px={5}
             pb={3}
-            sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+            sx={{
+              "& > *:first-child::after": { display: "none" },
+              "& > *:hover + *::after": { transform: "scaleX(0)" },
+            }}
           >
             {posts.map((post) => (
               <ChakraLink

@@ -797,7 +797,10 @@ export default function Home() {
             <Flex
               flexDirection="column"
               gap={0}
-              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
             >
               {engagements.map((item) => (
                 <ChakraLink
@@ -894,7 +897,10 @@ export default function Home() {
             <Flex
               flexDirection="column"
               gap={0}
-              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
             >
               {publications.map((pub) => (
                 <ChakraLink
@@ -976,7 +982,10 @@ export default function Home() {
             <Flex
               flexDirection="column"
               gap={0}
-              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
             >
               {selectedWork.map((item) => (
                 <ChakraLink
@@ -1043,7 +1052,10 @@ export default function Home() {
             <Flex
               flexDirection="column"
               gap={0}
-              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
             >
               {writing.map((post) => (
                 <ChakraLink
@@ -1132,7 +1144,10 @@ export default function Home() {
             <Flex
               flexDirection="column"
               gap={0}
-              sx={{ "& > *:hover + *::after": { transform: "scaleX(0)" } }}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
             >
               {showcase.map((item) => (
                 <ChakraLink
