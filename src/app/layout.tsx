@@ -4,6 +4,10 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: "Branon Eusebio",
   description: "Design Engineer building @ GitHub",
+  icons: {
+    icon: "/s0.png",
+    apple: "/s0.png",
+  },
 };
 
 export default function RootLayout({
