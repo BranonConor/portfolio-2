@@ -400,9 +400,8 @@ export default function Home() {
                   </motion.div>
                 ))}
               </Text>
-              . I shape the craft and quality of interfaces used by
-              millions — bridging design and code to build tools people
-              genuinely love.
+              . I shape the craft and quality of interfaces used by millions —
+              bridging design and code to build tools people genuinely love.
             </Text>
 
             {/* CTAs */}
