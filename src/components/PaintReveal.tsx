@@ -11,13 +11,17 @@ export const PaintReveal = () => {
   useEffect(() => {
     let ticking = false;
 
+    // Cache maxScroll — only recompute on resize
+    let maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
     const update = () => {
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress =
+      const raw =
         maxScroll > 0
           ? Math.max(0, Math.min(1, window.scrollY / maxScroll))
           : 0;
+
+      // Clamp elastic overscroll at edges
+      const progress = raw > 0.99 ? 1 : raw < 0.005 ? 0 : raw;
 
       if (imgRef.current) {
         imgRef.current.style.clipPath = `inset(0 0 ${(1 - progress) * 100}% 0)`;
@@ -44,9 +48,17 @@ export const PaintReveal = () => {
       }
     };
 
+    const onResize = () => {
+      maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
     update();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   return (
