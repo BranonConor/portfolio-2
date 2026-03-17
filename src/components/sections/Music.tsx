@@ -43,8 +43,8 @@ export const Music = () => {
         Music Production
       </Heading>
       <Text fontSize="13px" color="brand.textMuted" mb={4} lineHeight="1.6">
-        I&apos;ve been producing hip hop beats for over a decade under my
-        producer name @PancitPapi. Here are my albums on Spotify:
+        I produce music & beats under my producer name @PancitPapi. Great for
+        focus time and locking in on a task. Here are my albums on Spotify:
       </Text>
       <Flex
         flexDirection="column"

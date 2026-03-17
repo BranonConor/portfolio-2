@@ -68,9 +68,9 @@ export const Photography = () => {
         Photography & Digital Art
       </Heading>
       <Text fontSize="13px" color="brand.textMuted" mb={4} lineHeight="1.6">
-        I&apos;ve been doing photography for almost a decade, winning many
-        awards and scoring contracts with large companies for collaborations and
-        shoots.
+        I&apos;ve had a super fun mini-career in photography, winning many
+        awards and scoring contracts with some cool lifestyle product companies
+        for collaborations and shoots.
       </Text>
 
       <Text fontSize="13px" fontWeight="600" color="brand.text" mb={1}>
