@@ -13,7 +13,6 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
-
 const experience = [
   {
     company: "GitHub",
@@ -603,6 +602,7 @@ export default function Home() {
                   width="100%"
                   height="100%"
                   objectFit="contain"
+                  borderRadius="100%"
                 />
               </motion.div>
             ))}

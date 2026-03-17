@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Nav } from "./Nav";
 import { MobileNav } from "./MobileNav";
 import { PaintStroke } from "./PaintStroke";
+import { PaintReveal } from "./PaintReveal";
 
 export const PageWrapper: React.FC<BoxProps> = ({
   children,
@@ -63,6 +64,7 @@ export const PageWrapper: React.FC<BoxProps> = ({
           }}
           exit={{ opacity: 0, y: 8 }}
         >
+          <PaintReveal />
           {children}
         </Box>
       </Box>
