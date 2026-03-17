@@ -1,8 +1,14 @@
 import { Box, Flex, Heading, Text, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { useState } from "react";
 
 export const Music = () => {
   const items = [
+    {
+      title: "BETTER DAYS",
+      date: "2025",
+      link: "https://open.spotify.com/album/1deGJrJHVrQfds2DfA4tDZ?si=2gpreRs0Q9qpQ3ZOUvDc6Q",
+    },
     {
       title: "Adobo Tapes",
       date: "2024",
@@ -26,7 +32,7 @@ export const Music = () => {
   ];
 
   return (
-    <Box width="100%" mt={8}>
+    <Box width="100%">
       <Heading
         as="h3"
         fontSize="18px"
@@ -85,14 +91,123 @@ export const Music = () => {
               <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
               </Text>
-              <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+              <Text textStyle="listMeta">{item.date}</Text>
             </Flex>
-            <Text textStyle="listMeta" flexShrink={0}>
-              {item.date}
-            </Text>
+            <ExternalLinkIcon
+              boxSize={3}
+              color="brand.textMuted"
+              flexShrink={0}
+            />
           </ChakraLink>
         ))}
       </Flex>
+    </Box>
+  );
+};
+
+export const SpotifyEmbed = () => {
+  const albums = [
+    {
+      title: "🧢 BETTER DAYS",
+      embedUrl:
+        "https://open.spotify.com/embed/album/1deGJrJHVrQfds2DfA4tDZ?utm_source=generator",
+    },
+    {
+      title: "📸 Adobo Tapes",
+      embedUrl:
+        "https://open.spotify.com/embed/album/1VwNNoVc3fJFH45PQ7yqTK?utm_source=generator",
+    },
+    {
+      title: "💫 OVER THE YEARS",
+      embedUrl:
+        "https://open.spotify.com/embed/album/3sTnhMmZkSWRqwOjUd61Q8?utm_source=generator",
+    },
+    {
+      title: "🏙️ Vancouver Loft",
+      embedUrl:
+        "https://open.spotify.com/embed/album/0jgqurG0HxAJipHhhxrgwg?utm_source=generator",
+    },
+    {
+      title: "🪻 FEEL SOMETHING",
+      embedUrl:
+        "https://open.spotify.com/embed/album/2Sd57YRcNyJDEEH4tyfBRb?utm_source=generator",
+    },
+  ];
+
+  const [activeAlbum, setActiveAlbum] = useState(albums[0]);
+
+  return (
+    <Box
+      border="1px solid"
+      borderColor="brand.border"
+      borderRadius="12px"
+      bg="rgba(20, 20, 22, 0.6)"
+      backdropFilter="blur(16px)"
+      overflow="hidden"
+      p={3}
+      width="100%"
+    >
+      <Flex gap={1.5} mb={3} flexWrap="wrap">
+        {albums.map((album) => (
+          <Box
+            key={album.title}
+            as="button"
+            onClick={() => setActiveAlbum(album)}
+            fontSize="11px"
+            fontWeight="500"
+            px={2.5}
+            py={1}
+            borderRadius="6px"
+            border="1px solid"
+            borderColor={
+              activeAlbum.title === album.title ? "#f0503240" : "brand.border"
+            }
+            bg={activeAlbum.title === album.title ? "#f0503218" : "transparent"}
+            color={
+              activeAlbum.title === album.title ? "#f05032" : "brand.textMuted"
+            }
+            cursor="pointer"
+            transition="0.15s ease all"
+            _hover={{
+              bg:
+                activeAlbum.title === album.title
+                  ? "#f0503218"
+                  : "brand.surfaceHover",
+              color:
+                activeAlbum.title === album.title ? "#f05032" : "brand.text",
+            }}
+          >
+            {album.title}
+          </Box>
+        ))}
+      </Flex>
+      <Box
+        position="relative"
+        height={["352px", "352px", "484px"]}
+        overflow="hidden"
+        borderRadius="12px"
+      >
+        {albums.map((album) => (
+          <Box
+            key={album.title}
+            as="iframe"
+            src={album.embedUrl}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            borderRadius="12px"
+            position="absolute"
+            top={0}
+            left={0}
+            opacity={activeAlbum.title === album.title ? 1 : 0}
+            pointerEvents={activeAlbum.title === album.title ? "auto" : "none"}
+            zIndex={activeAlbum.title === album.title ? 1 : 0}
+            transition="opacity 0.2s ease"
+          />
+        ))}
+      </Box>
     </Box>
   );
 };

@@ -4,8 +4,8 @@ import { Flex, Button, Heading, Text, Box } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
 import Link from "next/link";
-import { Photography } from "@/components/sections/Photography";
-import { Music } from "@/components/sections/Music";
+import { Photography, PhotoGrid } from "@/components/sections/Photography";
+import { Music, SpotifyEmbed } from "@/components/sections/Music";
 
 export default function About() {
   return (
@@ -129,13 +129,55 @@ export default function About() {
           >
             More than just a tech worker
           </Heading>
-          <Text fontSize="14px" color="brand.textMuted" mb={4}>
+          <Text fontSize="14px" color="brand.textMuted">
             Life&apos;s too short to do anything but what you love. Here are
             some of my other passions:
           </Text>
-          <Music />
-          <Photography />
         </Box>
+
+        <Flex
+          gap={4}
+          width="100%"
+          mt={4}
+          flexDirection={["column", "column", "row"]}
+          alignItems={["flex-start", "flex-start", "stretch"]}
+        >
+          <Flex
+            flexDirection="column"
+            gap={4}
+            flex={1}
+            width={["100%", "100%", "50%"]}
+            order={[2, 2, 1]}
+          >
+            <Box
+              border="1px solid"
+              borderColor="brand.border"
+              borderRadius="12px"
+              bg="rgba(20, 20, 22, 0.6)"
+              backdropFilter="blur(16px)"
+              p={5}
+            >
+              <Photography />
+            </Box>
+            <PhotoGrid />
+          </Flex>
+          <Box flex={1} width={["100%", "100%", "50%"]} order={[1, 1, 2]}>
+            <Box
+              border="1px solid"
+              borderColor="brand.border"
+              borderRadius="12px"
+              bg="rgba(20, 20, 22, 0.6)"
+              backdropFilter="blur(16px)"
+              p={5}
+              mb={4}
+            >
+              <Music />
+            </Box>
+            <Box position={["static", "static", "sticky"]} top="86px">
+              <SpotifyEmbed />
+            </Box>
+          </Box>
+        </Flex>
       </Flex>
     </PageWrapper>
   );
