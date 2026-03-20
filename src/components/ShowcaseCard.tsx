@@ -1,4 +1,5 @@
 import {
+  Box,
   Flex,
   Heading,
   Link,
@@ -15,6 +16,8 @@ interface IShowcaseCardProps {
   description: string;
   link: string;
   codeLink?: string;
+  icon?: string;
+  tag?: string;
 }
 
 export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
@@ -23,17 +26,19 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
   description,
   link,
   codeLink,
+  icon,
+  tag,
 }) => {
   const bg = useColorModeValue("brand.lightBg", "brand.grey");
   const buttonGroupBg = useColorModeValue("brand.lightGrey", "brand.darkBg");
   const color = useColorModeValue("brand.darkBg", "brand.lightBg");
   const linkIcon = useColorModeValue(
     "/icons/link-dark.svg",
-    "/icons/link-light.svg"
+    "/icons/link-light.svg",
   );
   const codeIcon = useColorModeValue(
     "/icons/code-dark.svg",
-    "/icons/code-light.svg"
+    "/icons/code-light.svg",
   );
 
   return (
@@ -52,9 +57,51 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
       position="relative"
       zIndex={1}
     >
-      <Heading as="h4" size="md" mb={2}>
-        {title}
-      </Heading>
+      <Flex alignItems="center" gap={2} mb={2}>
+        {icon && (
+          <Box
+            width="32px"
+            height="32px"
+            minWidth="32px"
+            borderRadius="8px"
+            border="1px solid"
+            borderColor="brand.border"
+            bg="rgba(255, 255, 255, 0.06)"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            overflow="hidden"
+          >
+            <Image
+              src={icon}
+              alt={title}
+              width="20px"
+              height="20px"
+              objectFit="contain"
+              borderRadius="4px"
+            />
+          </Box>
+        )}
+        <Heading as="h4" size="md">
+          {title}
+        </Heading>
+        {tag && (
+          <Text
+            as="span"
+            fontSize="xs"
+            fontWeight={700}
+            bg="#22c55e"
+            color="white"
+            px={2}
+            py={0.5}
+            borderRadius="full"
+            whiteSpace="nowrap"
+            lineHeight="1.4"
+          >
+            {tag}
+          </Text>
+        )}
+      </Flex>
       <FancyHeading size="sm" pl={2} borderLeft="2px solid" mb={4}>
         {role}
       </FancyHeading>

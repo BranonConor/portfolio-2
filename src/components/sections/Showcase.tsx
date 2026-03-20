@@ -8,14 +8,27 @@ export const Showcase: React.FC = () => {
     role: string;
     link: string;
     codeLink?: string;
+    icon?: string;
+    tag?: string;
   }[] = [
     {
-      title: "Launched ListRocket in Beta! 🚀",
+      title: "Thesis",
       description:
-        "I've launched my web app, ListRocket, a productivity tool for bootstrapping every-day events with friends and family, in beta, fully free! Check it out 👇",
-      role: "Software Engineer",
+        "A social network for AI-assisted knowledge creation. Share ideas, build on others' insights, and let AI help connect the dots.",
+      role: "Creator & Engineer",
+      link: "https://thesis.social",
+      icon: "/thesis.png",
+      tag: "Live",
+    },
+    {
+      title: "ListRocket",
+      description:
+        "A collaborative event planning app for bootstrapping every-day events with friends and family. Fully free!",
+      role: "Creator & Engineer",
       link: "https://listrocket.app",
       codeLink: "https://github.com/BranonConor/list-rocket",
+      icon: "/listrocket.svg",
+      tag: "Live",
     },
     {
       title: "Co-Created an online HTML/CSS Bootcamp 🎨",
@@ -102,6 +115,8 @@ export const Showcase: React.FC = () => {
             link={item.link}
             codeLink={item?.codeLink}
             role={item.role}
+            icon={item?.icon}
+            tag={item?.tag}
           />
         ))}
       </Grid>

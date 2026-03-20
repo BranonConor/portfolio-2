@@ -205,19 +205,30 @@ const engagements = [
 
 const showcase = [
   {
+    title: "Thesis",
+    description: "AI-assisted knowledge network",
+    link: "https://thesis.social",
+    icon: "/thesis.png",
+    tag: "Live",
+  },
+  {
     title: "ListRocket",
-    description: "Productivity web app",
+    description: "Collaborative event planning app",
     link: "https://listrocket.app",
+    icon: "/listrocket.svg",
+    tag: "Live",
   },
   {
     title: "HTML/CSS Bootcamp",
     description: "Udemy course w/ Colt Steele",
     link: "https://www.udemy.com/course/html-and-css-bootcamp",
+    icon: "/udemy.png",
   },
   {
     title: "Typescript Course",
     description: "Udemy course w/ Colt Steele",
     link: "https://www.udemy.com/course/learn-typescript",
+    icon: "/udemy.png",
   },
 ];
 
@@ -975,6 +986,117 @@ export default function Home() {
           flex={1}
           width={["100%", "100%", "50%"]}
         >
+          {/* Showcase / Side Projects */}
+          <Section title="Showcase">
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{
+                "& > *:first-child::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
+            >
+              {showcase.map((item) => (
+                <ChakraLink
+                  key={item.title}
+                  href={item.link}
+                  isExternal
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  paddingY={2.5}
+                  position="relative"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    bg: "brand.border",
+                    transition: "0.18s ease all",
+                    transformOrigin: "center",
+                  }}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: "brand.surfaceHover",
+                    marginX: -3,
+                    paddingX: 3,
+                    borderRadius: "10px",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
+                    "& > div > span:first-of-type": { color: "brand.text" },
+                  }}
+                  transition="0.12s ease all"
+                >
+                  <Flex alignItems="center" gap={2.5}>
+                    {item.icon && (
+                      <Box
+                        width="28px"
+                        height="28px"
+                        minWidth="28px"
+                        borderRadius="6px"
+                        border="1px solid"
+                        borderColor="brand.border"
+                        bg="rgba(255, 255, 255, 0.06)"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        overflow="hidden"
+                      >
+                        <Image
+                          src={item.icon}
+                          alt={item.title}
+                          width="16px"
+                          height="16px"
+                          objectFit="contain"
+                          borderRadius="3px"
+                        />
+                      </Box>
+                    )}
+                    <Box>
+                      <Text
+                        as="span"
+                        textStyle="listTitle"
+                        transition="0.12s ease all"
+                      >
+                        {item.title}
+                      </Text>
+                      {item.tag && (
+                        <Box
+                          as="span"
+                          fontSize="11px"
+                          fontWeight="600"
+                          letterSpacing="0.02em"
+                          color="#22c55e"
+                          bg="#22c55e15"
+                          px={2.5}
+                          py={1}
+                          borderRadius="6px"
+                          ml={2}
+                          verticalAlign="middle"
+                          whiteSpace="nowrap"
+                          display="inline-block"
+                        >
+                          {item.tag}
+                        </Box>
+                      )}
+                      <Text
+                        as="span"
+                        textStyle="listMeta"
+                        ml={2}
+                        display={["none", "inline"]}
+                      >
+                        {item.description}
+                      </Text>
+                    </Box>
+                  </Flex>
+                  <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                </ChakraLink>
+              ))}
+            </Flex>
+          </Section>
+
           {/* Projects */}
           <Section title="Projects" href="/projects">
             <Flex
@@ -1137,72 +1259,6 @@ export default function Home() {
                     </Text>
                   </Flex>
                 </Box>
-              ))}
-            </Flex>
-          </Section>
-
-          {/* Showcase / Side Projects */}
-          <Section title="Showcase">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {showcase.map((item) => (
-                <ChakraLink
-                  key={item.title}
-                  href={item.link}
-                  isExternal
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  paddingY={2.5}
-                  position="relative"
-                  _after={{
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    bg: "brand.border",
-                    transition: "0.18s ease all",
-                    transformOrigin: "center",
-                  }}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
-                    zIndex: 1,
-                    _after: { transform: "scaleX(0)" },
-                    "& > div > span:first-of-type": { color: "brand.text" },
-                  }}
-                  transition="0.12s ease all"
-                >
-                  <Box>
-                    <Text
-                      as="span"
-                      textStyle="listTitle"
-                      transition="0.12s ease all"
-                    >
-                      {item.title}
-                    </Text>
-                    <Text
-                      as="span"
-                      textStyle="listMeta"
-                      ml={2}
-                      display={["none", "inline"]}
-                    >
-                      {item.description}
-                    </Text>
-                  </Box>
-                  <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                </ChakraLink>
               ))}
             </Flex>
           </Section>
