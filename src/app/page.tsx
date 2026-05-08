@@ -13,6 +13,46 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
+import { PaintStroke } from "@/components/PaintStroke";
+
+const SparkleIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M12 3l1.8 5.4L19.2 10.2 13.8 12l-1.8 5.4L10.2 12 4.8 10.2 10.2 8.4 12 3z"
+      fill="currentColor"
+    />
+    <path
+      d="M19 14l.9 2.7L22.6 17.6 19.9 18.5 19 21.2 18.1 18.5 15.4 17.6 18.1 16.7 19 14z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const DownloadIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 const experience = [
   {
     company: "GitHub",
@@ -90,27 +130,11 @@ const honors = [
     title: "Merge Award Winner, Hackathon",
     org: "GitHub",
     date: "Dec 2025",
-    description:
-      "Led a hackweek team in a bold reimagining of the GitHub platform design",
-  },
-  {
-    title: "HTML & CSS Bootcamp Course",
-    org: "Udemy",
-    date: "Feb 2023",
-    description: "Built and launched a top CSS course with Colt Steele",
   },
   {
     title: "A11y & Inclusion Award Winner",
     org: "Color",
     date: "Aug 2022",
-    description:
-      "Led a hackweek team to build a GitHub-like design review Figma widget",
-  },
-  {
-    title: "Mastering Typescript Course",
-    org: "Udemy",
-    date: "July 2022",
-    description: "Built and launched a top Typescript course with Colt Steele",
   },
 ];
 
@@ -292,6 +316,8 @@ export default function Home() {
         p={5}
         mb={4}
         width="100%"
+        overflow="hidden"
+        position="relative"
       >
         <Flex
           alignItems={["flex-start", "flex-start", "center"]}
@@ -419,15 +445,22 @@ export default function Home() {
             <Flex mt={5} gap={3}>
               <Button
                 variant="primary"
+                as={Link}
+                href="/projects"
+                size="sm"
+                leftIcon={<SparkleIcon />}
+              >
+                See my work
+              </Button>
+              <Button
+                variant="secondary"
                 as="a"
                 download
                 href="/resume.pdf"
                 size="sm"
+                leftIcon={<DownloadIcon />}
               >
-                Download Resume
-              </Button>
-              <Button variant="secondary" as={Link} href="/about" size="sm">
-                More about me
+                Download resume
               </Button>
             </Flex>
           </Box>
@@ -440,8 +473,103 @@ export default function Home() {
             height={["180px", "200px", "240px"]}
             alignSelf={["center", "center", "auto"]}
           >
+            {/* Subtle paint strokes behind portrait — mobile */}
+            <PaintStroke
+              variant={4}
+              top="12px"
+              right="-90px"
+              width="1400px"
+              opacity={0.3}
+              rotate={65}
+              scale={1.2}
+              display={["block", "none", "none"]}
+            />
+            <PaintStroke
+              variant={1}
+              bottom="-140px"
+              left="-118px"
+              width="1500px"
+              opacity={0.22}
+              rotate={-40}
+              scale={0.9}
+              display={["block", "none", "none"]}
+            />
+            <PaintStroke
+              variant={2}
+              top="35%"
+              left="40%"
+              width="640px"
+              opacity={0.16}
+              rotate={85}
+              flip
+              display={["block", "none", "none"]}
+            />
+
+            {/* // Tablet! */}
+            <PaintStroke
+              variant={4}
+              top="-10px"
+              right="-170px"
+              width="1400px"
+              opacity={0.3}
+              rotate={65}
+              scale={1.5}
+              display={["none", "block", "none"]}
+            />
+            <PaintStroke
+              variant={1}
+              bottom="-120px"
+              left="-232px"
+              width="1500px"
+              opacity={0.22}
+              rotate={-40}
+              scale={1.2}
+              display={["none", "block", "none"]}
+            />
+            <PaintStroke
+              variant={2}
+              top="35%"
+              left="40%"
+              width="640px"
+              opacity={0.16}
+              rotate={85}
+              flip
+              display={["none", "block", "none"]}
+            />
+
+            {/* Subtle paint strokes behind portrait — tablet & desktop */}
+            <PaintStroke
+              variant={4}
+              top="-10px"
+              right="-20px"
+              width={["250px", "250px", "260px"]}
+              opacity={0.3}
+              rotate={40}
+              scale={1.4}
+              display={["none", "none", "block"]}
+            />
+            <PaintStroke
+              variant={1}
+              bottom="-80px"
+              left="-84px"
+              width={["280px", "280px", "300px"]}
+              opacity={0.22}
+              rotate={20}
+              scale={1.2}
+              display={["none", "none", "block"]}
+            />
+            <PaintStroke
+              variant={2}
+              top="35%"
+              left="40%"
+              width={["180px", "180px", "190px"]}
+              opacity={0.16}
+              rotate={85}
+              flip
+              display={["none", "none", "block"]}
+            />
             <Image
-              src="/me.png"
+              src="/me-light.png"
               alt="Branon doing peace signs"
               position="absolute"
               top="50%"
@@ -450,6 +578,7 @@ export default function Home() {
               width="100%"
               height="100%"
               objectFit="contain"
+              zIndex={1}
             />
             {/* Mobile sparkles — emanate from portrait */}
             {[
@@ -1246,9 +1375,6 @@ export default function Home() {
                   >
                     <Box>
                       <Text textStyle="listTitle">{item.title}</Text>
-                      <Text textStyle="listMeta" mt={0.5}>
-                        {item.description}
-                      </Text>
                     </Box>
                     <Text
                       textStyle="listMeta"
@@ -1269,20 +1395,14 @@ export default function Home() {
               {[
                 { name: "TypeScript", color: "#3178c6" },
                 { name: "React", color: "#61dafb" },
-                { name: "Next.js", color: "#a1a1aa" },
+                { name: "HTML", color: "#e44d26" },
+                { name: "CSS", color: "#f472b6" },
                 { name: "Figma", color: "#a259ff" },
-                { name: "Copilot / AI", color: "#da70d6" },
-                { name: "Design Tokens", color: "#f0abfc" },
-                { name: "Web Components", color: "#e44d26" },
-                { name: "Accessibility", color: "#22c55e" },
-                { name: "CSS-in-JS", color: "#f472b6" },
-                { name: "Styled Components", color: "#db7093" },
-                { name: "Chakra UI", color: "#4fd1c5" },
-                { name: "Jest", color: "#c63d14" },
-                { name: "Cypress", color: "#69d3a7" },
-                { name: "GraphQL", color: "#e535ab" },
-                { name: "Node.js", color: "#68a063" },
+                { name: "AI", color: "#da70d6" },
                 { name: "Git", color: "#f05032" },
+                { name: "Accessibility", color: "#22c55e" },
+                { name: "Testing", color: "#69d3a7" },
+                { name: "Prototyping", color: "#f0abfc" },
               ].map((tech) => (
                 <Box
                   key={tech.name}
