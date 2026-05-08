@@ -127,12 +127,12 @@ const education = [
 
 const honors = [
   {
-    title: "Merge Award Winner, Hackathon",
+    title: "Hackathon: Merge Award Winner",
     org: "GitHub",
     date: "Dec 2025",
   },
   {
-    title: "A11y & Inclusion Award Winner",
+    title: "Hackathon: A11y & Inclusion Award Winner",
     org: "Color",
     date: "Aug 2022",
   },
