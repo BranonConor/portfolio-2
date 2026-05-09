@@ -182,6 +182,12 @@ const publications = [
 
 const projects = [
   {
+    title: "Building thesis.social 💫",
+    company: "GLIA Labs",
+    link: "/projects/posts/thesis",
+    hasPassword: true,
+  },
+  {
     title: "Theme Architecture Refactor",
     company: "Smartsheet",
     link: "/projects/posts/theme-refactor",

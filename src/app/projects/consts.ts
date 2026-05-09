@@ -45,13 +45,6 @@ export const designSystemsProjects = [
     link: "/projects/posts/color-palette-parity",
     date: "Dec 2022",
   },
-  {
-    title: "UNIFY Design System @ Charter Healthcare",
-    category: "Design Systems",
-    image: "/projects/unify/cover.png",
-    link: "/projects/posts/unify",
-    date: "July 2020",
-  },
 ];
 export const a11yProjects = [
   {
@@ -85,9 +78,19 @@ export const otherProjects = [
     date: "August 2022",
   },
 ];
+export const sideProjects = [
+  {
+    title: "Building thesis.social 💫",
+    category: "Side Projects",
+    image: "/thesis.gif",
+    link: "/projects/posts/thesis",
+    date: "March 2026",
+    hasPassword: true,
+  },
+];
 export const productProjects = [
   {
-    title: "Loading Screen Animation @ Smartsheet",
+    title: "Loading Screen Revamp @ Smartsheet",
     category: "Product",
     image: "/projects/loading-screen/cover.png",
     link: "/projects/posts/loading-screen",

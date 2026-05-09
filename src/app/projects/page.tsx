@@ -10,11 +10,13 @@ import {
   a11yProjects,
   otherProjects,
   productProjects,
+  sideProjects,
 } from "./consts";
 import { useState } from "react";
 
 const categories = [
   { key: "all", label: "All" },
+  { key: "Side Projects", label: "Side Projects" },
   { key: "Design Systems", label: "Design Systems" },
   { key: "Product", label: "Product" },
   { key: "A11y", label: "Accessibility" },
@@ -23,6 +25,7 @@ const categories = [
 ];
 
 const allProjects = [
+  ...sideProjects,
   ...designSystemsProjects,
   ...productProjects,
   ...a11yProjects,

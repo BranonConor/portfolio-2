@@ -1,0 +1,246 @@
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
+import HeroStrip from "@/components/blog/HeroStrip";
+
+<HeroStrip
+  title="Building thesis.social 💫"
+  subtitle="An AI-assisted knowledge platform where research happens through conversation"
+  date="March 2026"
+  category="Side Projects"
+/>
+
+### ✍🏽 About Thesis
+
+Thesis is a solo side project I designed, built, and launched under my creative studio, GLIA Labs. It's a full-stack AI-assisted knowledge platform — a social network where the unit of content isn't a post or a thread, but a cited, editor-reviewed essay.
+
+The tagline: _Research through conversation. Publish with conviction._
+
+Check it out live at [thesis.social](https://thesis.social) 👇
+
+<ContentImage
+  image="/thesis.gif"
+  caption="The Thesis landing page — 'Your thinking, crystallized.'"
+/>
+
+### ⚠️ The Problem
+
+- Most AI writing tools treat language models as ghostwriters. The user types a prompt, gets a wall of text, and hits publish. There's no depth, no verification, and no editorial rigor.
+- Social platforms optimize for engagement, not understanding. Feeds are algorithmic, content is reactive, and there's no incentive to think carefully before sharing.
+- There's no product that bridges the gap between _researching_ a topic and _publishing_ something meaningful about it — with real citations, real editorial review, and real ownership.
+
+### ✨ The Solution
+
+- Build a platform where AI is a _research partner_, not a ghostwriter — users explore ideas through freeform conversation with AI before ever writing a word.
+- Synthesize conversations into structured, cited markdown essays with a real citation pipeline that searches academic databases, quality journalism, and the open web.
+- Run four specialized AI editor agents on every draft, surfacing inline suggestions in a PR-style review UI where the user is always the final authority.
+- Ship a deliberately minimal social layer — chronological feeds, no algorithm, no likes, no comment threads. Just essays, highlights, saves, and the ability to start a new conversation from someone else's work.
+
+<br />
+
+# 💡 The Idea
+
+The internet doesn't need more content. It needs more thinking.
+
+That was the conviction I kept coming back to. We have more access to information than any generation in history — and less agreement on what's true. Feeds are designed for reaction, not reflection. AI can generate content endlessly, but understanding still takes effort.
+
+I wanted to build around a different idea: that the effort _is_ the point. What if a platform treated the research process as the product? What if synthesis wasn't a shortcut, but a milestone you earned through genuine exploration? And what if the social layer rewarded depth instead of engagement?
+
+That's Thesis.
+
+<br />
+
+# 🧠 The Core User Flow
+
+Here's how Thesis works end-to-end — from a spark of curiosity to a published, cited essay on your profile.
+
+<ContentImage
+  image="/convo.png"
+  caption="The full Thesis user flow — from research conversation to published essay"
+/>
+
+### 1. 💬 Start a Research Conversation
+
+Users open a freeform conversation with AI. No blank page, no prompt engineering — just a question and a research partner that meets you where you are. The AI acts as a collaborator, not a content generator.
+
+### 2. 📊 Build Depth
+
+A depth indicator tracks the conversation's progress — how many turns, how much ground has been covered. When the research reaches critical mass, the platform surfaces a "Synthesize" call to action so users know they've built enough foundation.
+
+### 3. ✍🏽 Title and Synthesize
+
+The user titles their essay and triggers the synthesis engine. One click transforms the conversation into a structured, cited markdown essay.
+
+### 4. 🔍 Citation Resolution
+
+This is where things get interesting. The synthesis engine searches for real sources to back up factual claims in the essay — starting with academic databases, then quality journalism, then the broader web. Each source is classified into a quality tier automatically.
+
+No hallucinated citations. No sources bolted on after the fact. Every claim has a paper trail.
+
+### 5. ✅ Verification Pass
+
+A second AI pass reviews all resolved citations for accuracy and quality. This double-check ensures the citation pipeline maintains integrity.
+
+### 6. 🤖 AI Editor Review
+
+Four specialized AI agents run in parallel and return inline suggestions:
+
+- **Clarity Agent** — Readability, jargon reduction, sentence complexity
+- **Source Agent** — Unsupported claims and citation gaps
+- **Structure Agent** — Argument flow, section ordering, transitions
+- **Steelman Agent** — The strongest counterargument to the essay's central thesis
+
+Each suggestion appears as an inline highlight in a review UI modeled after GitHub pull requests. The user can accept, reject, or undo every single one.
+
+<ContentImage
+  image="/thesis-flow.png"
+  caption="The PR-style editor review UI with inline suggestions from AI agents"
+/>
+
+### 7. 🚀 Publish
+
+Only when the author is satisfied do they hit publish. The essay goes live on their profile, appears in followers' feeds, and is shareable via a unique link. The result is an essay that's genuinely theirs — backed by real sources, stress-tested by AI reviewers, and stored permanently.
+
+### 8. 🔄 Respond
+
+Any reader can open a new research conversation seeded by the published essay, creating a chain of deeper and deeper exploration. Responses are full essays, not reactions.
+
+<br />
+
+# 🔬 Source Quality System
+
+One of the things I'm most proud of is the citation quality system. A client-side domain registry classifies every citation URL into one of four tiers:
+
+- 🎓 **Tier 1 — Academic** — PubMed, arXiv, Nature, JSTOR, Science, NEJM, The Lancet
+- 🏛️ **Tier 2 — Primary** — loc.gov, archives.gov, who.int, cdc.gov, nih.gov, un.org
+- 📰 **Tier 3 — Quality News** — Sources rated highly by the [Ad Fontes Media](https://adfontesmedia.com/) methodology (e.g. Reuters, AP, BBC, NPR, The Economist)
+- 🔗 **Tier 4 — General** — Everything else
+
+Essays earn a badge based on their citation profile:
+
+- 🔬 **Research-backed** — 2+ Tier 1 or Tier 2 sources
+- 📰 **News-sourced** — Tier 3 dominant
+- 💭 **Perspective piece** — Tier 4 majority
+
+These are content-type labels, not quality warnings. A well-argued opinion piece is still valuable writing — the framing respects that.
+
+<ContentImage
+  image="/sources.png"
+  caption="The source quality tier system with badges and classification"
+/>
+
+<br />
+
+# 🌐 The Social Layer
+
+The social design decisions were just as deliberate as the technical ones. I wanted a social network that resists engagement optimization at every level:
+
+- **Chronological feed, no algorithm.** Essays from followed users appear in reverse chronological order. No trending section, no notification-driven re-engagement loops. The platform trusts users to curate their own reading.
+- **Profiles display the essay library, not follower counts.** A user's profile is their body of work — published essays and active drafts. Social metrics are deliberately understated.
+- **Highlights are public, saves are private.** Highlighting a passage is a visible act of engagement, like marginalia in a shared book. Saving is a private bookmark. This encourages thoughtful public annotation over performative interaction.
+- **"Respond" instead of "Comment."** No comment threads. Every essay has a "Start a conversation from this" CTA that opens a new research conversation seeded with the essay's content. Responses are full essays, not reactions.
+- **Notable Essays are editorially curated.** No upvote mechanism. No popularity contests. Quality standards stay explicit.
+- **No infinite scroll, no push notifications, no share counts.** The product is built for people who want to think carefully and publish deliberately.
+
+<br />
+
+# 🛠️ Tech Stack
+
+This was a big build. Here's the stack at a high level:
+
+- **Framework** — Next.js (App Router, TypeScript)
+- **UI** — Chakra UI + Framer Motion
+- **Auth** — NextAuth.js (credentials + Google OAuth)
+- **Database** — PostgreSQL with Prisma ORM
+- **AI** — Anthropic SDK (streaming responses)
+- **Content** — Markdown rendering with MDX
+- **State** — Zustand
+
+### 🏗️ Architecture Highlights
+
+**Conversation Engine** — Users chat with AI via a streaming API. Messages are persisted in real time. A depth indicator on the client tracks conversation progress and surfaces the synthesis CTA when you've built enough foundation.
+
+**Synthesis Pipeline** — A multi-phase server-side pipeline that handles essay generation, citation resolution across prioritized source tiers, source verification, and persistence — all streamed to the client in real time.
+
+**AI Editor Agents** — Four agents run in parallel, each returning structured inline suggestions. The client renders these as highlights with a flyout diff view, Accept/Dismiss controls, and undo support — similar to a code review experience.
+
+<br />
+
+# � LLM Cost Optimization
+
+Once the core product was working, I shifted focus to something critical for any AI-native product: **cost per essay**. I audited every Anthropic API call in the pipeline and applied a systematic set of optimizations to bring the cost down from **~$0.40 to ~$0.10 per essay — a 75% reduction** — without degrading the user experience.
+
+### 🧩 Model Tiering
+
+Not every task needs the most powerful model. I split all LLM calls into two tiers using a single `models.ts` config:
+
+- **Haiku** (fast, cheap) — claim extraction, citation verification, web searches, clarity agent, structure agent, conversation title generation, conversation summarization
+- **Sonnet** (smart, nuanced) — research conversation, essay synthesis, source agent, steelman agent
+
+The logic: Haiku handles **pattern-matching and structured extraction** where the output shape is predictable. Sonnet is reserved for tasks requiring **genuine reasoning, nuance, and original synthesis** — the things users actually come to the platform for. Two agents were deliberately kept on Sonnet: the Steelman Agent (a shallow counterargument defeats the purpose) and the Source Agent (judging what constitutes a claim and what counts as credible support is genuinely nuanced).
+
+This alone cut costs by **~40–50%**.
+
+### 🗜️ Context Trimming
+
+Long research conversations were being passed in full to the synthesis prompt — sometimes tens of thousands of tokens. This was the single largest source of waste. The fix:
+
+- A **Haiku summarization pass** compresses the full conversation into ~500 tokens before synthesis begins
+- Only the **last 4 messages** of raw conversation are appended alongside the summary, preserving recent detail
+- Full conversation history is still stored in Postgres and accessible to the user — nothing is lost
+
+The synthesis prompt now receives ~900 tokens of context instead of potentially 10,000+. **~70% input token reduction for the most expensive call in the pipeline.**
+
+### 🔍 Citation Pipeline Refactor
+
+Citation resolution was the most expensive phase pre-optimization. The changes:
+
+- All web searches and citation tool-use calls run on **Haiku** — search result parsing doesn't need Sonnet
+- A **CitationCache table** stores resolved results for 7 days — if another user researched the same topic this week, the search is skipped entirely
+- **Claim deduplication** merges semantically redundant claims (>70% token overlap) into a single search query, cutting API calls by ~20–30% on focused topics
+- Constrained `site:` operator queries bias toward Tier 1/2 sources first, reducing re-queries for low-quality results
+
+This was the **largest absolute dollar reduction per essay**.
+
+### 🛡️ Usage Guardrails
+
+New infrastructure to prevent runaway costs:
+
+- **Rate limiting** — 10 synthesis attempts per user per day via a `SynthesisAttempt` table
+- **Hard token caps** — conversation context capped at 8,000 tokens, synthesis output capped at 1,500 tokens
+- **Usage logging** — every LLM call fires a non-blocking log to a `Usage` table recording tokens, model, action type, and user/essay IDs for per-user cost monitoring
+
+The user-facing experience is identical — same streaming UI, same agent review cards, same essay quality. The work was all under the hood.
+
+<br />
+
+# 🚀 Impact
+
+### What I Shipped
+
+- A full-stack, production AI-assisted knowledge platform — solo, from zero to launch
+- A synthesis pipeline with real citation resolution and verification
+- A multi-agent editor review system modeled after PR reviews
+- A deliberate social network designed to resist engagement optimization
+- A source quality classification system with tiered badges
+- A complete auth system with multiple sign-in methods
+- A responsive, polished UI with animations and theming
+
+### 🧠 Learnings
+
+- Building production AI features end-to-end: streaming responses, multi-agent orchestration, and handling failures gracefully
+- Designing citation pipelines that prioritize accuracy over speed
+- The value of _deliberate_ social design — every feature I chose NOT to build was just as important as what I shipped
+- Shipping a real product solo teaches you everything — auth, databases, edge cases, performance, deployment, and the thousand small decisions that separate a prototype from something people can actually use
+
+### 🔮 What's Next
+
+- Growing the user base and iterating on the research conversation experience
+- Expanding the citation domain registry with more academic and primary sources
+- Exploring collaborative research conversations (multiple users + AI)
+- Topic-based discovery and tag browsing for the essay library
+- Mobile-optimized reading and writing experience
+
+Check it out for yourself at [thesis.social](https://thesis.social) and start your first research conversation. I'd love for you to give it a spin 🙏🏽
+
+Cheers,
+Branon
