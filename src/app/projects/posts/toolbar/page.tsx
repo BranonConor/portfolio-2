@@ -17,7 +17,7 @@ const Page = () => {
         <PasswordForm
           preview={
             <HeroStrip
-              title="Toolbar Component Rebuild @ Smartsheet"
+              title="Toolbar Component @ Smartsheet"
               subtitle="Improving one of Smartsheet's most widely-used design system components"
               date="December 2024"
               category="Design Systems"

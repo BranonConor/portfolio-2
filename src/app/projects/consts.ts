@@ -9,7 +9,7 @@ export const brandingProjects = [
 ];
 export const designSystemsProjects = [
   {
-    title: "Toolbar Component Rebuild @ Smartsheet",
+    title: "Toolbar Component @ Smartsheet",
     category: "Design Systems",
     image: "/projects/toolbar/cover.png",
     link: "/projects/posts/toolbar",
@@ -17,7 +17,7 @@ export const designSystemsProjects = [
     hasPassword: true,
   },
   {
-    title: "Theme Architecture Refactor @ Smartsheet",
+    title: "Rearchitecting Themes @ Smartsheet",
     category: "Design Systems",
     image: "/projects/theme-refactor/cover.png",
     link: "/projects/posts/theme-refactor",

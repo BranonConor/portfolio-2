@@ -4,7 +4,7 @@ import Note from "@/components/blog/Note";
 import HeroStrip from "@/components/blog/HeroStrip";
 
 <HeroStrip
-  title="Toolbar Component Rebuild @ Smartsheet"
+  title="Toolbar Component @ Smartsheet"
   subtitle="Improving one of Smartsheet's most widely-used design system components"
   date="December 2024"
   category="Design Systems"
@@ -224,7 +224,7 @@ But this was a very inflexible API for consumers. So I came up with a new soluti
 import { TOOLBAR_FOCUSABLE_ID } from "./consts";
 
 export const focusableToolbarChildren = toolbar.querySelectorAll(
-  `[data-focusable-item="${TOOLBAR_FOCUSABLE_ID}"]`
+  `[data-focusable-item="${TOOLBAR_FOCUSABLE_ID}"]`,
 );
 ```
 
