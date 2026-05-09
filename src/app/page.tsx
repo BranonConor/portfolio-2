@@ -156,6 +156,14 @@ const publications = [
   },
   {
     title:
+      "The Role of the Insula in Classical and Dissociative PTSD: A Double Case Study",
+    publisher: "Neurocase",
+    date: "Apr 2022",
+    tag: "Neuroscience",
+    link: "https://pubmed.ncbi.nlm.nih.gov/35452340/",
+  },
+  {
+    title:
       "Assessment of multiple salivary biomarkers during rTMS treatment for major depression",
     publisher: "Psychiatry Research",
     date: "June 2021",
