@@ -188,6 +188,11 @@ const projects = [
     hasPassword: true,
   },
   {
+    title: "Loading Screen Revamp",
+    company: "Smartsheet",
+    link: "/projects/posts/loading-screen",
+  },
+  {
     title: "Theme Architecture Refactor",
     company: "Smartsheet",
     link: "/projects/posts/theme-refactor",
@@ -199,19 +204,9 @@ const projects = [
     link: "/projects/posts/ez-links",
   },
   {
-    title: "Dynamic Token Layers",
-    company: "Endpoint",
-    link: "/projects/posts/dynamic-token-layers",
-  },
-  {
     title: "A11y Audit Program",
     company: "Color Health",
     link: "/projects/posts/a11y-kit",
-  },
-  {
-    title: "Branding & Digital",
-    company: "TIDAL Acupuncture",
-    link: "/projects/posts/tidal",
   },
 ];
 
@@ -776,8 +771,10 @@ export default function Home() {
           gap={4}
           flex={1}
           width={["100%", "100%", "50%"]}
+          display={["contents", "contents", "flex"]}
         >
           {/* Experience */}
+          <Box order={[1, 1, 0]} width="100%">
           <Section title="Experience">
             <Flex flexDirection="column" gap={4}>
               {experience.map((role) => (
@@ -891,8 +888,10 @@ export default function Home() {
               </Flex>
             </Box>
           </Section>
+          </Box>
 
           {/* Education */}
+          <Box order={[5, 5, 0]} width="100%">
           <Section title="Education">
             <Flex
               flexDirection="column"
@@ -943,8 +942,10 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
 
           {/* Community Engagements */}
+          <Box order={[4, 4, 0]} width="100%">
           <Section title="Community Engagements" href="/engagements">
             <Flex
               flexDirection="column"
@@ -1043,8 +1044,10 @@ export default function Home() {
               </ChakraLink>
             </Flex>
           </Section>
+          </Box>
 
           {/* Publications */}
+          <Box order={[6, 6, 0]} width="100%">
           <Section title="Publications">
             <Flex
               flexDirection="column"
@@ -1120,6 +1123,7 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
         </Flex>
 
         {/* Right column */}
@@ -1128,8 +1132,10 @@ export default function Home() {
           gap={4}
           flex={1}
           width={["100%", "100%", "50%"]}
+          display={["contents", "contents", "flex"]}
         >
           {/* Showcase / Side Projects */}
+          <Box order={[2, 2, 0]} width="100%">
           <Section title="Showcase">
             <Flex
               flexDirection="column"
@@ -1239,8 +1245,10 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
 
           {/* Projects */}
+          <Box order={[3, 3, 0]} width="100%">
           <Section title="Projects" href="/projects">
             <Flex
               flexDirection="column"
@@ -1309,8 +1317,10 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
 
           {/* Writing */}
+          <Box order={[7, 7, 0]} width="100%">
           <Section title="Writing" href="/blog">
             <Flex
               flexDirection="column"
@@ -1367,8 +1377,10 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
 
           {/* Honors & Accomplishments */}
+          <Box order={[8, 8, 0]} width="100%">
           <Section title="Honors & Accomplishments">
             <Flex
               flexDirection="column"
@@ -1402,15 +1414,18 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
 
-          {/* Technologies */}
-          <Section title="Technologies">
+          {/* Skills */}
+          <Box order={[9, 9, 0]} width="100%">
+          <Section title="Skills">
             <Flex flexWrap="wrap" gap={2}>
               {[
                 { name: "TypeScript", color: "#3178c6" },
                 { name: "React", color: "#61dafb" },
                 { name: "HTML", color: "#e44d26" },
                 { name: "CSS", color: "#f472b6" },
+                { name: "Design Systems", color: "#f59e0b" },
                 { name: "Figma", color: "#a259ff" },
                 { name: "AI", color: "#da70d6" },
                 { name: "Git", color: "#f05032" },
@@ -1435,6 +1450,7 @@ export default function Home() {
               ))}
             </Flex>
           </Section>
+          </Box>
         </Flex>
       </Flex>
     </PageWrapper>

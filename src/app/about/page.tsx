@@ -7,6 +7,51 @@ import Link from "next/link";
 import { Photography, PhotoGrid } from "@/components/sections/Photography";
 import { Music, SpotifyEmbed } from "@/components/sections/Music";
 
+const SparkleIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M12 3l1.8 5.4L19.2 10.2 13.8 12l-1.8 5.4L10.2 12 4.8 10.2 10.2 8.4 12 3z"
+      fill="currentColor"
+    />
+    <path
+      d="M19 14l.9 2.7L22.6 17.6 19.9 18.5 19 21.2 18.1 18.5 15.4 17.6 18.1 16.7 19 14z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const PencilIcon = () => (
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M4 20h4l10-10-4-4L4 16v4z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14 6l4 4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export default function About() {
   return (
     <PageWrapper>
@@ -100,10 +145,11 @@ export default function About() {
                 as={Link}
                 href="/projects"
                 size="sm"
+                leftIcon={<SparkleIcon />}
               >
                 See my work
               </Button>
-              <Button variant="secondary" as={Link} href="/blog" size="sm">
+              <Button variant="secondary" as={Link} href="/blog" size="sm" leftIcon={<PencilIcon />}>
                 Visit blog
               </Button>
             </Flex>
