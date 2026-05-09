@@ -775,73 +775,9 @@ export default function Home() {
         >
           {/* Experience */}
           <Box order={[1, 1, 0]} width="100%">
-          <Section title="Experience">
-            <Flex flexDirection="column" gap={4}>
-              {experience.map((role) => (
-                <Flex key={role.company} gap={3} alignItems="flex-start">
-                  <Box
-                    width="36px"
-                    height="36px"
-                    minWidth="36px"
-                    borderRadius="8px"
-                    border="1px solid"
-                    borderColor="brand.border"
-                    bg="rgba(255, 255, 255, 0.06)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    overflow="hidden"
-                    mt={0.5}
-                  >
-                    <Image
-                      src={role.logo}
-                      alt={role.company}
-                      width={role.logoSize || "20px"}
-                      height={role.logoSize || "20px"}
-                      objectFit="contain"
-                      borderRadius="4px"
-                    />
-                  </Box>
-                  <Box>
-                    <Flex alignItems="center" gap={2} mb={0.5}>
-                      <Text textStyle="listTitle">
-                        {role.role} @ {role.company}
-                      </Text>
-                      {role.current && (
-                        <Box
-                          width="6px"
-                          height="6px"
-                          borderRadius="full"
-                          bg="#22c55e"
-                          flexShrink={0}
-                        />
-                      )}
-                    </Flex>
-                    <Text textStyle="listMeta">{role.period}</Text>
-                  </Box>
-                </Flex>
-              ))}
-            </Flex>
-
-            {/* Other Experience */}
-            <Box
-              mt={5}
-              pt={4}
-              borderTop="1px solid"
-              borderTopColor="brand.border"
-            >
-              <Text
-                fontSize="11px"
-                fontWeight="600"
-                textTransform="uppercase"
-                letterSpacing="0.08em"
-                color="brand.textMuted"
-                mb={3}
-              >
-                Other
-              </Text>
+            <Section title="Experience">
               <Flex flexDirection="column" gap={4}>
-                {otherExperience.map((role) => (
+                {experience.map((role) => (
                   <Flex key={role.company} gap={3} alignItems="flex-start">
                     <Box
                       width="36px"
@@ -860,8 +796,8 @@ export default function Home() {
                       <Image
                         src={role.logo}
                         alt={role.company}
-                        width="20px"
-                        height="20px"
+                        width={role.logoSize || "20px"}
+                        height={role.logoSize || "20px"}
                         objectFit="contain"
                         borderRadius="4px"
                       />
@@ -886,80 +822,187 @@ export default function Home() {
                   </Flex>
                 ))}
               </Flex>
-            </Box>
-          </Section>
+
+              {/* Other Experience */}
+              <Box
+                mt={5}
+                pt={4}
+                borderTop="1px solid"
+                borderTopColor="brand.border"
+              >
+                <Text
+                  fontSize="11px"
+                  fontWeight="600"
+                  textTransform="uppercase"
+                  letterSpacing="0.08em"
+                  color="brand.textMuted"
+                  mb={3}
+                >
+                  Other
+                </Text>
+                <Flex flexDirection="column" gap={4}>
+                  {otherExperience.map((role) => (
+                    <Flex key={role.company} gap={3} alignItems="flex-start">
+                      <Box
+                        width="36px"
+                        height="36px"
+                        minWidth="36px"
+                        borderRadius="8px"
+                        border="1px solid"
+                        borderColor="brand.border"
+                        bg="rgba(255, 255, 255, 0.06)"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        overflow="hidden"
+                        mt={0.5}
+                      >
+                        <Image
+                          src={role.logo}
+                          alt={role.company}
+                          width="20px"
+                          height="20px"
+                          objectFit="contain"
+                          borderRadius="4px"
+                        />
+                      </Box>
+                      <Box>
+                        <Flex alignItems="center" gap={2} mb={0.5}>
+                          <Text textStyle="listTitle">
+                            {role.role} @ {role.company}
+                          </Text>
+                          {role.current && (
+                            <Box
+                              width="6px"
+                              height="6px"
+                              borderRadius="full"
+                              bg="#22c55e"
+                              flexShrink={0}
+                            />
+                          )}
+                        </Flex>
+                        <Text textStyle="listMeta">{role.period}</Text>
+                      </Box>
+                    </Flex>
+                  ))}
+                </Flex>
+              </Box>
+            </Section>
           </Box>
 
           {/* Education */}
           <Box order={[5, 5, 0]} width="100%">
-          <Section title="Education">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{ "& > *:first-child": { borderTop: "none" } }}
-            >
-              {education.map((item) => (
-                <Flex
-                  key={item.program}
-                  gap={3}
-                  alignItems="flex-start"
-                  paddingY={2.5}
-                  borderTop="1px solid"
-                  borderTopColor="brand.border"
-                >
-                  <Box
-                    width="36px"
-                    height="36px"
-                    minWidth="36px"
-                    borderRadius="8px"
-                    border="1px solid"
-                    borderColor="brand.border"
-                    bg="rgba(255, 255, 255, 0.06)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    overflow="hidden"
-                    mt={0.5}
+            <Section title="Education">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{ "& > *:first-child": { borderTop: "none" } }}
+              >
+                {education.map((item) => (
+                  <Flex
+                    key={item.program}
+                    gap={3}
+                    alignItems="flex-start"
+                    paddingY={2.5}
+                    borderTop="1px solid"
+                    borderTopColor="brand.border"
                   >
-                    <Image
-                      src={item.logo}
-                      alt={item.institution}
-                      width="20px"
-                      height="20px"
-                      objectFit="contain"
-                      borderRadius="4px"
-                    />
-                  </Box>
-                  <Box>
-                    <Text textStyle="listTitle">
-                      {item.program} @ {item.institution}
-                    </Text>
-                    <Text textStyle="listMeta" mt={0.5}>
-                      {item.note}
-                    </Text>
-                  </Box>
-                </Flex>
-              ))}
-            </Flex>
-          </Section>
+                    <Box
+                      width="36px"
+                      height="36px"
+                      minWidth="36px"
+                      borderRadius="8px"
+                      border="1px solid"
+                      borderColor="brand.border"
+                      bg="rgba(255, 255, 255, 0.06)"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      overflow="hidden"
+                      mt={0.5}
+                    >
+                      <Image
+                        src={item.logo}
+                        alt={item.institution}
+                        width="20px"
+                        height="20px"
+                        objectFit="contain"
+                        borderRadius="4px"
+                      />
+                    </Box>
+                    <Box>
+                      <Text textStyle="listTitle">
+                        {item.program} @ {item.institution}
+                      </Text>
+                      <Text textStyle="listMeta" mt={0.5}>
+                        {item.note}
+                      </Text>
+                    </Box>
+                  </Flex>
+                ))}
+              </Flex>
+            </Section>
           </Box>
 
           {/* Community Engagements */}
           <Box order={[4, 4, 0]} width="100%">
-          <Section title="Community Engagements" href="/engagements">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {engagements.map((item) => (
+            <Section title="Community Engagements" href="/engagements">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {engagements.map((item) => (
+                  <ChakraLink
+                    key={item.title}
+                    as={Link}
+                    href={item.link}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                      "& > span:first-of-type": { color: "brand.text" },
+                    }}
+                    transition="0.12s ease all"
+                  >
+                    <Text
+                      as="span"
+                      textStyle="listTitle"
+                      transition="0.12s ease all"
+                    >
+                      {item.title}
+                    </Text>
+                    <Text textStyle="listMeta" flexShrink={0} ml={3}>
+                      {item.type}
+                    </Text>
+                  </ChakraLink>
+                ))}
                 <ChakraLink
-                  key={item.title}
                   as={Link}
-                  href={item.link}
+                  href="/engagements/posts/adplist"
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
@@ -993,136 +1036,95 @@ export default function Home() {
                     textStyle="listTitle"
                     transition="0.12s ease all"
                   >
-                    {item.title}
+                    ADPList Mentoring
                   </Text>
                   <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                    {item.type}
+                    Mentoring
                   </Text>
                 </ChakraLink>
-              ))}
-              <ChakraLink
-                as={Link}
-                href="/engagements/posts/adplist"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                paddingY={2.5}
-                position="relative"
-                _after={{
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "1px",
-                  bg: "brand.border",
-                  transition: "0.18s ease all",
-                  transformOrigin: "center",
-                }}
-                _hover={{
-                  textDecoration: "none",
-                  bg: "brand.surfaceHover",
-                  marginX: -3,
-                  paddingX: 3,
-                  borderRadius: "10px",
-                  zIndex: 1,
-                  _after: { transform: "scaleX(0)" },
-                  "& > span:first-of-type": { color: "brand.text" },
-                }}
-                transition="0.12s ease all"
-              >
-                <Text
-                  as="span"
-                  textStyle="listTitle"
-                  transition="0.12s ease all"
-                >
-                  ADPList Mentoring
-                </Text>
-                <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                  Mentoring
-                </Text>
-              </ChakraLink>
-            </Flex>
-          </Section>
+              </Flex>
+            </Section>
           </Box>
 
           {/* Publications */}
           <Box order={[6, 6, 0]} width="100%">
-          <Section title="Publications">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {publications.map((pub) => (
-                <ChakraLink
-                  key={pub.title}
-                  href={pub.link}
-                  isExternal
-                  display="block"
-                  paddingY={2.5}
-                  position="relative"
-                  _after={{
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    bg: "brand.border",
-                    transition: "0.18s ease all",
-                    transformOrigin: "center",
-                  }}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
-                    zIndex: 1,
-                    _after: { transform: "scaleX(0)" },
-                  }}
-                  transition="0.12s ease all"
-                >
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                    gap={3}
+            <Section title="Publications">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {publications.map((pub) => (
+                  <ChakraLink
+                    key={pub.title}
+                    href={pub.link}
+                    isExternal
+                    display="block"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                    }}
+                    transition="0.12s ease all"
                   >
-                    <Box flex={1} minWidth={0}>
-                      <Text textStyle="listTitle">{pub.title}</Text>
-                      <Text textStyle="listMeta" mt={0.5}>
-                        {pub.publisher} · {pub.date}
-                      </Text>
-                    </Box>
-                    <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
-                      <Box
-                        fontSize="10px"
-                        fontWeight="600"
-                        textTransform="uppercase"
-                        letterSpacing="0.05em"
-                        color={pub.tag === "Tech" ? "brand.accent" : "#a78bfa"}
-                        bg={
-                          pub.tag === "Tech"
-                            ? "rgba(96,165,250,0.1)"
-                            : "rgba(167,139,250,0.1)"
-                        }
-                        px={2}
-                        py={0.5}
-                        borderRadius="4px"
-                      >
-                        {pub.tag}
+                    <Flex
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      gap={3}
+                    >
+                      <Box flex={1} minWidth={0}>
+                        <Text textStyle="listTitle">{pub.title}</Text>
+                        <Text textStyle="listMeta" mt={0.5}>
+                          {pub.publisher} · {pub.date}
+                        </Text>
                       </Box>
-                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                      <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
+                        <Box
+                          fontSize="10px"
+                          fontWeight="600"
+                          textTransform="uppercase"
+                          letterSpacing="0.05em"
+                          color={
+                            pub.tag === "Tech" ? "brand.accent" : "#a78bfa"
+                          }
+                          bg={
+                            pub.tag === "Tech"
+                              ? "rgba(96,165,250,0.1)"
+                              : "rgba(167,139,250,0.1)"
+                          }
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                        >
+                          {pub.tag}
+                        </Box>
+                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                      </Flex>
                     </Flex>
-                  </Flex>
-                </ChakraLink>
-              ))}
-            </Flex>
-          </Section>
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </Section>
           </Box>
         </Flex>
 
@@ -1136,73 +1138,161 @@ export default function Home() {
         >
           {/* Showcase / Side Projects */}
           <Box order={[2, 2, 0]} width="100%">
-          <Section title="Showcase">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {showcase.map((item) => (
-                <ChakraLink
-                  key={item.title}
-                  href={item.link}
-                  isExternal
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  paddingY={2.5}
-                  position="relative"
-                  _after={{
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    bg: "brand.border",
-                    transition: "0.18s ease all",
-                    transformOrigin: "center",
-                  }}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
-                    zIndex: 1,
-                    _after: { transform: "scaleX(0)" },
-                    "& > div > span:first-of-type": { color: "brand.text" },
-                  }}
-                  transition="0.12s ease all"
-                >
-                  <Flex alignItems="center" gap={2.5}>
-                    {item.icon && (
-                      <Box
-                        width="28px"
-                        height="28px"
-                        minWidth="28px"
-                        borderRadius="6px"
-                        border="1px solid"
-                        borderColor="brand.border"
-                        bg="rgba(255, 255, 255, 0.06)"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        overflow="hidden"
-                      >
-                        <Image
-                          src={item.icon}
-                          alt={item.title}
-                          width="16px"
-                          height="16px"
-                          objectFit="contain"
-                          borderRadius="3px"
-                        />
+            <Section title="Showcase">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {showcase.map((item) => (
+                  <ChakraLink
+                    key={item.title}
+                    href={item.link}
+                    isExternal
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                      "& > div > span:first-of-type": { color: "brand.text" },
+                    }}
+                    transition="0.12s ease all"
+                  >
+                    <Flex alignItems="center" gap={2.5}>
+                      {item.icon && (
+                        <Box
+                          width="28px"
+                          height="28px"
+                          minWidth="28px"
+                          borderRadius="6px"
+                          border="1px solid"
+                          borderColor="brand.border"
+                          bg="rgba(255, 255, 255, 0.06)"
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          overflow="hidden"
+                        >
+                          <Image
+                            src={item.icon}
+                            alt={item.title}
+                            width="16px"
+                            height="16px"
+                            objectFit="contain"
+                            borderRadius="3px"
+                          />
+                        </Box>
+                      )}
+                      <Box>
+                        <Text
+                          as="span"
+                          textStyle="listTitle"
+                          transition="0.12s ease all"
+                        >
+                          {item.title}
+                        </Text>
+                        {item.tag && (
+                          <Box
+                            as="span"
+                            fontSize="11px"
+                            fontWeight="600"
+                            letterSpacing="0.02em"
+                            color="#22c55e"
+                            bg="#22c55e15"
+                            px={2.5}
+                            py={1}
+                            borderRadius="6px"
+                            ml={2}
+                            verticalAlign="middle"
+                            whiteSpace="nowrap"
+                            display="inline-block"
+                          >
+                            {item.tag}
+                          </Box>
+                        )}
+                        <Text
+                          as="span"
+                          textStyle="listMeta"
+                          ml={2}
+                          display={["none", "inline"]}
+                        >
+                          {item.description}
+                        </Text>
                       </Box>
-                    )}
+                    </Flex>
+                    <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </Section>
+          </Box>
+
+          {/* Projects */}
+          <Box order={[3, 3, 0]} width="100%">
+            <Section title="Projects" href="/projects">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {projects.map((item) => (
+                  <ChakraLink
+                    key={item.title}
+                    as={Link}
+                    href={item.link}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                      "& > div > span:first-of-type": { color: "brand.text" },
+                    }}
+                    transition="0.12s ease all"
+                  >
                     <Box>
                       <Text
                         as="span"
@@ -1211,245 +1301,157 @@ export default function Home() {
                       >
                         {item.title}
                       </Text>
-                      {item.tag && (
-                        <Box
+                      {item.hasPassword && (
+                        <Text
                           as="span"
                           fontSize="11px"
-                          fontWeight="600"
-                          letterSpacing="0.02em"
-                          color="#22c55e"
-                          bg="#22c55e15"
-                          px={2.5}
-                          py={1}
-                          borderRadius="6px"
+                          color="brand.textMuted"
                           ml={2}
-                          verticalAlign="middle"
-                          whiteSpace="nowrap"
-                          display="inline-block"
                         >
-                          {item.tag}
-                        </Box>
+                          🔒
+                        </Text>
                       )}
-                      <Text
-                        as="span"
-                        textStyle="listMeta"
-                        ml={2}
-                        display={["none", "inline"]}
-                      >
-                        {item.description}
-                      </Text>
                     </Box>
-                  </Flex>
-                  <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                </ChakraLink>
-              ))}
-            </Flex>
-          </Section>
+                    <Text textStyle="listMeta" flexShrink={0} ml={3}>
+                      {item.company}
+                    </Text>
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </Section>
           </Box>
 
-          {/* Projects */}
-          <Box order={[3, 3, 0]} width="100%">
-          <Section title="Projects" href="/projects">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {projects.map((item) => (
-                <ChakraLink
-                  key={item.title}
-                  as={Link}
-                  href={item.link}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  paddingY={2.5}
-                  position="relative"
-                  _after={{
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    bg: "brand.border",
-                    transition: "0.18s ease all",
-                    transformOrigin: "center",
-                  }}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
-                    zIndex: 1,
-                    _after: { transform: "scaleX(0)" },
-                    "& > div > span:first-of-type": { color: "brand.text" },
-                  }}
-                  transition="0.12s ease all"
-                >
-                  <Box>
+          {/* Writing */}
+          <Box order={[7, 7, 0]} width="100%">
+            <Section title="Writing" href="/blog">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {writing.map((post) => (
+                  <ChakraLink
+                    key={post.title}
+                    as={Link}
+                    href={post.link}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                      "& > span:first-of-type": { color: "brand.text" },
+                    }}
+                    transition="0.12s ease all"
+                  >
                     <Text
                       as="span"
                       textStyle="listTitle"
                       transition="0.12s ease all"
                     >
-                      {item.title}
+                      {post.title}
                     </Text>
-                    {item.hasPassword && (
-                      <Text
-                        as="span"
-                        fontSize="11px"
-                        color="brand.textMuted"
-                        ml={2}
-                      >
-                        🔒
-                      </Text>
-                    )}
-                  </Box>
-                  <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                    {item.company}
-                  </Text>
-                </ChakraLink>
-              ))}
-            </Flex>
-          </Section>
-          </Box>
-
-          {/* Writing */}
-          <Box order={[7, 7, 0]} width="100%">
-          <Section title="Writing" href="/blog">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{
-                "& > *:first-child::after": { display: "none" },
-                "& > *:hover + *::after": { transform: "scaleX(0)" },
-              }}
-            >
-              {writing.map((post) => (
-                <ChakraLink
-                  key={post.title}
-                  as={Link}
-                  href={post.link}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  paddingY={2.5}
-                  position="relative"
-                  _after={{
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    bg: "brand.border",
-                    transition: "0.18s ease all",
-                    transformOrigin: "center",
-                  }}
-                  _hover={{
-                    textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
-                    zIndex: 1,
-                    _after: { transform: "scaleX(0)" },
-                    "& > span:first-of-type": { color: "brand.text" },
-                  }}
-                  transition="0.12s ease all"
-                >
-                  <Text
-                    as="span"
-                    textStyle="listTitle"
-                    transition="0.12s ease all"
-                  >
-                    {post.title}
-                  </Text>
-                  <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                    {post.date}
-                  </Text>
-                </ChakraLink>
-              ))}
-            </Flex>
-          </Section>
+                    <Text textStyle="listMeta" flexShrink={0} ml={3}>
+                      {post.date}
+                    </Text>
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </Section>
           </Box>
 
           {/* Honors & Accomplishments */}
           <Box order={[8, 8, 0]} width="100%">
-          <Section title="Honors & Accomplishments">
-            <Flex
-              flexDirection="column"
-              gap={0}
-              sx={{ "& > *:first-child": { borderTop: "none" } }}
-            >
-              {honors.map((item) => (
-                <Box
-                  key={item.title}
-                  paddingY={2.5}
-                  borderTop="1px solid"
-                  borderTopColor="brand.border"
-                >
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                    gap={3}
+            <Section title="Honors & Accomplishments">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{ "& > *:first-child": { borderTop: "none" } }}
+              >
+                {honors.map((item) => (
+                  <Box
+                    key={item.title}
+                    paddingY={2.5}
+                    borderTop="1px solid"
+                    borderTopColor="brand.border"
                   >
-                    <Box>
-                      <Text textStyle="listTitle">{item.title}</Text>
-                    </Box>
-                    <Text
-                      textStyle="listMeta"
-                      flexShrink={0}
-                      whiteSpace="nowrap"
+                    <Flex
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      gap={3}
                     >
-                      {item.org} · {item.date}
-                    </Text>
-                  </Flex>
-                </Box>
-              ))}
-            </Flex>
-          </Section>
+                      <Box>
+                        <Text textStyle="listTitle">{item.title}</Text>
+                      </Box>
+                      <Text
+                        textStyle="listMeta"
+                        flexShrink={0}
+                        whiteSpace="nowrap"
+                      >
+                        {item.org} · {item.date}
+                      </Text>
+                    </Flex>
+                  </Box>
+                ))}
+              </Flex>
+            </Section>
           </Box>
 
           {/* Skills */}
           <Box order={[9, 9, 0]} width="100%">
-          <Section title="Skills">
-            <Flex flexWrap="wrap" gap={2}>
-              {[
-                { name: "TypeScript", color: "#3178c6" },
-                { name: "React", color: "#61dafb" },
-                { name: "HTML", color: "#e44d26" },
-                { name: "CSS", color: "#f472b6" },
-                { name: "Design Systems", color: "#f59e0b" },
-                { name: "Figma", color: "#a259ff" },
-                { name: "AI", color: "#da70d6" },
-                { name: "Git", color: "#f05032" },
-                { name: "Accessibility", color: "#22c55e" },
-                { name: "Testing", color: "#69d3a7" },
-                { name: "Prototyping", color: "#f0abfc" },
-              ].map((tech) => (
-                <Box
-                  key={tech.name}
-                  fontSize="11px"
-                  fontWeight="600"
-                  letterSpacing="0.02em"
-                  color={tech.color}
-                  bg={`${tech.color}15`}
-                  px={2.5}
-                  py={1}
-                  borderRadius="6px"
-                  whiteSpace="nowrap"
-                >
-                  {tech.name}
-                </Box>
-              ))}
-            </Flex>
-          </Section>
+            <Section title="Skills">
+              <Flex flexWrap="wrap" gap={2}>
+                {[
+                  { name: "TypeScript", color: "#3178c6" },
+                  { name: "React", color: "#61dafb" },
+                  { name: "HTML", color: "#e44d26" },
+                  { name: "CSS", color: "#f472b6" },
+                  { name: "Design Systems", color: "#f59e0b" },
+                  { name: "Figma", color: "#a259ff" },
+                  { name: "AI", color: "#da70d6" },
+                  { name: "Git", color: "#f05032" },
+                  { name: "Accessibility", color: "#22c55e" },
+                  { name: "Testing", color: "#69d3a7" },
+                  { name: "Prototyping", color: "#f0abfc" },
+                ].map((tech) => (
+                  <Box
+                    key={tech.name}
+                    fontSize="11px"
+                    fontWeight="600"
+                    letterSpacing="0.02em"
+                    color={tech.color}
+                    bg={`${tech.color}15`}
+                    px={2.5}
+                    py={1}
+                    borderRadius="6px"
+                    whiteSpace="nowrap"
+                  >
+                    {tech.name}
+                  </Box>
+                ))}
+              </Flex>
+            </Section>
           </Box>
         </Flex>
       </Flex>

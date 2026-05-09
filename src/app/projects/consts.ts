@@ -25,13 +25,6 @@ export const designSystemsProjects = [
     hasPassword: true,
   },
   {
-    title: "Design System Maturation @ Endpoint",
-    category: "Design Systems",
-    image: "/projects/process-improvements/cover.png",
-    link: "/projects/posts/process-improvements",
-    date: "Sept 2023",
-  },
-  {
     title: "Dynamic Token Layers @ Endpoint",
     category: "Design Systems",
     image: "/projects/dynamic-token-layers/cover.png",

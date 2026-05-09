@@ -149,7 +149,13 @@ export default function About() {
               >
                 See my work
               </Button>
-              <Button variant="secondary" as={Link} href="/blog" size="sm" leftIcon={<PencilIcon />}>
+              <Button
+                variant="secondary"
+                as={Link}
+                href="/blog"
+                size="sm"
+                leftIcon={<PencilIcon />}
+              >
                 Visit blog
               </Button>
             </Flex>
