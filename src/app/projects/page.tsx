@@ -31,7 +31,7 @@ const allProjects = [
   ...a11yProjects,
   ...otherProjects,
   ...brandingProjects,
-];
+].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 export default function Projects() {
   const [currentFilter, setCurrentFilter] = useState("all");
