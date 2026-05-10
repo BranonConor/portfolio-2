@@ -62,8 +62,6 @@ export const otherProjects = [
     image: "/projects/reimagining-github/cover.png",
     link: "/projects/posts/reimagining-github",
     date: "December 2025",
-    hasPassword: true,
-    inProgress: true,
   },
   {
     title: "EZ Links @ Smartsheet",

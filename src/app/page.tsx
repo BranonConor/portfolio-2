@@ -185,7 +185,6 @@ const projects = [
     title: "Reimagining GitHub 💭",
     company: "GitHub",
     link: "/projects/posts/reimagining-github",
-    hasPassword: true,
   },
   {
     title: "Building thesis.social 💫",
