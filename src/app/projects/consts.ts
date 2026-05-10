@@ -57,6 +57,15 @@ export const a11yProjects = [
 ];
 export const otherProjects = [
   {
+    title: "Reimagining GitHub \u{1F4AD} @ GitHub",
+    category: "Hackweek",
+    image: "/projects/reimagining-github/cover.png",
+    link: "/projects/posts/reimagining-github",
+    date: "December 2025",
+    hasPassword: true,
+    inProgress: true,
+  },
+  {
     title: "EZ Links @ Smartsheet",
     category: "Hackweek",
     image: "/projects/ez-links/cover.png",

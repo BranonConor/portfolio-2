@@ -25,7 +25,27 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
             src={url}
             loop
             autoPlay
-            controlsList="nodownload"
+            muted
+            // Strip audio tracks entirely so there's no way for a user to
+            // re-enable sound (e.g. via devtools toggling `muted`).
+            ref={(el) => {
+              if (el) {
+                el.muted = true;
+                el.volume = 0;
+                // @ts-expect-error - non-standard but supported on most engines
+                if (typeof el.audioTracks !== "undefined") {
+                  // @ts-expect-error
+                  for (let i = 0; i < el.audioTracks.length; i++) {
+                    // @ts-expect-error
+                    el.audioTracks[i].enabled = false;
+                  }
+                }
+              }
+            }}
+            controls={false}
+            controlsList="nodownload nofullscreen noremoteplayback"
+            disablePictureInPicture
+            disableRemotePlayback
             playsInline
             webkit-playsinline="true"
             width="100%"

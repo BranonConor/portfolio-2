@@ -204,6 +204,21 @@ export default function Projects() {
                       🔒
                     </Text>
                   )}
+                  {(project as any).inProgress && (
+                    <Text
+                      fontSize="10px"
+                      fontWeight="600"
+                      letterSpacing="0.06em"
+                      color="#fbbf24"
+                      bg="rgba(251, 191, 36, 0.12)"
+                      border="1px solid rgba(251, 191, 36, 0.3)"
+                      paddingX={1.5}
+                      paddingY={0.5}
+                      borderRadius="6px"
+                    >
+                      IN PROG
+                    </Text>
+                  )}
                 </Flex>
                 <Text
                   fontSize="12px"
