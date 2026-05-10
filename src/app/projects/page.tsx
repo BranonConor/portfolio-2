@@ -215,6 +215,7 @@ export default function Projects() {
                       paddingX={1.5}
                       paddingY={0.5}
                       borderRadius="6px"
+                      display={["none", "block"]}
                     >
                       IN PROG
                     </Text>
