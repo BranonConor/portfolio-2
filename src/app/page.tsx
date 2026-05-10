@@ -182,6 +182,12 @@ const publications = [
 
 const projects = [
   {
+    title: "Reimagining GitHub 💭",
+    company: "GitHub",
+    link: "/projects/posts/reimagining-github",
+    hasPassword: true,
+  },
+  {
     title: "Building thesis.social 💫",
     company: "GLIA Labs",
     link: "/projects/posts/thesis",

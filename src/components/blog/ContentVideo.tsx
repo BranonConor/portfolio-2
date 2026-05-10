@@ -53,7 +53,13 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
         </AspectRatio>
       </Box>
       {caption && (
-        <Text fontStyle="italic" mb={4} as="span" fontSize="12px" color="brand.textMuted">
+        <Text
+          fontStyle="italic"
+          mb={4}
+          as="span"
+          fontSize="12px"
+          color="brand.textMuted"
+        >
           {caption}
         </Text>
       )}
