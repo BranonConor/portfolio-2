@@ -24,6 +24,37 @@ const categories = [
   { key: "Hackweek", label: "Hackweek" },
 ];
 
+const MONTHS: Record<string, number> = {
+  jan: 0, january: 0,
+  feb: 1, february: 1,
+  mar: 2, march: 2,
+  apr: 3, april: 3,
+  may: 4,
+  jun: 5, june: 5,
+  jul: 6, july: 6,
+  aug: 7, august: 7,
+  sep: 8, sept: 8, september: 8,
+  oct: 9, october: 9,
+  nov: 10, november: 10,
+  dec: 11, december: 11,
+};
+
+// Safari/JSC's `new Date("December 2025")` returns Invalid Date, which breaks
+// chronological sorting in mobile Safari. Parse "Month YYYY" / "Mon YYYY"
+// strings manually for cross-browser consistency.
+const parseProjectDate = (input: string): number => {
+  const match = input.trim().match(/^([A-Za-z]+)\s+(\d{4})$/);
+  if (match) {
+    const month = MONTHS[match[1].toLowerCase()];
+    const year = Number(match[2]);
+    if (month !== undefined && !Number.isNaN(year)) {
+      return new Date(year, month, 1).getTime();
+    }
+  }
+  const fallback = new Date(input).getTime();
+  return Number.isNaN(fallback) ? 0 : fallback;
+};
+
 const allProjects = [
   ...sideProjects,
   ...designSystemsProjects,
@@ -31,7 +62,7 @@ const allProjects = [
   ...a11yProjects,
   ...otherProjects,
   ...brandingProjects,
-].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+].sort((a, b) => parseProjectDate(b.date) - parseProjectDate(a.date));
 
 export default function Projects() {
   const [currentFilter, setCurrentFilter] = useState("all");
