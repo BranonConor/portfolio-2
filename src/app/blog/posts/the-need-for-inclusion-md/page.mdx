@@ -9,15 +9,15 @@ import ContentImage from "@/components/blog/ContentImage";
   category="Accessibility"
 />
 
-# Beyond A11Y.md: Context Engineering for Inclusive AI-Assisted Design and Development
+# Going Beyond A11Y.md
 
 AI-assisted work is rapidly becoming the default for designers and engineers alike. Designers now prompt their way into flows, components, and entire products. Engineers do the same with code. And in both cases, generative systems are no longer just helping us _ship_ - they're helping us _design_.
 
-That shift moves accessibility and inclusive design upstream. The experiences and interfaces we used to author by hand are now being willed into existence by agentic systems trained on the public web - a web that, as we know painfully well, is overwhelmingly inaccessible and unevenly representative of human diversity.<sup><a href="#fn-1">1</a></sup>
+That shift moves accessibility and inclusive design upstream. The experiences and interfaces we used to author by hand are now being willed into existence by agentic systems trained on tons of different datasets like the public web - which, as we know painfully well, is overwhelmingly inaccessible and unevenly representative of human diversity.<sup><a href="#fn-1">1</a></sup>
 
-In [_Mismatch_](https://mitpress.mit.edu/9780262539485/mismatch/), [Kat Holmes](https://www.linkedin.com/in/katholmes/) describes exclusion as exactly that - a "mismatch" between systems and the ways (plural!!) humans need to use it. Exclusion usually isn't malicious. It happens when systems get quietly optimized around what's assumed to be the predominant use case.
+In [_Mismatch_](https://mitpress.mit.edu/9780262539485/mismatch/), [Kat Holmes](https://www.linkedin.com/in/katholmes/) describes exclusion as exactly that - a "mismatch" between systems and the ways (plural!!) humans need to use them. Exclusion usually isn't malicious. It happens when systems get quietly optimized around what's assumed to be the predominant use case.
 
-And that's where LLMs embody this problem. They aren't built to be exclusionary - they inherit statistical assumptions from skewed training data. The most common patterns get implicitly treated as representative of humanity itself.
+Sadly, modern LLMs are inherently 'mismatched'. But they aren't built to be exclusionary - they inherit statistical assumptions from skewed training data. Their understandings of humanity are driven by the most common patterns they've been exposed to.
 
 ---
 
@@ -43,7 +43,7 @@ Now, we'll be fair and acknowledge that modern flagship models like Claude and C
 
 ---
 
-# How does this relate to modern design/engineering work?
+# The Landscape Today
 
 ## Accessibility compliance !== inclusion
 
@@ -68,7 +68,7 @@ If design systems operationalized visual consistency, and a11y tooling operation
 
 If AI is going to design with some autonomy, it needs to be aware of the biases baked into its training data - much like human designers need to be aware of the cognitive schemas and assumptions shaping how we understand the world and our users. Self-awareness is a prerequisite for inclusion, whether the designer is a person or a probabilistic system.
 
-I went deeper into the empirical evidence behind this - the ABLEIST research, hiring bias across LLMs, the training-data feedback loop, and what bias-correction techniques actually move the needle - in a companion piece on Thesis.<sup><a href="#fn-5">5</a></sup>
+For a deeper dive into the empirical evidence behind this - the ABLEIST research, hiring bias across LLMs, the training-data feedback loop, and what bias-correction techniques actually move the needle - I wrote a nifty companion piece on Thesis.<sup><a href="#fn-5">5</a></sup>
 
 ---
 
@@ -111,13 +111,11 @@ Where `A11Y.md` is all about technical accessibility implementation, `INCLUSION.
 - inclusive language heuristics
 - review prompts for generated outputs
 
-This file convention isn't going to "solve" AI bias. Bias mitigation is an unresolved sociotechnical problem and you can't prompt your way out of it.<sup><a href="#fn-4">4</a></sup>
+Now, grounding ourselves here: this file convention isn't going to "solve" AI bias. Bias mitigation is an unresolved sociotechnical problem and you can't prompt your way out of it.<sup><a href="#fn-4">4</a></sup>
 
-The goal is more modest and more durable: operationalize inclusive design principles directly inside AI-native design/dev workflows, by embedding persistent inclusion guidance into the environments where generation is actually happening.
+The goal is more modest and more durable: operationalize inclusive design principles directly inside AI-native design/dev workflows, by embedding persistent inclusion guidance into the environments where generation is actually happening. Much like the other context files popping up in different tools, it's an attempt to smooth over some gaps and blind spots as AI builds products for us.
 
-In that sense, `INCLUSION.md` is less of a static policy doc and more like _organizational memory for inclusive systems thinking_. Much like the other context files popping up in different tools, it's an attempt to smooth over some gaps and blind spots as AI builds products for us. AI work is shifting upstream in the product lifecycle and so too should our processes around inclusion.
-
-Here's a short sampler of the shape it takes - just enough to get the idea. The full template (and adapted examples for frontend apps, design systems, and backend APIs) lives in the repo.
+It could look something like this:
 
 ```md
 # INCLUSION.md
@@ -169,13 +167,14 @@ participatory research, disabled practitioners, accessibility expertise,
 and human review. This is an operational scaffold, not a substitute.
 ```
 
-The [full `INCLUSION.md` template](https://github.com/BranonConor/inclusion.md/blob/main/INCLUSION.md) - with communication diversity guidance, disability representation specifics, cognitive accessibility, inclusive-language tables, engineering baselines, domain extensions, and citations - lives in the [repo](https://github.com/BranonConor/inclusion.md).
+...
+...
 
 ---
 
 # Open source it!
 
-Talk is cheap - let's start experimenting with this idea. I went ahead and drafted the actual scaffold and shipped it as an open-source repository:
+Talk is cheap - so I wanted to start hacking on this idea. I went ahead and drafted the actual scaffold and shipped it as an open-source repository:
 
 **[github.com/BranonConor/inclusion.md](https://github.com/BranonConor/inclusion.md)**
 
@@ -184,7 +183,7 @@ Talk is cheap - let's start experimenting with this idea. I went ahead and draft
   caption="INCLUSION.md - an LLM/agent context convention for model biases."
 />
 
-It's MIT-licensed and intentionally rough around the edges - the kind of thing that should get sharpened by people with more lived experience than me. Fork it, adapt it, translate it, argue with it. The repo contains:
+It's intentionally rough around the edges - the kind of thing we can iron out together with collective, lived experience, as an industry and community. Fork it, adapt it, translate it, argue with it. The repo contains:
 
 - **`INCLUSION.md`** - the full template (project context, training-data risks, communication diversity, disability representation guidance, cognitive accessibility, inclusive language heuristics, engineering guidance, AI generation review prompts, domain extensions, hard limitations, maintenance ownership)
 - **`examples/frontend-app/`** - a version adapted for consumer-facing web apps (forms, microcopy, AI features)
