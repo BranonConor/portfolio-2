@@ -217,6 +217,11 @@ const projects = [
 
 const writing = [
   {
+    title: "The need for INCLUSION.md",
+    date: "May 2026",
+    link: "/blog/posts/the-need-for-inclusion-md",
+  },
+  {
     title: "Creating an A11y Auditing Kit",
     date: "June 2022",
     link: "/blog/posts/creating-an-a11y-auditing-kit",

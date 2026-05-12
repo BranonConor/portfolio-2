@@ -8,6 +8,12 @@ import Link from "next/link";
 export default function Blog() {
   const posts = [
     {
+      title: "The need for INCLUSION.md",
+      category: "Accessibility",
+      link: "/blog/posts/the-need-for-inclusion-md",
+      date: "May 2026",
+    },
+    {
       title: "Creating an A11y Auditing Kit",
       category: "Accessibility",
       link: "/blog/posts/creating-an-a11y-auditing-kit",

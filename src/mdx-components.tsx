@@ -31,7 +31,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         borderLeftColor="brand.border"
         mt={8}
         mx={[4, 5, 6]}
-        color="brand.textMuted"
+        color="brand.text"
+        fontWeight={600}
       >
         {children}
       </FancyHeading>
