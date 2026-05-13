@@ -18,13 +18,13 @@ import { FancyHeading } from "./components/FancyHeading";
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     h1: ({ children }) => (
-      <Heading as="h1" size="xl" mt={8} color="brand.text" px={[4, 5, 6]}>
+      <Heading as="h2" size="xl" mt={8} color="brand.text" px={[4, 5, 6]}>
         {children}
       </Heading>
     ),
     h2: ({ children }) => (
       <FancyHeading
-        as="h2"
+        as="h3"
         size="md"
         pl={2}
         borderLeft="2px solid"
@@ -39,7 +39,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     h3: ({ children }) => (
       <Heading
-        as="h3"
+        as="h4"
         size="md"
         borderLeft="2px solid"
         borderLeftColor="brand.border"
@@ -53,7 +53,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     h4: ({ children }) => (
       <Heading
-        as="h4"
+        as="h5"
         size="sm"
         fontWeight="bold"
         mt={6}
@@ -104,7 +104,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         fontWeight={600}
         href={href}
         target="blank"
-        rel="noreferrer noopenner"
+        rel="noreferrer noopener"
         size="md"
         _hover={{
           opacity: 0.8,
