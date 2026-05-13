@@ -15,9 +15,9 @@ AI-assisted work is rapidly becoming the default for designers and engineers ali
 
 That shift moves accessibility and inclusive design upstream. The experiences and interfaces we used to author by hand are now being willed into existence by agentic systems trained on tons of different datasets like the public web - which, as we know painfully well, is overwhelmingly inaccessible and unevenly representative of human diversity.<sup><a href="#fn-1">1</a></sup>
 
-In [_Mismatch_](https://mitpress.mit.edu/9780262539485/mismatch/), [Kat Holmes](https://www.linkedin.com/in/katholmes/) describes exclusion as exactly that - a "mismatch" between systems and the ways (plural!!) humans need to use them. Exclusion usually isn't malicious. It happens when systems get quietly optimized around what's assumed to be the predominant use case.
+In [_Mismatch_](https://mitpress.mit.edu/9780262539485/mismatch/), [Kat Holmes](https://www.linkedin.com/in/katholmes/) describes exclusion as exactly that - a "mismatch" between systems and the ways (plural!!) humans need to use them. Now, exclusion usually isn't malicious. It happens when systems get quietly optimized around what's assumed to be the predominant use case.
 
-Sadly, modern LLMs are inherently 'mismatched'. But they aren't built to be exclusionary - they inherit statistical assumptions from skewed training data. Their understandings of humanity are driven by the most common patterns they've been exposed to.
+Sadly, modern LLMs are inherently 'mismatched' in this exact way. But they aren't purposefully built to be exclusionary - they inherit statistical assumptions from skewed training data. Their understandings of humanity are driven by the most common patterns they've been exposed to.
 
 ---
 
@@ -31,14 +31,15 @@ When that same property gets pointed at people, the failure modes turn from funn
 
 Emerging research has documented disability representation patterns in LLM outputs including ableist framing, tokenization, inspiration narratives, underrepresentation, deficit-based language, intersectional erasure, and neurotypical communication assumptions.<sup><a href="#fn-2">2</a></sup><sup><a href="#fn-3">3</a></sup><sup><a href="#fn-5">5</a></sup>
 
-The hard part is that most of these harms aren't loud. Disabled participants in this research often described model outputs as _mirroring_ familiar social stereotypes - not producing obviously hateful content.<sup><a href="#fn-3">3</a></sup> Subtle exclusion is much harder to detect and govern inside design and engineering systems.
+The hard part is that most of these harms aren't loud. Disabled participants in this research often described model outputs as _mirroring_ familiar social stereotypes - not producing obviously hateful content.<sup><a href="#fn-3">3</a></sup> Subtle exclusion is much harder to detect and govern inside design and engineering systems. For a deeper dive into the empirical evidence behind this - the ABLEIST research, hiring bias across LLMs, the training-data feedback loop, and what bias-correction techniques actually move the needle - I wrote a nifty companion piece on Thesis.<sup><a href="#fn-5">5</a></sup>
 
-Now, we'll be fair and acknowledge that modern flagship models like Claude and ChatGPT have invested tons of time and money into releasing bigger, better models with less biases, less hallucinations, less silly bugs, etc. And I'm not asserting that perfection is required here.
+Now, we'll be fair and acknowledge that modern flagship models like Claude and ChatGPT have invested tons of time and money into releasing bigger, better models with less biases, less hallucinations, less silly bugs, etc. And I'm not asserting that perfection is required here for there to be value.
 
 <Note>
   But we should call it what it is: AI is a black box with unprecedented
-  intelligence about ONLY what it's been taught by the powers-that-be in tech.
-  And this is worth calling out as we let it design our digital worlds.
+  intelligence about ONLY what it's been taught by the powers-that-be in tech
+  based on biased datasets. And this is worth calling out as we let it design
+  more and more of our tech experiences.
 </Note>
 
 ---
@@ -49,7 +50,7 @@ Now, we'll be fair and acknowledge that modern flagship models like Claude and C
 
 Most accessibility tooling and guidance still focuses on implementation correctness: semantic HTML, keyboard navigation, ARIA, contrast, WCAG conformance. All of it essential. None of it really addresses representational harms, cultural assumptions, or the contextual gaps living _inside_ the generative systems we're now designing and building with.
 
-An interface can pass an accessibility audit cleanly and _still_ reproduce exclusionary assumptions about disability, cognition, communication, culture, literacy, or identity.
+An interface can pass an accessibility audit cleanly and _still_ reproduce exclusionary assumptions about disability, cognition, communication, culture, literacy, or identity when designing and building end to end experiences.
 
 The distinction I keep coming back to:
 
@@ -60,15 +61,9 @@ The distinction I keep coming back to:
 
 ## AI is now an upstream design partner
 
-The biggest structural shift in our craft right now is that AI tools sit _between_ human intent and what ships - and increasingly that's true on the design side as much as the engineering side. Figma's Make, Cursor, v0, Claude Code, Copilot, and friends are drafting components, generating layouts, naming things, writing microcopy, sketching personas, even mocking research artifacts.
+The biggest structural shift in our craft right now is that AI tools sit _between_ human intent and what ships - and increasingly that's true on the design side as much as the engineering side. Figma's Make, Cursor, v0, Claude Code, Copilot, and friends are drafting components, generating layouts & product flows, naming things, writing microcopy, sketching personas, even mocking research artifacts.
 
-In that world, inclusion guidance can't only live as static documentation aimed at humans. It has to also be operationalized - machine-readable, persistent, and present inside the AI-assisted environments where generation actually happens.
-
-If design systems operationalized visual consistency, and a11y tooling operationalized compliance, _context engineering_ is shaping up to be one of the main ways we operationalize inclusive behavior in the tools we now design and build with.
-
-If AI is going to design with some autonomy, it needs to be aware of the biases baked into its training data - much like human designers need to be aware of the cognitive schemas and assumptions shaping how we understand the world and our users. Self-awareness is a prerequisite for inclusion, whether the designer is a person or a probabilistic system.
-
-For a deeper dive into the empirical evidence behind this - the ABLEIST research, hiring bias across LLMs, the training-data feedback loop, and what bias-correction techniques actually move the needle - I wrote a nifty companion piece on Thesis.<sup><a href="#fn-5">5</a></sup>
+If AI is going to design with some autonomy, it needs to be aware of the biases baked into its training data - much like human designers need to be aware of the cognitive schemas and assumptions shaping how we understand the world and our users. Self-awareness is a prerequisite for inclusion, whether the designer is a person or a probabilistic system. And to address this, we need new clever ways to operationalize inclusivity in our flashy new AI tools. One of the most effective emerging patterns for this is **context engineering**.
 
 ---
 
@@ -113,62 +108,9 @@ Where `A11Y.md` is all about technical accessibility implementation, `INCLUSION.
 
 Now, grounding ourselves here: this file convention isn't going to "solve" AI bias. Bias mitigation is an unresolved sociotechnical problem and you can't prompt your way out of it.<sup><a href="#fn-4">4</a></sup>
 
-The goal is more modest and more durable: operationalize inclusive design principles directly inside AI-native design/dev workflows, by embedding persistent inclusion guidance into the environments where generation is actually happening. Much like the other context files popping up in different tools, it's an attempt to smooth over some gaps and blind spots as AI builds products for us.
+The goal is more modest and more durable: operationalize inclusive design principles directly inside AI-native design/dev workflows, right where generation is actually happening. Much like the other context files popping up in different tools, it's an attempt to smooth over some gaps and blind spots as AI builds products for us.
 
-It could look something like this:
-
-```md
-# INCLUSION.md
-
-Purpose: Inclusion guidance for AI-assisted design and development workflows.
-Complements: A11Y.md, design.md, contributing.md.
-
----
-
-# Core Principle
-
-Do not optimize for a single "default user."
-Inclusive systems support diverse cognitive models, communication styles,
-sensory experiences, motor capabilities, cultural contexts, and languages.
-
-Reference: Kat Holmes, _Mismatch_.
-
----
-
-# Known Training-Data Risks
-
-LLMs trained on the public web may inherit:
-
-- inaccessible implementation patterns
-- Western-centric, English-fluent defaults
-- ableist language
-- neurotypical communication assumptions
-- underrepresentation of disability communities
-
----
-
-# AI Generation Review Prompts
-
-Before finalizing any AI-generated output, ask:
-
-1. Does this assume a single "default" user? Who does that exclude?
-2. Could this exclude users with cognitive or communication differences?
-3. Are disabled users represented with agency, not as edge cases?
-4. Would this work across sight, hearing, touch, and voice?
-5. Does generated language reinforce stereotypes or deficit framing?
-6. Does this work on a slow network, low-end device, or non-English locale?
-
----
-
-# Important Limitation
-
-This file does not eliminate model bias. Inclusion still requires
-participatory research, disabled practitioners, accessibility expertise,
-and human review. This is an operational scaffold, not a substitute.
-```
-
-...
-...
+So what could that look like, specifically?
 
 ---
 
@@ -183,59 +125,47 @@ Talk is cheap - so I wanted to start hacking on this idea. I went ahead and draf
   caption="INCLUSION.md - an LLM/agent context convention for model biases."
 />
 
-It's intentionally rough around the edges - the kind of thing we can iron out together with collective, lived experience, as an industry and community. Fork it, adapt it, translate it, argue with it. The repo contains:
-
-- **`INCLUSION.md`** - the full template (project context, training-data risks, communication diversity, disability representation guidance, cognitive accessibility, inclusive language heuristics, engineering guidance, AI generation review prompts, domain extensions, hard limitations, maintenance ownership)
-- **`examples/frontend-app/`** - a version adapted for consumer-facing web apps (forms, microcopy, AI features)
-- **`examples/design-system/`** - a version adapted for component libraries (tokens, RTL, density, deprecation)
-- **`examples/backend-api/`** - a version adapted for APIs and SDKs (schema design, error messages, auth, telemetry)
-- **`CONTRIBUTING.md`** with ground rules and a PR checklist
+It's intentionally rough around the edges - the kind of thing we can iron out together with collective, lived experience, as an industry and community. Fork it, adapt it, translate it, argue with it. The repo contains the full `INCLUSION.md` template + a CLI tool for easy `npx` generation in a project. It's also got a few examples of use cases and guidance on contributions. Neat.
 
 ---
 
-## How to actually use it
+## How to start using it
 
-The whole point of this file is that it has to be _picked up_ by the AI assistants your team uses day-to-day. Otherwise it's just another doc nobody reads.
+There are two equally valid ways to get the file into your repo. Pick whichever fits your team's vibe.
 
-Here's the shortest path to getting it working in your repo:
+**1. Generate it with the CLI (recommended)**
 
-**1. Drop it in**
+```bash
+npx inclusion-md init
+```
+
+Run it, answer some questions, pick a use-case, and it writes an `INCLUSION.md` file to your repo root with your specifications. Zero install, zero dependencies, Node 16+.
+
+**2. Or copy the file by hand**
 
 ```bash
 curl -O https://raw.githubusercontent.com/BranonConor/inclusion.md/main/INCLUSION.md
 ```
 
-Place it at the root of your repository, next to `README.md` and `CONTRIBUTING.md`.
-
-**2. Fill in your project context**
-
-The first section of the template is intentionally blank. Inclusion guidance is contextual - the part that matters most is the part that describes _your_ product, _your_ users, and _your_ known blind spots. The generic stuff underneath it gets a lot sharper once that's filled in.
+Place it at the root of your repository and fill in Section 1 (Project Context) yourself. The first section is intentionally blank so you can detail the inclusion criteria specific to your project. The rest of the file is general inclusion guidance anyone might benefit from!
 
 **3. Point your AI assistant at it**
 
-For **GitHub Copilot**, create `.github/copilot-instructions.md`:
-
-```md
+```
+// GitHub Copilot - in .github/copilot-instructions.md
 This repository contains an `INCLUSION.md` at the project root.
 Follow its guidance when generating UI copy, code, documentation,
 error messages, persona descriptions, and review feedback.
-```
 
-For **Cursor**, add a rule in `.cursor/rules/inclusion.md`:
-
-```md
+// Cursor - in .cursor/rules/inclusion.md
 Always read and follow `/INCLUSION.md` when generating code, copy,
 or design artifacts in this repository.
-```
 
-For **Claude Code**, reference it from `CLAUDE.md`:
-
-```md
+// Claude Code - in CLAUDE.md
 Read `/INCLUSION.md` and apply its review prompts before
 finalizing any generated output in this repository.
-```
 
-For **Continue**, **Windsurf**, **Cody**, etc. - add `INCLUSION.md` to your workspace context configuration. Most assistants now support repository-level context files in some form.
+```
 
 **4. Treat it like the rest of your engineering docs**
 
@@ -273,3 +203,7 @@ Thanks for making it this far. I'm hopeful this might actually influence the way
 7. <span id="fn-7" />
    Janelle Shane, _You Look Like a Thing and I Love You_ (Voracious, 2019) -
    [janelleshane.com/book-you-look-like-a-thing](https://www.janelleshane.com/book-you-look-like-a-thing)
+
+```
+
+```
