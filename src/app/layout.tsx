@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Providers } from "./providers";
 import { SkipToContent } from "@/components/SkipToContent";
+
+const GA_MEASUREMENT_ID = "G-C74KV5XNVN";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://branon.dev"),
@@ -48,6 +51,18 @@ export default function RootLayout({
         ></link>
       </head>
       <body style={{ margin: 0, padding: 0 }}>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <Providers>
           <SkipToContent />
           {children}
