@@ -1,12 +1,26 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
+import { SkipToContent } from "@/components/SkipToContent";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://branon.dev"),
   title: "Branon Eusebio",
   description: "Design Engineer building @ GitHub",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",
+  },
+  openGraph: {
+    title: "Branon Eusebio",
+    description: "Design Engineer building @ GitHub",
+    url: "https://branon.dev",
+    siteName: "Branon Eusebio",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Branon Eusebio",
+    description: "Design Engineer building @ GitHub",
   },
 };
 
@@ -34,7 +48,10 @@ export default function RootLayout({
         ></link>
       </head>
       <body style={{ margin: 0, padding: 0 }}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SkipToContent />
+          {children}
+        </Providers>
       </body>
     </html>
   );

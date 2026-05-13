@@ -14,6 +14,7 @@ export const PageWrapper: React.FC<BoxProps> = ({
     <AnimatePresence mode="wait">
       <Box
         as="main"
+        id="main-content"
         bg="brand.bg"
         minHeight="100vh"
         maxWidth="100%"

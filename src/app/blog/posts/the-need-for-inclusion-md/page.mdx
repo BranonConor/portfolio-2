@@ -6,6 +6,30 @@ export const metadata = {
   title: "The need for INCLUSION.md - Branon Eusebio",
   description:
     "Beyond A11Y.md: a context-engineering convention for inclusive AI-assisted design and development. Why training-data bias, representational harms, and AI-as-upstream-design-partner call for an operational scaffold beyond accessibility compliance.",
+  openGraph: {
+    title: "The need for INCLUSION.md",
+    description:
+      "Beyond A11Y.md: a context-engineering convention for inclusive AI-assisted design and development.",
+    url: "https://branon.dev/blog/posts/the-need-for-inclusion-md",
+    type: "article",
+    publishedTime: "2026-05-01",
+    authors: ["Branon Eusebio"],
+    images: [
+      {
+        url: "/blog/the-need-for-inclusion-md/inclusion-md-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "INCLUSION.md - an LLM/agent context convention for model biases.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The need for INCLUSION.md",
+    description:
+      "Beyond A11Y.md: a context-engineering convention for inclusive AI-assisted design and development.",
+    images: ["/blog/the-need-for-inclusion-md/inclusion-md-banner.png"],
+  },
 };
 
 <HeroStrip
@@ -19,7 +43,7 @@ export const metadata = {
 
 AI-assisted work is rapidly becoming the default for designers and engineers alike. Designers now prompt their way into flows, components, and entire products. Engineers do the same with code. And in both cases, generative systems are no longer just helping us _ship_ - they're helping us _design_.
 
-That shift moves accessibility and inclusive design upstream. The experiences and interfaces we used to author by hand are now being willed into existence by agentic systems trained on tons of different datasets like the public web - which, as we know painfully well, is overwhelmingly inaccessible and unevenly representative of human diversity.<sup><a href="#fn-1" aria-label="Footnote 1">1</a></sup>
+That shift moves accessibility and inclusive design upstream. The experiences and interfaces we used to author by hand are now being willed into existence by agentic systems trained on tons of different datasets like the public web - which, as we know painfully well, is overwhelmingly inaccessible and unevenly representative of human diversity.<sup id="fnref-1"><a href="#fn-1" aria-label="Footnote 1">1</a></sup>
 
 In [_Mismatch_](https://mitpress.mit.edu/9780262539485/mismatch/), [Kat Holmes](https://www.linkedin.com/in/katholmes/) describes exclusion as exactly that - a "mismatch" between systems and the ways (plural!!) humans need to use them. Now, exclusion usually isn't malicious. It happens when systems get quietly optimized around what's assumed to be the predominant use case.
 
@@ -31,11 +55,11 @@ Sadly, modern LLMs are inherently 'mismatched' in this exact way. But they aren'
 
 The 2023 WebAIM Million Report found that **96.3% of the top one million homepages** had detectable WCAG failures.<sup><a href="#fn-1" aria-label="Footnote 1">1</a></sup> LLMs are trained extensively on public web content. The math isn't subtle.
 
-And it's not theoretical. In [_You Look Like a Thing and I Love You_](https://www.janelleshane.com/book-you-look-like-a-thing), Shane shares a whole catalog of examples of ML systems faithfully learning the _wrong_ pattern from their data: a skin-cancer classifier that mostly learned to detect _rulers_ (because malignant photos in the dataset often had one for scale), a "fish" detector that mostly learned to recognize _human fingers_ (because most training photos were of anglers holding their catch), and image taggers that confidently labeled sheep in any green grassy field - even when the sheep weren't there.<sup><a href="#fn-7" aria-label="Footnote 7">7</a></sup> Probabilistic systems are extraordinarily good at finding the easiest correlation in front of them, and the easiest correlation is rarely the one we meant.
+And it's not theoretical. In [_You Look Like a Thing and I Love You_](https://www.janelleshane.com/book-you-look-like-a-thing), Shane shares a whole catalog of examples of ML systems faithfully learning the _wrong_ pattern from their data: a skin-cancer classifier that mostly learned to detect _rulers_ (because malignant photos in the dataset often had one for scale), a "fish" detector that mostly learned to recognize _human fingers_ (because most training photos were of anglers holding their catch), and image taggers that confidently labeled sheep in any green grassy field - even when the sheep weren't there.<sup id="fnref-7"><a href="#fn-7" aria-label="Footnote 7">7</a></sup> Probabilistic systems are extraordinarily good at finding the easiest correlation in front of them, and the easiest correlation is rarely the one we meant.
 
 When that same property gets pointed at people, the failure modes turn from funny to harmful. Amazon famously had to scrap an internal resume-screening model after it learned to down-rank applications containing the word "women's" - because the historical data it learned from was overwhelmingly male.<sup><a href="#fn-7" aria-label="Footnote 7">7</a></sup> Word-embedding studies have surfaced similar patterns at the language level (man is to computer programmer as woman is to homemaker, etc.).<sup><a href="#fn-7" aria-label="Footnote 7">7</a></sup> Same mechanism, different stakes.
 
-Emerging research has documented disability representation patterns in LLM outputs including ableist framing, tokenization, inspiration narratives, underrepresentation, deficit-based language, intersectional erasure, and neurotypical communication assumptions.<sup><a href="#fn-2" aria-label="Footnote 2">2</a></sup><sup><a href="#fn-3" aria-label="Footnote 3">3</a></sup><sup><a href="#fn-5" aria-label="Footnote 5">5</a></sup>
+Emerging research has documented disability representation patterns in LLM outputs including ableist framing, tokenization, inspiration narratives, underrepresentation, deficit-based language, intersectional erasure, and neurotypical communication assumptions.<sup id="fnref-2"><a href="#fn-2" aria-label="Footnote 2">2</a></sup><sup id="fnref-3"><a href="#fn-3" aria-label="Footnote 3">3</a></sup><sup id="fnref-5"><a href="#fn-5" aria-label="Footnote 5">5</a></sup>
 
 The hard part is that most of these harms aren't loud. Disabled participants in this research often described model outputs as _mirroring_ familiar social stereotypes - not producing obviously hateful content.<sup><a href="#fn-3" aria-label="Footnote 3">3</a></sup> Subtle exclusion is much harder to detect and govern inside design and engineering systems. For a deeper dive into the empirical evidence behind this - the ABLEIST research, hiring bias across LLMs, the training-data feedback loop, and what bias-correction techniques actually move the needle - I wrote a nifty companion piece on Thesis.<sup><a href="#fn-5" aria-label="Footnote 5">5</a></sup>
 
@@ -112,7 +136,7 @@ Where `A11Y.md` is all about technical accessibility implementation, `INCLUSION.
 - inclusive language heuristics
 - review prompts for generated outputs
 
-Now, grounding ourselves here: this file convention isn't going to "solve" AI bias. Bias mitigation is an unresolved sociotechnical problem and you can't prompt your way out of it.<sup><a href="#fn-4" aria-label="Footnote 4">4</a></sup>
+Now, grounding ourselves here: this file convention isn't going to "solve" AI bias. Bias mitigation is an unresolved sociotechnical problem and you can't prompt your way out of it.<sup id="fnref-4"><a href="#fn-4" aria-label="Footnote 4">4</a></sup>
 
 The goal is more modest and more durable: operationalize inclusive design principles directly inside AI-native design/dev workflows, right where generation is actually happening. Much like the other context files popping up in different tools, it's an attempt to smooth over some gaps and blind spots as AI builds products for us.
 
@@ -191,21 +215,21 @@ Thanks for making it this far. I'm hopeful this might actually influence the way
 
 1. <span id="fn-1" />
    WebAIM Million Report 2023 -
-   [webaim.org/projects/million/2023](https://webaim.org/projects/million/2023/)
+   [webaim.org/projects/million/2023](https://webaim.org/projects/million/2023/) <a href="#fnref-1" aria-label="Back to footnote 1 reference">↩</a>
 2. <span id="fn-2" />
    ABLEIST: Measuring Ableist Harms in Large Language Models -
-   [arxiv.org/abs/2510.10998](https://arxiv.org/abs/2510.10998)
+   [arxiv.org/abs/2510.10998](https://arxiv.org/abs/2510.10998) <a href="#fnref-2" aria-label="Back to footnote 2 reference">↩</a>
 3. <span id="fn-3" />
    Centering Disability Perspectives in LLM Research and Design -
-   [dl.acm.org/doi/10.1145/3613904.3642233](https://dl.acm.org/doi/10.1145/3613904.3642233)
+   [dl.acm.org/doi/10.1145/3613904.3642233](https://dl.acm.org/doi/10.1145/3613904.3642233) <a href="#fnref-3" aria-label="Back to footnote 3 reference">↩</a>
 4. <span id="fn-4" />A Survey of Prompt Engineering and Guardrails for LLM Bias
-   Mitigation - [arxiv.org/abs/2506.18199](https://arxiv.org/abs/2506.18199)
+   Mitigation - [arxiv.org/abs/2506.18199](https://arxiv.org/abs/2506.18199) <a href="#fnref-4" aria-label="Back to footnote 4 reference">↩</a>
 5. <span id="fn-5" />
    Branon Eusebio, _The need for INCLUSION.md_ (Thesis) -
-   [thesis.social/article/cmp1vdxrs000h04k3xutnlbsw](https://www.thesis.social/article/cmp1vdxrs000h04k3xutnlbsw)
+   [thesis.social/article/cmp1vdxrs000h04k3xutnlbsw](https://www.thesis.social/article/cmp1vdxrs000h04k3xutnlbsw) <a href="#fnref-5" aria-label="Back to footnote 5 reference">↩</a>
 6. <span id="fn-6" />
    Kat Holmes, _Mismatch: How Inclusion Shapes Design_ (MIT Press, 2018) -
    [mitpress.mit.edu/9780262539485/mismatch](https://mitpress.mit.edu/9780262539485/mismatch/)
 7. <span id="fn-7" />
    Janelle Shane, _You Look Like a Thing and I Love You_ (Voracious, 2019) -
-   [janelleshane.com/book-you-look-like-a-thing](https://www.janelleshane.com/book-you-look-like-a-thing)
+   [janelleshane.com/book-you-look-like-a-thing](https://www.janelleshane.com/book-you-look-like-a-thing) <a href="#fnref-7" aria-label="Back to footnote 7 reference">↩</a>
