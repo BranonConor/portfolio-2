@@ -82,7 +82,11 @@ export default function Projects() {
   const filteredProjects =
     currentFilter === "all"
       ? allProjects
-      : allProjects.filter((p) => p.category === currentFilter);
+      : allProjects.filter((p) =>
+          Array.isArray(p.category)
+            ? p.category.includes(currentFilter)
+            : p.category === currentFilter,
+        );
 
   return (
     <PageWrapper>
@@ -227,21 +231,27 @@ export default function Projects() {
                 }}
                 transition="0.12s ease all"
               >
-                <Flex alignItems="center" gap={3}>
+                <Flex alignItems="center" gap={3} flexWrap="wrap">
                   <Text fontSize="14px" fontWeight="500" color="brand.text">
                     {project.title}
                   </Text>
-                  <Text
-                    fontSize="11px"
-                    color="brand.textMuted"
-                    bg="brand.surface"
-                    paddingX={2}
-                    paddingY={0.5}
-                    borderRadius="6px"
-                    display={["none", "block"]}
-                  >
-                    {project.category}
-                  </Text>
+                  {(Array.isArray(project.category)
+                    ? project.category
+                    : [project.category]
+                  ).map((cat) => (
+                    <Text
+                      key={cat}
+                      fontSize="11px"
+                      color="brand.textMuted"
+                      bg="brand.surface"
+                      paddingX={2}
+                      paddingY={0.5}
+                      borderRadius="6px"
+                      display={["none", "block"]}
+                    >
+                      {cat}
+                    </Text>
+                  ))}
                   {(project as any).hasPassword && (
                     <Text fontSize="11px" opacity={0.5}>
                       🔒

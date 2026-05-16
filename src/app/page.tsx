@@ -182,6 +182,11 @@ const publications = [
 
 const projects = [
   {
+    title: "INCLUSION.md 🧡",
+    company: "Open Source",
+    link: "/projects/posts/inclusion-md",
+  },
+  {
     title: "Reimagining GitHub 💭",
     company: "GitHub",
     link: "/projects/posts/reimagining-github",
@@ -196,12 +201,6 @@ const projects = [
     title: "Loading Screen Revamp",
     company: "Smartsheet",
     link: "/projects/posts/loading-screen",
-  },
-  {
-    title: "Theme Architecture Refactor",
-    company: "Smartsheet",
-    link: "/projects/posts/theme-refactor",
-    hasPassword: true,
   },
   {
     title: "EZ Links",
@@ -247,6 +246,13 @@ const engagements = [
 ];
 
 const showcase = [
+  {
+    title: "INCLUSION.md",
+    description: "Context for inclusive AI-assisted work",
+    link: "https://github.com/BranonConor/inclusion.md",
+    icon: "/icons/repo-light.svg",
+    tag: "Live",
+  },
   {
     title: "Thesis",
     description: "AI-assisted knowledge network",

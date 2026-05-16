@@ -1,0 +1,312 @@
+import ContentImage from "@/components/blog/ContentImage";
+import Note from "@/components/blog/Note";
+import HeroStrip from "@/components/blog/HeroStrip";
+
+export const metadata = {
+  title: "INCLUSION.md 🧡 - Building Better w/ AI - Branon Eusebio",
+  description:
+    "An open-source context-engineering scaffold for inclusive AI-assisted design and development - plus a controlled experiment, built with GitHub Copilot and Claude Opus, that measures whether it actually moves the needle.",
+  openGraph: {
+    title: "INCLUSION.md 🧡 - Building Better w/ AI",
+    description:
+      "A repo-level context file for inclusive AI-assisted work, and a controlled experiment that found it improves generated outputs by ~80%.",
+    url: "https://branon.dev/projects/posts/inclusion-md",
+    type: "article",
+    publishedTime: "2026-05-15",
+    authors: ["Branon Eusebio"],
+    images: [
+      {
+        url: "/projects/inclusion-md/cover.png",
+        width: 1200,
+        height: 630,
+        alt: "INCLUSION.md - an LLM/agent context convention for model biases.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "INCLUSION.md 🧡 - Building Better w/ AI",
+    description:
+      "A repo-level context file for inclusive AI-assisted work, and a controlled experiment that found it improves generated outputs by ~80%.",
+    images: ["/projects/inclusion-md/cover.png"],
+  },
+};
+
+<HeroStrip
+  title="INCLUSION.md 🧡 - Building Better w/ AI"
+  subtitle="An open-source context-engineering scaffold for inclusive AI-assisted work - plus a controlled experiment to find out if it actually does anything."
+  date="May 2026"
+  category="A11y"
+/>
+
+<style>{`
+  .post-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin: 20px 0;
+    padding: 0 16px;
+  }
+  @media (min-width: 30em) { .post-table-wrap { padding: 0 20px; } }
+  @media (min-width: 48em) { .post-table-wrap { padding: 0 24px; } }
+`}</style>
+
+### ✍🏽 The TLDR
+
+AI coding and design assistants now sit _between_ human intent and what ships. They draft components, name things, write microcopy, generate flows. And they inherit their defaults from the public web - which is overwhelmingly inaccessible and unevenly representative of human diversity.
+
+`INCLUSION.md` is a small open-source attempt to push back: a repo-level context file that gives AI tools persistent, inclusion-oriented guidance during generation. The companion essay [_The need for INCLUSION.md_](/blog/posts/the-need-for-inclusion-md) lays out the long-form argument. This post is about what I _built_ - and the small experiment I ran agentically with [GitHub Copilot](https://github.com/features/copilot) and [Claude Opus 4.7](https://www.anthropic.com/claude) to see if it actually moves the needle.
+
+<ContentImage
+  image="/projects/inclusion-md/cover.png"
+  caption="INCLUSION.md - an LLM/agent context convention for model biases."
+/>
+
+### ⚠️ The Problem
+
+- Modern coding assistants are now upstream design partners, generating UI, copy, error messages, and architecture decisions.
+- They were trained extensively on the public web - 96.3% of which fails WCAG audits per WebAIM's 2023 Million Report - and on text full of representational gaps around disability, language, communication style, and culture.
+- Existing repo conventions like `A11Y.md`, `CONTRIBUTING.md`, and `AGENTS.md` shape implementation correctness, contribution process, and agent behavior - but none of them carry the _inclusion_ context: known training-data blind spots, disability representation, communication diversity, cognitive access, cultural defaults.
+- Accessibility tells us whether a user _can_ access a system. Inclusion asks whether they were _meaningfully considered_ in the assumptions baked into it. Different question, missing tooling.
+
+### ✨ The Solution
+
+A drop-in repository file - the inclusion-focused sibling of `A11Y.md` and `DESIGN.md` - that AI assistants like Copilot, Cursor, Claude Code, Windsurf, and Continue read as persistent context during generation.
+
+<div className="post-table-wrap">
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      fontSize: "14px",
+      tableLayout: "auto",
+    }}
+  >
+    <thead>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+        <th style={{ textAlign: "left", padding: "10px 14px 10px 0", fontWeight: 600, whiteSpace: "nowrap" }}>
+          File
+        </th>
+        <th style={{ textAlign: "left", padding: "10px 0 10px 14px", fontWeight: 600 }}>
+          Operationalizes
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0", whiteSpace: "nowrap" }}>
+
+          `README.md`
+
+        </td>
+        <td style={{ padding: "10px 0 10px 14px" }}>
+          What this project is
+        </td>
+      </tr>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0", whiteSpace: "nowrap" }}>
+
+          `CONTRIBUTING.md`
+
+        </td>
+        <td style={{ padding: "10px 0 10px 14px" }}>
+          How humans contribute
+        </td>
+      </tr>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0", whiteSpace: "nowrap" }}>
+
+          `A11Y.md`
+
+        </td>
+        <td style={{ padding: "10px 0 10px 14px" }}>
+          Technical accessibility compliance
+        </td>
+      </tr>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0", whiteSpace: "nowrap" }}>
+
+          `DESIGN.md`
+
+        </td>
+        <td style={{ padding: "10px 0 10px 14px" }}>
+          Visual and interaction system
+        </td>
+      </tr>
+      <tr>
+        <td style={{ padding: "10px 14px 10px 0", whiteSpace: "nowrap" }}>
+
+          `INCLUSION.md`
+
+        </td>
+        <td style={{ padding: "10px 0 10px 14px" }}>
+          Contextual, representational, sociotechnical inclusion
+        </td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+
+Shipped as an open-source repo + npm package with a friendly CLI for easy adoption:
+
+```bash
+npx inclusion-md init
+```
+
+Zero dependencies, Node 16+, a short questionnaire, and you get a customized `INCLUSION.md` written to your repo root. From there you point your AI assistant at it and treat it like the rest of your engineering docs - named owner, review cadence, changelog, the works.
+
+<Note>
+  Open source repo:
+  [github.com/BranonConor/inclusion.md](https://github.com/BranonConor/inclusion.md)
+  · npm: [inclusion-md](https://www.npmjs.com/package/inclusion-md) · companion
+  essay: [The need for INCLUSION.md](/blog/posts/the-need-for-inclusion-md)
+</Note>
+
+### 👯‍♂️ The Team
+
+Just me, plus my AI pair (GitHub Copilot + Claude Opus 4.7) acting as a coding partner. Iteration, drafting, scaffolding - all done agentically in VS Code. The thinking, the inclusion guidance itself, and the editorial calls are mine.
+
+<br />
+
+# 🧪 The Experiment
+
+The pitch for `INCLUSION.md` is intuitively reasonable: give the model more context, get better outputs. But "reasonable" isn't evidence. I wanted to know - does this file _actually_ change what an AI assistant generates? And by how much?
+
+So I ran a small controlled experiment, again agentically with GitHub Copilot + Claude Opus 4.7.
+
+### 🧰 Setup
+
+Two identical [Next.js 14 + TypeScript scaffolds](https://github.com/BranonConor/inclusion-md-experiment), differing in exactly one file:
+
+- **Condition A** - the scaffold, no `INCLUSION.md`.
+- **Condition B** - the same scaffold, _plus_ a populated `INCLUSION.md` documenting the fictional product's design decisions, known exclusions, and review prompts.
+
+Then four design challenges, picked specifically to surface common inclusion failure modes:
+
+1. **A login flow** - to probe error message tone and clarity.
+2. **A profile form** - to probe field flexibility and required-field assumptions (the classic "required legal name" trap).
+3. **A notification banner** - to probe severity communication (color-only? icon + color? screen-reader behavior?).
+4. **A status dashboard** - to probe sensory access and color-only status indicators.
+
+The same agent built each challenge twice (once per condition), then scored all eight outputs against a 5-category, 10-point-per-category rubric: Error Messages & Copy, Flexibility & Alternatives, Cognitive & Communication Access, Sensory & Interaction Access, and Constraint Awareness.
+
+<Note>
+  Big honesty disclosure: same-agent-as-author-and-auditor is the dominant
+  methodological limitation here, and the n is small (4 challenges). This is a
+  directional signal, not a clinical result. It's disclosed up front in the
+  report.
+</Note>
+
+### 📊 Results
+
+Condition B (with `INCLUSION.md`) scored higher on **every challenge** and **every category**. Across the four shared categories (max 40 points), the average moved from **19.25 in Condition A to 34.75 in Condition B - a +80.5% improvement.**
+
+Per-category lift in Condition B:
+
+<div className="post-table-wrap">
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      fontSize: "14px",
+      tableLayout: "auto",
+    }}
+  >
+    <thead>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+        <th style={{ textAlign: "left", padding: "10px 14px 10px 0", fontWeight: 600 }}>
+          Category
+        </th>
+        <th style={{ textAlign: "left", padding: "10px 0 10px 14px", fontWeight: 600, whiteSpace: "nowrap" }}>
+          Lift
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0" }}>
+          Flexibility &amp; Alternatives
+        </td>
+        <td style={{ padding: "10px 0 10px 14px", whiteSpace: "nowrap" }}>
+
+          **+192%**
+
+        </td>
+      </tr>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0" }}>
+          Cognitive &amp; Communication Access
+        </td>
+        <td style={{ padding: "10px 0 10px 14px", whiteSpace: "nowrap" }}>
+          +66.7%
+        </td>
+      </tr>
+      <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <td style={{ padding: "10px 14px 10px 0" }}>
+          Sensory &amp; Interaction Access
+        </td>
+        <td style={{ padding: "10px 0 10px 14px", whiteSpace: "nowrap" }}>
+          +59.1%
+        </td>
+      </tr>
+      <tr>
+        <td style={{ padding: "10px 14px 10px 0" }}>
+          Error Messages &amp; Copy
+        </td>
+        <td style={{ padding: "10px 0 10px 14px", whiteSpace: "nowrap" }}>
+          +54.5%
+        </td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+
+The most interesting finding wasn't the headline number - it was _which_ category jumped the most. I expected Sensory Accessibility (icons alongside color, screen reader announcements) to lead, since that's the most concrete inclusion guidance in the doc. Instead, **Flexibility nearly tripled**. The doc's habit of asking _"could this work differently?"_ produced configurable, fallback-aware components way more reliably than its pointed a11y guidance produced direct a11y improvements.
+
+The doc had the most leverage when it:
+
+- **Named failure modes precisely** ("color-only status indicators", "required legal name field")
+- **Gave explicit permission to challenge the spec** ("possibly the name field is optional")
+- **Forced configurability** by listing alternative use cases the implementation needed to support
+
+It had the _least_ leverage on markup hygiene (form labels, semantic HTML) - the training-data floor there is already pretty good, so there wasn't much ceiling to push against.
+
+<Note>
+  The defensible takeaway: a project-specific context file that names failure
+  modes and stated tradeoffs produces measurably more cautious, configurable,
+  and constraint-aware AI-generated code than a project without one - for the
+  same model, in the same session, on the same prompt.
+</Note>
+
+### 🔬 Where it goes next
+
+The question this experiment _can't_ answer is whether that translates to better outcomes for the disabled users such projects nominally serve. That's the question that matters next, and the right people to run it aren't me alone. It's a study to do _with_ disabled practitioners and accessibility researchers - not _about_ them from the comfort of a single agentic session.
+
+If you want to see the receipts (test cases, generated outputs, scoring rubric, per-challenge audit reasoning, full 10-section report), the experiment repo is fully open-source:
+
+- 📊 Experiment repo: [github.com/BranonConor/inclusion-md-experiment](https://github.com/BranonConor/inclusion-md-experiment)
+- 📄 Full report: [`experiment/REPORT.md`](https://github.com/BranonConor/inclusion-md-experiment/blob/main/experiment/REPORT.md)
+
+<br />
+
+# 🚀 Outcomes
+
+- **Open-source repo + npm package shipped.** [`inclusion-md`](https://www.npmjs.com/package/inclusion-md) is live, zero-dependency, Node 16+, with a friendly CLI and adapted templates for frontend apps, design systems, and backend APIs.
+- **A companion essay** publicly arguing for the convention: [_The need for INCLUSION.md_](/blog/posts/the-need-for-inclusion-md).
+- **A controlled experiment** with a directional, replicable signal: **+80.5% improvement** across inclusion-relevant categories when `INCLUSION.md` is present, with the largest single jump in Flexibility (+192%).
+- **An honest report** that documents the limitations as loudly as the wins - because that's the only way this kind of work earns trust.
+
+<br />
+
+# 🪞 Reflections
+
+Working agentically on this was genuinely novel. I was using the very tools I was critiquing - GitHub Copilot and Claude Opus 4.7 - to scaffold, draft, refactor, and even help audit the experiment outputs. That cuts both ways: it's a great forcing function for "does this actually work?" and it's a real bias risk for "did the agent flatter its own outputs?". The honesty disclosure in the report is genuinely meant, not a vibes-y caveat.
+
+What surprised me most: how _quickly_ the model's behavior changed once the context file gave it explicit permission to challenge defaults. The training-data floor in 2026 is much higher than it was a couple years ago - the basics are mostly handled. The lift is now in the soft layer: when the model is willing to question whether a name field should be required, whether a status needs an icon as well as a color, whether an error message should suggest a recovery path or just announce a problem. That layer responds to context engineering shockingly well.
+
+If you're a designer or engineer working with AI assistants and any of this resonates - fork the repo, adapt the template, drop me a note. I'd especially love contributions from disabled practitioners and from communities underrepresented in this kind of tooling.
+
+Cheers to doing our best :)
+
+- Branon

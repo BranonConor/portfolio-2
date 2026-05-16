@@ -41,6 +41,13 @@ export const designSystemsProjects = [
 ];
 export const a11yProjects = [
   {
+    title: "INCLUSION.md 🧡 - Building Better w/ AI",
+    category: ["Side Projects", "A11y"],
+    image: "/projects/inclusion-md/cover.png",
+    link: "/projects/posts/inclusion-md",
+    date: "May 2026",
+  },
+  {
     title: "Focus/Keyboard Nav Utilities @ Smartsheet",
     category: "A11y",
     image: "/projects/focus-utility/cover.png",
@@ -58,14 +65,14 @@ export const a11yProjects = [
 export const otherProjects = [
   {
     title: "Reimagining GitHub \u{1F4AD} @ GitHub",
-    category: "Hackweek",
+    category: ["Hackweek", "Product"],
     image: "/projects/reimagining-github/cover.png",
     link: "/projects/posts/reimagining-github",
     date: "December 2025",
   },
   {
     title: "EZ Links @ Smartsheet",
-    category: "Hackweek",
+    category: ["Hackweek", "Product"],
     image: "/projects/ez-links/cover.png",
     link: "/projects/posts/ez-links",
     date: "May 2024",
@@ -81,7 +88,7 @@ export const otherProjects = [
 export const sideProjects = [
   {
     title: "Building thesis.social 💫",
-    category: "Side Projects",
+    category: ["Side Projects", "Product"],
     image: "/thesis.gif",
     link: "/projects/posts/thesis",
     date: "March 2026",
