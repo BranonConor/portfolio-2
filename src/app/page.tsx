@@ -248,7 +248,7 @@ const engagements = [
 const showcase = [
   {
     title: "INCLUSION.md",
-    description: "Context for inclusive AI-assisted work",
+    description: "Context for inclusive AI design",
     link: "https://github.com/BranonConor/inclusion.md",
     icon: "/icons/repo-light.svg",
     tag: "Live",
