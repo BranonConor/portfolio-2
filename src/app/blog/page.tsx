@@ -1,12 +1,20 @@
 "use client";
 
 import { Flex, Heading, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
 import Link from "next/link";
 
 export default function Blog() {
   const posts = [
+    {
+      title: "The CLI is the New UI",
+      category: "AI & DX",
+      link: "https://www.thesis.social/article/cmp73stnr000o04l6bxr194c5",
+      date: "May 2026",
+      external: true,
+    },
     {
       title: "The need for INCLUSION.md",
       category: "Accessibility",
@@ -100,8 +108,9 @@ export default function Blog() {
             {posts.map((post) => (
               <ChakraLink
                 key={post.title}
-                as={Link}
-                href={post.link}
+                {...(post.external
+                  ? { href: post.link, isExternal: true }
+                  : { as: Link, href: post.link })}
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
@@ -150,9 +159,12 @@ export default function Blog() {
                     {post.category}
                   </Text>
                 </Flex>
-                <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                  {post.date}
-                </Text>
+                <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
+                  <Text textStyle="listMeta">{post.date}</Text>
+                  {post.external && (
+                    <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                  )}
+                </Flex>
               </ChakraLink>
             ))}
           </Flex>

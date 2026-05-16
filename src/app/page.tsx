@@ -216,6 +216,12 @@ const projects = [
 
 const writing = [
   {
+    title: "The CLI is the New UI",
+    date: "May 2026",
+    link: "https://www.thesis.social/article/cmp73stnr000o04l6bxr194c5",
+    external: true,
+  },
+  {
     title: "The need for INCLUSION.md",
     date: "May 2026",
     link: "/blog/posts/the-need-for-inclusion-md",
@@ -1351,8 +1357,9 @@ export default function Home() {
                 {writing.map((post) => (
                   <ChakraLink
                     key={post.title}
-                    as={Link}
-                    href={post.link}
+                    {...(post.external
+                      ? { href: post.link, isExternal: true }
+                      : { as: Link, href: post.link })}
                     display="flex"
                     justifyContent="space-between"
                     alignItems="center"
@@ -1381,16 +1388,24 @@ export default function Home() {
                     }}
                     transition="0.12s ease all"
                   >
-                    <Text
-                      as="span"
-                      textStyle="listTitle"
-                      transition="0.12s ease all"
-                    >
-                      {post.title}
-                    </Text>
-                    <Text textStyle="listMeta" flexShrink={0} ml={3}>
-                      {post.date}
-                    </Text>
+                    <Flex alignItems="center" gap={2}>
+                      <Text
+                        as="span"
+                        textStyle="listTitle"
+                        transition="0.12s ease all"
+                      >
+                        {post.title}
+                      </Text>
+                    </Flex>
+                    <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
+                      <Text textStyle="listMeta">{post.date}</Text>
+                      {post.external && (
+                        <ExternalLinkIcon
+                          boxSize={3}
+                          color="brand.textMuted"
+                        />
+                      )}
+                    </Flex>
                   </ChakraLink>
                 ))}
               </Flex>
