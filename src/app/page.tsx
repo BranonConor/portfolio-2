@@ -88,13 +88,13 @@ const experience = [
   },
   {
     company: "Charter Healthcare",
-    role: "UX/UI Engineer",
+    role: "UX Engineer",
     period: "May 2020 – May 2021",
     logo: "/charter.png",
   },
   {
     company: "TheraMind",
-    role: "Web Developer & Designer",
+    role: "UX Engineer",
     period: "Dec 2019 – May 2020",
     logo: "/theramind.png",
   },
@@ -102,10 +102,11 @@ const experience = [
 
 const otherExperience = [
   {
-    company: "GLIA Labs",
+    company: "HumanHands",
     role: "Designer, Engineer & Creator",
     period: "Nov 2019 – Present",
-    logo: "/glialabs.png",
+    logo: "/humanhands.jpg",
+    logoSize: "24px",
     current: true,
   },
 ];
@@ -193,7 +194,7 @@ const projects = [
   },
   {
     title: "Building thesis.social 💫",
-    company: "GLIA Labs",
+    company: "HumanHands",
     link: "/projects/posts/thesis",
     hasPassword: true,
   },
@@ -882,8 +883,8 @@ export default function Home() {
                         <Image
                           src={role.logo}
                           alt={role.company}
-                          width="20px"
-                          height="20px"
+                          width={role.logoSize || "20px"}
+                          height={role.logoSize || "20px"}
                           objectFit="contain"
                           borderRadius="4px"
                         />
@@ -1400,10 +1401,7 @@ export default function Home() {
                     <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
                       <Text textStyle="listMeta">{post.date}</Text>
                       {post.external && (
-                        <ExternalLinkIcon
-                          boxSize={3}
-                          color="brand.textMuted"
-                        />
+                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
                       )}
                     </Flex>
                   </ChakraLink>
