@@ -141,6 +141,13 @@ const honors = [
 
 const publications = [
   {
+    title: "The Need for INCLUSION.md",
+    publisher: "Designsystem.news",
+    date: "May 2026",
+    tag: "Tech",
+    link: "https://designsystems.news/#:~:text=The%20need%20for%20INCLUSION.md",
+  },
+  {
     title:
       "We Used UX Research After an Accessibility Audit. Here's What Happened.",
     publisher: "Human Centered",
@@ -1069,82 +1076,74 @@ export default function Home() {
             </Section>
           </Box>
 
-          {/* Publications */}
-          <Box order={[6, 6, 0]} width="100%">
-            <Section title="Publications">
+          {/* Honors & Accomplishments */}
+          <Box order={[8, 8, 0]} width="100%">
+            <Section title="Honors & Accomplishments">
               <Flex
                 flexDirection="column"
                 gap={0}
-                sx={{
-                  "& > *:first-child::after": { display: "none" },
-                  "& > *:hover + *::after": { transform: "scaleX(0)" },
-                }}
+                sx={{ "& > *:first-child": { borderTop: "none" } }}
               >
-                {publications.map((pub) => (
-                  <ChakraLink
-                    key={pub.title}
-                    href={pub.link}
-                    isExternal
-                    display="block"
+                {honors.map((item) => (
+                  <Box
+                    key={item.title}
                     paddingY={2.5}
-                    position="relative"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: "1px",
-                      bg: "brand.border",
-                      transition: "0.18s ease all",
-                      transformOrigin: "center",
-                    }}
-                    _hover={{
-                      textDecoration: "none",
-                      bg: "brand.surfaceHover",
-                      marginX: -3,
-                      paddingX: 3,
-                      borderRadius: "10px",
-                      zIndex: 1,
-                      _after: { transform: "scaleX(0)" },
-                    }}
-                    transition="0.12s ease all"
+                    borderTop="1px solid"
+                    borderTopColor="brand.border"
                   >
                     <Flex
                       justifyContent="space-between"
                       alignItems="flex-start"
                       gap={3}
                     >
-                      <Box flex={1} minWidth={0}>
-                        <Text textStyle="listTitle">{pub.title}</Text>
-                        <Text textStyle="listMeta" mt={0.5}>
-                          {pub.publisher} · {pub.date}
-                        </Text>
+                      <Box>
+                        <Text textStyle="listTitle">{item.title}</Text>
                       </Box>
-                      <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
-                        <Box
-                          fontSize="10px"
-                          fontWeight="600"
-                          textTransform="uppercase"
-                          letterSpacing="0.05em"
-                          color={
-                            pub.tag === "Tech" ? "brand.accent" : "#a78bfa"
-                          }
-                          bg={
-                            pub.tag === "Tech"
-                              ? "rgba(96,165,250,0.1)"
-                              : "rgba(167,139,250,0.1)"
-                          }
-                          px={2}
-                          py={0.5}
-                          borderRadius="4px"
-                        >
-                          {pub.tag}
-                        </Box>
-                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                      </Flex>
+                      <Text
+                        textStyle="listMeta"
+                        flexShrink={0}
+                        whiteSpace="nowrap"
+                      >
+                        {item.org} · {item.date}
+                      </Text>
                     </Flex>
-                  </ChakraLink>
+                  </Box>
+                ))}
+              </Flex>
+            </Section>
+          </Box>
+
+          {/* Skills */}
+          <Box order={[9, 9, 0]} width="100%">
+            <Section title="Skills">
+              <Flex flexWrap="wrap" gap={2}>
+                {[
+                  { name: "TypeScript", color: "#3178c6" },
+                  { name: "React", color: "#61dafb" },
+                  { name: "HTML", color: "#e44d26" },
+                  { name: "CSS", color: "#f472b6" },
+                  { name: "Design Systems", color: "#f59e0b" },
+                  { name: "Figma", color: "#a259ff" },
+                  { name: "AI", color: "#da70d6" },
+                  { name: "Git", color: "#f05032" },
+                  { name: "Accessibility", color: "#22c55e" },
+                  { name: "Testing", color: "#69d3a7" },
+                  { name: "Prototyping", color: "#f0abfc" },
+                ].map((tech) => (
+                  <Box
+                    key={tech.name}
+                    fontSize="11px"
+                    fontWeight="600"
+                    letterSpacing="0.02em"
+                    color={tech.color}
+                    bg={`${tech.color}15`}
+                    px={2.5}
+                    py={1}
+                    borderRadius="6px"
+                    whiteSpace="nowrap"
+                  >
+                    {tech.name}
+                  </Box>
                 ))}
               </Flex>
             </Section>
@@ -1410,74 +1409,82 @@ export default function Home() {
             </Section>
           </Box>
 
-          {/* Honors & Accomplishments */}
-          <Box order={[8, 8, 0]} width="100%">
-            <Section title="Honors & Accomplishments">
+          {/* Publications */}
+          <Box order={[6, 6, 0]} width="100%">
+            <Section title="Publications">
               <Flex
                 flexDirection="column"
                 gap={0}
-                sx={{ "& > *:first-child": { borderTop: "none" } }}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
               >
-                {honors.map((item) => (
-                  <Box
-                    key={item.title}
+                {publications.map((pub) => (
+                  <ChakraLink
+                    key={pub.title}
+                    href={pub.link}
+                    isExternal
+                    display="block"
                     paddingY={2.5}
-                    borderTop="1px solid"
-                    borderTopColor="brand.border"
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                    }}
+                    transition="0.12s ease all"
                   >
                     <Flex
                       justifyContent="space-between"
                       alignItems="flex-start"
                       gap={3}
                     >
-                      <Box>
-                        <Text textStyle="listTitle">{item.title}</Text>
+                      <Box flex={1} minWidth={0}>
+                        <Text textStyle="listTitle">{pub.title}</Text>
+                        <Text textStyle="listMeta" mt={0.5}>
+                          {pub.publisher} · {pub.date}
+                        </Text>
                       </Box>
-                      <Text
-                        textStyle="listMeta"
-                        flexShrink={0}
-                        whiteSpace="nowrap"
-                      >
-                        {item.org} · {item.date}
-                      </Text>
+                      <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
+                        <Box
+                          fontSize="10px"
+                          fontWeight="600"
+                          textTransform="uppercase"
+                          letterSpacing="0.05em"
+                          color={
+                            pub.tag === "Tech" ? "brand.accent" : "#a78bfa"
+                          }
+                          bg={
+                            pub.tag === "Tech"
+                              ? "rgba(96,165,250,0.1)"
+                              : "rgba(167,139,250,0.1)"
+                          }
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                        >
+                          {pub.tag}
+                        </Box>
+                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                      </Flex>
                     </Flex>
-                  </Box>
-                ))}
-              </Flex>
-            </Section>
-          </Box>
-
-          {/* Skills */}
-          <Box order={[9, 9, 0]} width="100%">
-            <Section title="Skills">
-              <Flex flexWrap="wrap" gap={2}>
-                {[
-                  { name: "TypeScript", color: "#3178c6" },
-                  { name: "React", color: "#61dafb" },
-                  { name: "HTML", color: "#e44d26" },
-                  { name: "CSS", color: "#f472b6" },
-                  { name: "Design Systems", color: "#f59e0b" },
-                  { name: "Figma", color: "#a259ff" },
-                  { name: "AI", color: "#da70d6" },
-                  { name: "Git", color: "#f05032" },
-                  { name: "Accessibility", color: "#22c55e" },
-                  { name: "Testing", color: "#69d3a7" },
-                  { name: "Prototyping", color: "#f0abfc" },
-                ].map((tech) => (
-                  <Box
-                    key={tech.name}
-                    fontSize="11px"
-                    fontWeight="600"
-                    letterSpacing="0.02em"
-                    color={tech.color}
-                    bg={`${tech.color}15`}
-                    px={2.5}
-                    py={1}
-                    borderRadius="6px"
-                    whiteSpace="nowrap"
-                  >
-                    {tech.name}
-                  </Box>
+                  </ChakraLink>
                 ))}
               </Flex>
             </Section>
