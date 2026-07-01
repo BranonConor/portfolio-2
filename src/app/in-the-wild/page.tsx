@@ -28,6 +28,15 @@ export default function InTheWild() {
       ? inTheWild
       : inTheWild.filter((item) => item.category === currentFilter);
 
+  // Always show newest first, regardless of array order in consts.
+  const sorted = useMemo(
+    () =>
+      [...filtered].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      ),
+    [filtered],
+  );
+
   return (
     <PageWrapper>
       <Flex
@@ -136,7 +145,7 @@ export default function InTheWild() {
               "& > *:hover + *::after": { transform: "scaleX(0)" },
             }}
           >
-            {filtered.map((item) => {
+            {sorted.map((item) => {
               const linkProps = item.external
                 ? {
                     href: item.link,

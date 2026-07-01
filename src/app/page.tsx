@@ -211,11 +211,6 @@ const projects = [
     link: "/projects/posts/loading-screen",
   },
   {
-    title: "EZ Links",
-    company: "Smartsheet",
-    link: "/projects/posts/ez-links",
-  },
-  {
     title: "A11y Audit Program",
     company: "Color Health",
     link: "/projects/posts/a11y-kit",
@@ -266,6 +261,29 @@ const inTheWild = [
     date: "June 2026",
     logo: "/logos/nytimes.svg",
     link: "/in-the-wild/posts/nih-health-database",
+  },
+  {
+    title: "Secret scanning extended metadata checks",
+    source: "GitHub",
+    date: "February 2026",
+    logo: "/github.png",
+    link: "https://github.blog/changelog/2026-02-18-secret-scanning-improvements-to-extended-metadata-checks/",
+    external: true,
+  },
+  {
+    title: "Smartsheet's redesign: AI & a11y",
+    source: "DesignRush",
+    date: "October 2024",
+    logo: "/logos/designrush.png",
+    link: "/in-the-wild/posts/smartsheet-redesign",
+  },
+  {
+    title: "DCTclock - TIME Best Inventions of 2021",
+    source: "TIME",
+    date: "November 2021",
+    logo: "/logos/time.svg",
+    link: "https://time.com/collections/best-inventions-2021/6113080/dctclock/",
+    external: true,
   },
 ];
 
@@ -1086,90 +1104,6 @@ export default function Home() {
             </Section>
           </Box>
 
-          {/* In the Wild */}
-          <Box order={[5, 5, 0]} width="100%">
-            <Section title="In the Wild" href="/in-the-wild">
-              <Flex
-                flexDirection="column"
-                gap={0}
-                sx={{
-                  "& > *:first-child::after": { display: "none" },
-                  "& > *:hover + *::after": { transform: "scaleX(0)" },
-                }}
-              >
-                {inTheWild.map((item) => (
-                  <ChakraLink
-                    key={item.title}
-                    as={Link}
-                    href={item.link}
-                    display="block"
-                    paddingY={2.5}
-                    position="relative"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: "1px",
-                      bg: "brand.border",
-                      transition: "0.18s ease all",
-                      transformOrigin: "center",
-                    }}
-                    _hover={{
-                      textDecoration: "none",
-                      bg: "brand.surfaceHover",
-                      marginX: -3,
-                      paddingX: 3,
-                      borderRadius: "10px",
-                      zIndex: 1,
-                      _after: { transform: "scaleX(0)" },
-                    }}
-                    transition="0.12s ease all"
-                  >
-                    <Flex
-                      justifyContent="space-between"
-                      alignItems="flex-start"
-                      gap={3}
-                    >
-                      <Flex alignItems="center" gap={2.5} flex={1} minWidth={0}>
-                        {item.logo && (
-                          <Box
-                            width="36px"
-                            height="36px"
-                            minWidth="36px"
-                            borderRadius="8px"
-                            border="1px solid"
-                            borderColor="brand.border"
-                            bg="rgba(255, 255, 255, 0.06)"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            overflow="hidden"
-                          >
-                            <Image
-                              src={item.logo}
-                              alt={item.source}
-                              width="20px"
-                              height="20px"
-                              objectFit="contain"
-                            />
-                          </Box>
-                        )}
-                        <Box minWidth={0}>
-                          <Text textStyle="listTitle">{item.title}</Text>
-                          <Text textStyle="listMeta" mt={0.5}>
-                            {item.source} · {item.date}
-                          </Text>
-                        </Box>
-                      </Flex>
-                    </Flex>
-                  </ChakraLink>
-                ))}
-              </Flex>
-            </Section>
-          </Box>
-
           {/* Honors & Accomplishments */}
           <Box order={[8, 8, 0]} width="100%">
             <Section title="Honors & Accomplishments">
@@ -1202,6 +1136,73 @@ export default function Home() {
                       </Text>
                     </Flex>
                   </Box>
+                ))}
+              </Flex>
+            </Section>
+          </Box>
+
+          {/* Skills */}
+          {/* Writing */}
+          <Box order={[7, 7, 0]} width="100%">
+            <Section title="Writing" href="/blog">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {writing.map((post) => (
+                  <ChakraLink
+                    key={post.title}
+                    {...(post.external
+                      ? { href: post.link, isExternal: true }
+                      : { as: Link, href: post.link })}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                      "& > span:first-of-type": { color: "brand.text" },
+                    }}
+                    transition="0.12s ease all"
+                  >
+                    <Flex alignItems="center" gap={2}>
+                      <Text
+                        as="span"
+                        textStyle="listTitle"
+                        transition="0.12s ease all"
+                      >
+                        {post.title}
+                      </Text>
+                    </Flex>
+                    <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
+                      <Text textStyle="listMeta">{post.date}</Text>
+                      {post.external && (
+                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                      )}
+                    </Flex>
+                  </ChakraLink>
                 ))}
               </Flex>
             </Section>
@@ -1434,9 +1435,9 @@ export default function Home() {
             </Section>
           </Box>
 
-          {/* Writing */}
-          <Box order={[7, 7, 0]} width="100%">
-            <Section title="Writing" href="/blog">
+          {/* In the Wild */}
+          <Box order={[5, 5, 0]} width="100%">
+            <Section title="In the Wild" href="/in-the-wild">
               <Flex
                 flexDirection="column"
                 gap={0}
@@ -1445,15 +1446,18 @@ export default function Home() {
                   "& > *:hover + *::after": { transform: "scaleX(0)" },
                 }}
               >
-                {writing.map((post) => (
+                {inTheWild.map((item) => (
                   <ChakraLink
-                    key={post.title}
-                    {...(post.external
-                      ? { href: post.link, isExternal: true }
-                      : { as: Link, href: post.link })}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
+                    key={item.title}
+                    {...((item as { external?: boolean }).external
+                      ? {
+                          href: item.link,
+                          isExternal: true,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                        }
+                      : { as: Link, href: item.link })}
+                    display="block"
                     paddingY={2.5}
                     position="relative"
                     _after={{
@@ -1475,24 +1479,46 @@ export default function Home() {
                       borderRadius: "10px",
                       zIndex: 1,
                       _after: { transform: "scaleX(0)" },
-                      "& > span:first-of-type": { color: "brand.text" },
                     }}
                     transition="0.12s ease all"
                   >
-                    <Flex alignItems="center" gap={2}>
-                      <Text
-                        as="span"
-                        textStyle="listTitle"
-                        transition="0.12s ease all"
-                      >
-                        {post.title}
-                      </Text>
-                    </Flex>
-                    <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
-                      <Text textStyle="listMeta">{post.date}</Text>
-                      {post.external && (
-                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                      )}
+                    <Flex
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      gap={3}
+                    >
+                      <Flex alignItems="center" gap={2.5} flex={1} minWidth={0}>
+                        {item.logo && (
+                          <Box
+                            width="36px"
+                            height="36px"
+                            minWidth="36px"
+                            borderRadius="8px"
+                            border="1px solid"
+                            borderColor="brand.border"
+                            bg="rgba(255, 255, 255, 0.06)"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            overflow="hidden"
+                          >
+                            <Image
+                              src={item.logo}
+                              alt={item.source}
+                              width="20px"
+                              height="20px"
+                              objectFit="contain"
+                              borderRadius="4px"
+                            />
+                          </Box>
+                        )}
+                        <Box minWidth={0}>
+                          <Text textStyle="listTitle">{item.title}</Text>
+                          <Text textStyle="listMeta" mt={0.5}>
+                            {item.source} · {item.date}
+                          </Text>
+                        </Box>
+                      </Flex>
                     </Flex>
                   </ChakraLink>
                 ))}

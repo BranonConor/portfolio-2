@@ -1,0 +1,15 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="100" height="100" rx="16" fill="white"/>
+  <!-- Authentic TIME serif "T" -->
+  <g fill="#E90606">
+    <!-- top crossbar -->
+    <rect x="16" y="20" width="68" height="10"/>
+    <!-- downward serifs at the crossbar ends -->
+    <rect x="16" y="20" width="6" height="17"/>
+    <rect x="78" y="20" width="6" height="17"/>
+    <!-- vertical stem -->
+    <rect x="44" y="20" width="12" height="55"/>
+    <!-- serif foot at the base -->
+    <rect x="35" y="72" width="30" height="9"/>
+  </g>
+</svg>

@@ -27,6 +27,40 @@ export const inTheWild: WildItem[] = [
     link: "/in-the-wild/posts/nih-health-database",
     date: "June 2026",
   },
+  {
+    title: "Smartsheet's redesign is a bold leap into AI, accessibility, and a user-centered experience",
+    category: "Press",
+    source: "DesignRush",
+    role: "Design engineer on the design systems team behind the redesign",
+    link: "/in-the-wild/posts/smartsheet-redesign",
+    date: "October 2024",
+  },
+  {
+    title: "Smartsheet's new app loading screen is now generally available",
+    category: "Shipped",
+    source: "Smartsheet",
+    role: "Co-designed and fully implemented the new platform-wide loading experience",
+    link: "/in-the-wild/posts/smartsheet-loading-screen",
+    date: "August 2025",
+  },
+  {
+    title: "Secret scanning improvements to extended metadata checks",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineer - built the alert metadata table UI",
+    link: "https://github.blog/changelog/2026-02-18-secret-scanning-improvements-to-extended-metadata-checks/",
+    external: true,
+    date: "February 2026",
+  },
+  {
+    title: "DCTclock - TIME Best Inventions of 2021",
+    category: "Press",
+    source: "TIME",
+    role: "UX engineer at Linus Health",
+    link: "https://time.com/collections/best-inventions-2021/6113080/dctclock/",
+    external: true,
+    date: "November 2021",
+  },
 
   // ── Add future credits here ──────────────────────────────────────────────
   // Example "Shipped" entry (uncomment + fill in when the GA lands):
