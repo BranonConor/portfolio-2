@@ -108,6 +108,30 @@ const InfoIcon = ({ color }: IconProps) => (
   </svg>
 );
 
+const BroadcastIcon = ({ color }: IconProps) => (
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="2.2" fill={color} />
+    <path
+      d="M7.8 7.8a6 6 0 000 8.4M16.2 16.2a6 6 0 000-8.4"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+    <path
+      d="M5 5a10 10 0 000 14M19 19a10 10 0 000-14"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 const navItems: {
   label: string;
   href: string;
@@ -121,6 +145,12 @@ const navItems: {
     href: "/engagements",
     color: "#22c55e",
     Icon: UsersIcon,
+  },
+  {
+    label: "In the Wild",
+    href: "/in-the-wild",
+    color: "#fbbf24",
+    Icon: BroadcastIcon,
   },
   { label: "Blog", href: "/blog", color: "#61dafb", Icon: PencilIcon },
   { label: "About", href: "/about", color: "#f05032", Icon: InfoIcon },
@@ -199,6 +229,8 @@ export const Nav = () => {
               display="flex"
               alignItems="center"
               gap={1.5}
+              whiteSpace="nowrap"
+              flexShrink={0}
               fontSize="13px"
               fontWeight={isActive ? "500" : "400"}
               color={isActive ? item.color : "brand.textMuted"}

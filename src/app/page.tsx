@@ -259,6 +259,16 @@ const engagements = [
   },
 ];
 
+const inTheWild = [
+  {
+    title: "World's largest integrated health database",
+    source: "The New York Times",
+    date: "June 2026",
+    logo: "/logos/nytimes.svg",
+    link: "/in-the-wild/posts/nih-health-database",
+  },
+];
+
 const showcase = [
   {
     title: "INCLUSION.md",
@@ -1076,6 +1086,90 @@ export default function Home() {
             </Section>
           </Box>
 
+          {/* In the Wild */}
+          <Box order={[5, 5, 0]} width="100%">
+            <Section title="In the Wild" href="/in-the-wild">
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-child::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {inTheWild.map((item) => (
+                  <ChakraLink
+                    key={item.title}
+                    as={Link}
+                    href={item.link}
+                    display="block"
+                    paddingY={2.5}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      bg: "brand.border",
+                      transition: "0.18s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: "brand.surfaceHover",
+                      marginX: -3,
+                      paddingX: 3,
+                      borderRadius: "10px",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                    }}
+                    transition="0.12s ease all"
+                  >
+                    <Flex
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      gap={3}
+                    >
+                      <Flex alignItems="center" gap={2.5} flex={1} minWidth={0}>
+                        {item.logo && (
+                          <Box
+                            width="36px"
+                            height="36px"
+                            minWidth="36px"
+                            borderRadius="8px"
+                            border="1px solid"
+                            borderColor="brand.border"
+                            bg="rgba(255, 255, 255, 0.06)"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            overflow="hidden"
+                          >
+                            <Image
+                              src={item.logo}
+                              alt={item.source}
+                              width="20px"
+                              height="20px"
+                              objectFit="contain"
+                            />
+                          </Box>
+                        )}
+                        <Box minWidth={0}>
+                          <Text textStyle="listTitle">{item.title}</Text>
+                          <Text textStyle="listMeta" mt={0.5}>
+                            {item.source} · {item.date}
+                          </Text>
+                        </Box>
+                      </Flex>
+                    </Flex>
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </Section>
+          </Box>
+
           {/* Honors & Accomplishments */}
           <Box order={[8, 8, 0]} width="100%">
             <Section title="Honors & Accomplishments">
@@ -1202,13 +1296,13 @@ export default function Home() {
                     }}
                     transition="0.12s ease all"
                   >
-                    <Flex alignItems="center" gap={2.5}>
+                    <Flex alignItems="center" gap={2.5} flex={1} minWidth={0}>
                       {item.icon && (
                         <Box
-                          width="28px"
-                          height="28px"
-                          minWidth="28px"
-                          borderRadius="6px"
+                          width="36px"
+                          height="36px"
+                          minWidth="36px"
+                          borderRadius="8px"
                           border="1px solid"
                           borderColor="brand.border"
                           bg="rgba(255, 255, 255, 0.06)"
@@ -1220,46 +1314,43 @@ export default function Home() {
                           <Image
                             src={item.icon}
                             alt={item.title}
-                            width="16px"
-                            height="16px"
+                            width="20px"
+                            height="20px"
                             objectFit="contain"
-                            borderRadius="3px"
+                            borderRadius="4px"
                           />
                         </Box>
                       )}
-                      <Box>
-                        <Text
-                          as="span"
-                          textStyle="listTitle"
-                          transition="0.12s ease all"
-                        >
-                          {item.title}
-                        </Text>
-                        {item.tag && (
-                          <Box
+                      <Box minWidth={0}>
+                        <Flex alignItems="center" gap={2}>
+                          <Text
                             as="span"
-                            fontSize="11px"
-                            fontWeight="600"
-                            letterSpacing="0.02em"
-                            color="#22c55e"
-                            bg="#22c55e15"
-                            px={2.5}
-                            py={1}
-                            borderRadius="6px"
-                            ml={2}
-                            verticalAlign="middle"
-                            whiteSpace="nowrap"
-                            display="inline-block"
+                            textStyle="listTitle"
+                            transition="0.12s ease all"
                           >
-                            {item.tag}
-                          </Box>
-                        )}
-                        <Text
-                          as="span"
-                          textStyle="listMeta"
-                          ml={2}
-                          display={["none", "inline"]}
-                        >
+                            {item.title}
+                          </Text>
+                          {item.tag && (
+                            <Box
+                              as="span"
+                              fontSize="11px"
+                              fontWeight="600"
+                              letterSpacing="0.02em"
+                              color="#22c55e"
+                              bg="#22c55e15"
+                              px={2.5}
+                              py={1}
+                              borderRadius="6px"
+                              verticalAlign="middle"
+                              whiteSpace="nowrap"
+                              display="inline-block"
+                              flexShrink={0}
+                            >
+                              {item.tag}
+                            </Box>
+                          )}
+                        </Flex>
+                        <Text textStyle="listMeta" mt={0.5}>
                           {item.description}
                         </Text>
                       </Box>

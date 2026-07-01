@@ -23,6 +23,7 @@ const primaryPink = makePrimary("#da70d6");
 const primaryGreen = makePrimary("#22c55e");
 const primaryBlue = makePrimary("#61dafb");
 const primaryOrange = makePrimary("#f05032");
+const primaryAmber = makePrimary("#fbbf24");
 
 const secondary = defineStyle({
   borderRadius: "8px",
@@ -48,6 +49,7 @@ export const buttonTheme = defineStyleConfig({
     primaryGreen,
     primaryBlue,
     primaryOrange,
+    primaryAmber,
     secondary,
   },
 });
