@@ -113,7 +113,7 @@ export default function Blog() {
                   : { as: Link, href: post.link })}
                 display="flex"
                 justifyContent="space-between"
-                alignItems="center"
+                alignItems="flex-start"
                 paddingY={2.5}
                 position="relative"
                 _after={{
@@ -139,28 +139,42 @@ export default function Blog() {
                 }}
                 transition="0.12s ease all"
               >
-                <Flex alignItems="center" gap={3}>
+                <Box flex={1} minWidth={0}>
+                  <Flex alignItems="center" gap={3}>
+                    <Text
+                      as="span"
+                      textStyle="listTitle"
+                      transition="0.12s ease all"
+                    >
+                      {post.title}
+                    </Text>
+                    <Text
+                      fontSize="11px"
+                      color="brand.textMuted"
+                      bg="brand.surface"
+                      paddingX={2}
+                      paddingY={0.5}
+                      borderRadius="6px"
+                      display={["none", "block"]}
+                    >
+                      {post.category}
+                    </Text>
+                  </Flex>
                   <Text
-                    as="span"
-                    textStyle="listTitle"
-                    transition="0.12s ease all"
+                    textStyle="listMeta"
+                    mt={0.5}
+                    display={{ base: "block", md: "none" }}
                   >
-                    {post.title}
+                    {post.date}
                   </Text>
+                </Box>
+                <Flex alignItems="center" gap={2} flexShrink={0} ml={3} mt={0.5}>
                   <Text
-                    fontSize="11px"
-                    color="brand.textMuted"
-                    bg="brand.surface"
-                    paddingX={2}
-                    paddingY={0.5}
-                    borderRadius="6px"
-                    display={["none", "block"]}
+                    textStyle="listMeta"
+                    display={{ base: "none", md: "block" }}
                   >
-                    {post.category}
+                    {post.date}
                   </Text>
-                </Flex>
-                <Flex alignItems="center" gap={2} flexShrink={0} ml={3}>
-                  <Text textStyle="listMeta">{post.date}</Text>
                   {post.external && (
                     <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
                   )}

@@ -256,7 +256,16 @@ const engagements = [
 
 const inTheWild = [
   {
+    title: "Secret scanning public monitoring",
+    source: "GitHub",
+    date: "July 2026",
+    logo: "/github.png",
+    link: "https://github.blog/changelog/2026-07-01-secret-scanning-public-monitoring-for-enterprises/",
+    external: true,
+  },
+  {
     title: "World's largest integrated health database",
+    titleMobile: "World's largest integrated health DB",
     source: "The New York Times",
     date: "June 2026",
     logo: "/logos/nytimes.svg",
@@ -264,6 +273,7 @@ const inTheWild = [
   },
   {
     title: "Secret scanning extended metadata checks",
+    titleMobile: "Secret scanning extended metadata",
     source: "GitHub",
     date: "February 2026",
     logo: "/github.png",
@@ -1436,7 +1446,7 @@ export default function Home() {
           </Box>
 
           {/* In the Wild */}
-          <Box order={[5, 5, 0]} width="100%">
+          <Box order={[2, 2, 0]} width="100%">
             <Section title="In the Wild" href="/in-the-wild">
               <Flex
                 flexDirection="column"
@@ -1513,7 +1523,29 @@ export default function Home() {
                           </Box>
                         )}
                         <Box minWidth={0}>
-                          <Text textStyle="listTitle">{item.title}</Text>
+                          <Text textStyle="listTitle">
+                            {(item as { titleMobile?: string }).titleMobile ? (
+                              <>
+                                <Box
+                                  as="span"
+                                  display={{ base: "inline", md: "none" }}
+                                >
+                                  {
+                                    (item as { titleMobile?: string })
+                                      .titleMobile
+                                  }
+                                </Box>
+                                <Box
+                                  as="span"
+                                  display={{ base: "none", md: "inline" }}
+                                >
+                                  {item.title}
+                                </Box>
+                              </>
+                            ) : (
+                              item.title
+                            )}
+                          </Text>
                           <Text textStyle="listMeta" mt={0.5}>
                             {item.source} · {item.date}
                           </Text>
@@ -1577,9 +1609,36 @@ export default function Home() {
                         <Text textStyle="listMeta" mt={0.5}>
                           {pub.publisher} · {pub.date}
                         </Text>
-                      </Box>
-                      <Flex flexShrink={0} alignItems="center" gap={2} mt={0.5}>
                         <Box
+                          display={{ base: "inline-flex", md: "none" }}
+                          mt={2}
+                          fontSize="10px"
+                          fontWeight="600"
+                          textTransform="uppercase"
+                          letterSpacing="0.05em"
+                          color={
+                            pub.tag === "Tech" ? "brand.accent" : "#a78bfa"
+                          }
+                          bg={
+                            pub.tag === "Tech"
+                              ? "rgba(96,165,250,0.1)"
+                              : "rgba(167,139,250,0.1)"
+                          }
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                        >
+                          {pub.tag}
+                        </Box>
+                      </Box>
+                      <Flex
+                        flexShrink={0}
+                        alignItems="center"
+                        gap={2}
+                        mt={0.5}
+                      >
+                        <Box
+                          display={{ base: "none", md: "inline-flex" }}
                           fontSize="10px"
                           fontWeight="600"
                           textTransform="uppercase"

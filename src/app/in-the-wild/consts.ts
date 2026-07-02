@@ -20,6 +20,15 @@ export interface WildItem {
 
 export const inTheWild: WildItem[] = [
   {
+    title: "Secret scanning public monitoring for enterprises",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineer shipping UI features & polish",
+    link: "https://github.blog/changelog/2026-07-01-secret-scanning-public-monitoring-for-enterprises/",
+    external: true,
+    date: "July 2026",
+  },
+  {
     title: "NIH announces the world's largest integrated health database",
     category: "Press",
     source: "The New York Times",

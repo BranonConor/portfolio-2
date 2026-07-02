@@ -160,9 +160,9 @@ export default function InTheWild() {
                   key={item.title}
                   {...linkProps}
                   display="flex"
-                  flexDirection={["column", "row"]}
+                  flexDirection="row"
                   justifyContent="space-between"
-                  alignItems={["flex-start", "center"]}
+                  alignItems="flex-start"
                   paddingY={4}
                   position="relative"
                   _after={{
@@ -187,54 +187,17 @@ export default function InTheWild() {
                   }}
                   transition="0.12s ease all"
                 >
-                  <Flex flexDirection="column" gap={1} pr={[0, 4]}>
-                    <Flex alignItems="center" gap={2}>
-                      <Text
-                        fontSize="14px"
-                        fontWeight="500"
-                        color="brand.text"
-                      >
-                        {item.title}
-                      </Text>
-                      {item.external && (
-                        <ExternalLinkIcon
-                          boxSize="12px"
-                          color="brand.textMuted"
-                        />
-                      )}
+                  <Box flex={1} minWidth={0} pr={4}>
+                    <Text textStyle="listTitle">{item.title}</Text>
+                    <Text textStyle="listMeta" mt={0.5}>
+                      {item.source} · {item.date}
+                    </Text>
+                  </Box>
+                  {item.external && (
+                    <Flex flexShrink={0} alignItems="center" mt={0.5}>
+                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
                     </Flex>
-                    <Flex alignItems="center" gap={2} flexWrap="wrap">
-                      <Text
-                        fontSize="11px"
-                        color={ACCENT}
-                        bg={`${ACCENT}15`}
-                        paddingX={2}
-                        paddingY={0.5}
-                        borderRadius="6px"
-                      >
-                        {item.category}
-                      </Text>
-                      <Text fontSize="12px" color="brand.textMuted">
-                        {item.source}
-                      </Text>
-                      <Text
-                        fontSize="12px"
-                        color="brand.textMuted"
-                        opacity={0.7}
-                      >
-                        · {item.role}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                  <Text
-                    fontSize="12px"
-                    color="brand.textMuted"
-                    opacity={0.6}
-                    flexShrink={0}
-                    mt={[2, 0]}
-                  >
-                    {item.date}
-                  </Text>
+                  )}
                 </ChakraLink>
               );
             })}
