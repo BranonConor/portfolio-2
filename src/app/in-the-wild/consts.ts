@@ -29,6 +29,23 @@ export const inTheWild: WildItem[] = [
     date: "July 2026",
   },
   {
+    title: "Secret scanning extended metadata and multipart validation",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineer - designed and built the entire alert metadata experience (in-content table + sidesheet drawer)",
+    link: "/in-the-wild/posts/secret-scanning-extended-metadata",
+    date: "July 2026",
+  },
+  {
+    title: "Organization-level targeting for GitHub Code Quality",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineering support on the enablement experience",
+    link: "https://github.blog/changelog/2026-07-09-organization-level-targeting-for-github-code-quality/",
+    external: true,
+    date: "July 2026",
+  },
+  {
     title: "NIH announces the world's largest integrated health database",
     category: "Press",
     source: "The New York Times",

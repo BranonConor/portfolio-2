@@ -256,6 +256,14 @@ const engagements = [
 
 const inTheWild = [
   {
+    title: "Secret scanning extended metadata",
+    titleMobile: "Secret scanning extended metadata",
+    source: "GitHub",
+    date: "July 2026",
+    logo: "/github.png",
+    link: "/in-the-wild/posts/secret-scanning-extended-metadata",
+  },
+  {
     title: "Secret scanning public monitoring",
     source: "GitHub",
     date: "July 2026",
@@ -270,15 +278,6 @@ const inTheWild = [
     date: "June 2026",
     logo: "/logos/nytimes.svg",
     link: "/in-the-wild/posts/nih-health-database",
-  },
-  {
-    title: "Secret scanning extended metadata checks",
-    titleMobile: "Secret scanning extended metadata",
-    source: "GitHub",
-    date: "February 2026",
-    logo: "/github.png",
-    link: "https://github.blog/changelog/2026-02-18-secret-scanning-improvements-to-extended-metadata-checks/",
-    external: true,
   },
   {
     title: "Smartsheet's redesign: AI & a11y",

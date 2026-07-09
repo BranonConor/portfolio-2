@@ -168,16 +168,30 @@ export default function Blog() {
                     {post.date}
                   </Text>
                 </Box>
-                <Flex alignItems="center" gap={2} flexShrink={0} ml={3} mt={0.5}>
+                <Flex
+                  alignItems="center"
+                  gap={2}
+                  flexShrink={0}
+                  ml={3}
+                  alignSelf="stretch"
+                >
                   <Text
                     textStyle="listMeta"
                     display={{ base: "none", md: "block" }}
                   >
                     {post.date}
                   </Text>
-                  {post.external && (
-                    <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                  )}
+                  <Box
+                    boxSize={3}
+                    flexShrink={0}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    {post.external && (
+                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                    )}
+                  </Box>
                 </Flex>
               </ChakraLink>
             ))}

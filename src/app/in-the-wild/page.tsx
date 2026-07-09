@@ -13,20 +13,19 @@ const ACCENT = "#fbbf24";
 export default function InTheWild() {
   const [currentFilter, setCurrentFilter] = useState("all");
 
-  // Derive the filter chips from whatever categories actually exist, so
-  // empty categories never show up. "All" is always first.
-  const categories = useMemo(() => {
-    const seen: string[] = [];
-    for (const item of inTheWild) {
-      if (!seen.includes(item.category)) seen.push(item.category);
-    }
-    return [{ key: "all", label: "All" }, ...seen.map((c) => ({ key: c, label: c }))];
-  }, []);
+  // Fixed source-based filters: GitHub work vs. everything else.
+  const categories = [
+    { key: "all", label: "All" },
+    { key: "github", label: "GitHub" },
+    { key: "other", label: "Other" },
+  ];
 
   const filtered =
     currentFilter === "all"
       ? inTheWild
-      : inTheWild.filter((item) => item.category === currentFilter);
+      : currentFilter === "github"
+        ? inTheWild.filter((item) => item.source === "GitHub")
+        : inTheWild.filter((item) => item.source !== "GitHub");
 
   // Always show newest first, regardless of array order in consts.
   const sorted = useMemo(
@@ -98,7 +97,7 @@ export default function InTheWild() {
               In the Wild
             </Heading>
             <Text fontSize="15px" color="brand.textMuted">
-              Work I&apos;ve had a hand in — shipped, launched, or out in the world.
+              Things I&apos;ve helped ship, living out in the world ⚡️
             </Text>
           </Box>
 
@@ -189,15 +188,39 @@ export default function InTheWild() {
                 >
                   <Box flex={1} minWidth={0} pr={4}>
                     <Text textStyle="listTitle">{item.title}</Text>
-                    <Text textStyle="listMeta" mt={0.5}>
+                    <Text
+                      textStyle="listMeta"
+                      mt={0.5}
+                      display={["block", "block", "none"]}
+                    >
                       {item.source} · {item.date}
                     </Text>
                   </Box>
-                  {item.external && (
-                    <Flex flexShrink={0} alignItems="center" mt={0.5}>
-                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
-                    </Flex>
-                  )}
+                  <Flex
+                    flexShrink={0}
+                    alignItems="center"
+                    gap={2}
+                    alignSelf="stretch"
+                  >
+                    <Text
+                      textStyle="listMeta"
+                      display={["none", "none", "block"]}
+                      whiteSpace="nowrap"
+                    >
+                      {item.source} · {item.date}
+                    </Text>
+                    <Box
+                      boxSize={3}
+                      flexShrink={0}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      {item.external && (
+                        <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+                      )}
+                    </Box>
+                  </Flex>
                 </ChakraLink>
               );
             })}
