@@ -97,8 +97,12 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
           const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
 
           particles.push({
-            tx, ty, x: tx, y: ty,
-            vx: 0, vy: 0,
+            tx, ty,
+            // Start scattered — converge on load
+            x: cw / 2 + (Math.random() - 0.5) * cw * 0.9,
+            y: ch / 2 + (Math.random() - 0.5) * ch * 0.9,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
             r, g, b, a,
             size: Math.random() * 1.0 + 1.2,
             angle: Math.random() * Math.PI * 2,
@@ -222,7 +226,7 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
       ctx.clearRect(0, 0, cw, ch);
 
       if (style === "original") {
-        drawOriginal(ctx, cw, ch, portraitImgRef.current, particles, mouse);
+        drawOriginal(ctx, cw, ch, portraitImgRef.current, particles, mouse, frame);
       } else if (style === "glitch") {
         drawGlitch(ctx, particles, frame, cw, ch);
       } else if (style === "electric") {
@@ -281,47 +285,69 @@ function drawOriginal(
   img: HTMLImageElement | null,
   particles: Particle[],
   mouse: { x: number; y: number; inside: boolean },
+  frame: number,
 ) {
-  // Draw the actual PNG image as default
-  if (img && img.complete) {
-    const scale = Math.min(cw, ch) * 0.88;
-    const ox = (cw - scale) / 2;
-    const oy = (ch - scale) / 2;
-    ctx.drawImage(img, ox, oy, scale, scale);
+  // Convergence phase: particles visibly pull in over ~120 frames (~2s)
+  const convergeDuration = 120;
+  const convergeProgress = Math.min(1, frame / convergeDuration);
 
-    // If mouse is hovering, draw scattered particles over a faded image
-    if (mouse.inside && mouse.x > 0) {
-      // Fade the image slightly where particles have scattered
+  if (convergeProgress < 1 || (mouse.inside && mouse.x > 0)) {
+    // Draw particles (during convergence or while hovering)
+    // Fade in the PNG image behind as particles settle
+    if (img && img.complete && convergeProgress > 0.6) {
+      const imgAlpha = (convergeProgress - 0.6) / 0.4; // 0→1 over last 40% of convergence
       ctx.save();
-      ctx.globalCompositeOperation = "destination-out";
-      for (const p of particles) {
-        const dx = p.x - p.tx;
-        const dy = p.y - p.ty;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 2) {
-          ctx.globalAlpha = Math.min(0.8, dist / 15);
-          ctx.beginPath();
-          ctx.arc(p.tx, p.ty, 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      ctx.globalAlpha = imgAlpha * 0.95;
+      const scale = Math.min(cw, ch) * 0.88;
+      const ox = (cw - scale) / 2;
+      const oy = (ch - scale) / 2;
+      ctx.drawImage(img, ox, oy, scale, scale);
       ctx.restore();
 
-      // Draw displaced particles
-      ctx.save();
-      for (const p of particles) {
-        const dx = p.x - p.tx;
-        const dy = p.y - p.ty;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > 2) {
-          ctx.globalAlpha = Math.min(1, (p.a / 255) * (dist / 10));
-          ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-          ctx.fill();
+      // Erase where particles are displaced (hover effect)
+      if (mouse.inside && mouse.x > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-out";
+        for (const p of particles) {
+          const dx = p.x - p.tx;
+          const dy = p.y - p.ty;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > 2) {
+            ctx.globalAlpha = Math.min(0.8, dist / 15);
+            ctx.beginPath();
+            ctx.arc(p.tx, p.ty, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
+        ctx.restore();
       }
-      ctx.restore();
+    }
+
+    // Draw the particles themselves
+    for (const p of particles) {
+      const dx = p.x - p.tx;
+      const dy = p.y - p.ty;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // During convergence show all; during hover only show displaced ones
+      if (convergeProgress < 1 || dist > 2) {
+        const alpha = convergeProgress < 1
+          ? (p.a / 255) * Math.min(1, 0.3 + convergeProgress * 0.7)
+          : Math.min(1, (p.a / 255) * (dist / 10));
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, convergeProgress < 1 ? 1.8 - convergeProgress * 0.5 : 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  } else {
+    // Fully settled — just draw the PNG
+    if (img && img.complete) {
+      const scale = Math.min(cw, ch) * 0.88;
+      const ox = (cw - scale) / 2;
+      const oy = (ch - scale) / 2;
+      ctx.drawImage(img, ox, oy, scale, scale);
     }
   }
 }
