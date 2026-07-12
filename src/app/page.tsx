@@ -10,10 +10,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { EasterEggProvider, useEasterEgg } from "@/components/easter-egg";
 
 const SparkleIcon = () => (
   <svg
@@ -382,6 +383,19 @@ const Section = ({
 export default function Home() {
   return (
     <PageWrapper>
+      <EasterEggProvider portraitSrc="/me-light.png">
+        <HomeContent />
+      </EasterEggProvider>
+    </PageWrapper>
+  );
+}
+
+function HomeContent() {
+  const { onPortraitMouseDown, onPortraitMouseUp, isActive, isMobile } =
+    useEasterEgg();
+
+  return (
+    <>
       {/* Hero */}
       <Box
         border="1px solid"
@@ -655,6 +669,13 @@ export default function Home() {
               height="100%"
               objectFit="contain"
               zIndex={1}
+              cursor={!isMobile ? "grab" : undefined}
+              onMouseDown={onPortraitMouseDown}
+              onMouseUp={onPortraitMouseUp}
+              onMouseLeave={onPortraitMouseUp}
+              _hover={!isMobile ? { filter: "brightness(1.1)" } : undefined}
+              transition="filter 0.2s"
+              userSelect="none"
             />
             {/* Mobile sparkles — emanate from portrait */}
             {[
@@ -827,6 +848,13 @@ export default function Home() {
       </Box>
 
       {/* Two-column layout */}
+      <AnimatePresence>
+        {!isActive && (
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60, transition: { duration: 0.4, ease: "easeIn" } }}
+            animate={{ opacity: 1, y: 0 }}
+          >
       <Flex
         gap={4}
         flexDirection={["column", "column", "row"]}
@@ -1666,6 +1694,9 @@ export default function Home() {
           </Box>
         </Flex>
       </Flex>
-    </PageWrapper>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
