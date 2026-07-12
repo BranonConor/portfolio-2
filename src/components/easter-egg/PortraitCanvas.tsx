@@ -14,6 +14,11 @@ const STYLES = [
   "shatter",        // Triangular displaced shards
   "spiral",         // Local spiral motion
   "constellation",  // Star points + lines
+  "magnetic",       // Ferrofluid field lines
+  "sketch",         // Cross-hatch pencil drawing
+  "pulse",          // Concentric ring ripples
+  "matrix",         // Digital rain reformation
+  "ink",            // Ink bleed / watercolor spread
 ] as const;
 
 type StyleKey = (typeof STYLES)[number];
@@ -194,6 +199,41 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
           const jitter = (frame % 4 < 2) ? (Math.random() - 0.5) * 3 : 0;
           targetX = p.tx + jitter;
           targetY = p.ty + jitter * 0.5;
+        } else if (style === "magnetic") {
+          // Particles align along curved field lines
+          const fieldAngle = Math.atan2(p.ty - ch / 2, p.tx - cw / 2);
+          const fieldDist = Math.sin(fieldAngle * 3 + frame * 0.015) * 4;
+          targetX = p.tx + Math.cos(fieldAngle + Math.PI / 2) * fieldDist;
+          targetY = p.ty + Math.sin(fieldAngle + Math.PI / 2) * fieldDist;
+        } else if (style === "sketch") {
+          // Slight jitter to simulate pencil tremor
+          const tremor = Math.sin(frame * 0.1 + p.angle * 10) * 1.2;
+          targetX = p.tx + tremor;
+          targetY = p.ty + Math.cos(frame * 0.08 + p.angle * 7) * 0.8;
+        } else if (style === "pulse") {
+          // Radial pulse from center
+          const pdx = p.tx - cw / 2;
+          const pdy = p.ty - ch / 2;
+          const pDist = Math.sqrt(pdx * pdx + pdy * pdy);
+          const wave = Math.sin(frame * 0.04 - pDist * 0.06) * 4;
+          targetX = p.tx + (pdx / (pDist || 1)) * wave;
+          targetY = p.ty + (pdy / (pDist || 1)) * wave;
+        } else if (style === "matrix") {
+          // Particles rain down then reform
+          const rainCycle = (frame * 0.8 + p.angle * 200) % 300;
+          if (rainCycle < 150) {
+            targetX = p.tx;
+            targetY = p.ty + (rainCycle / 150) * 20;
+          } else {
+            targetX = p.tx;
+            targetY = p.ty;
+          }
+        } else if (style === "ink") {
+          // Organic spreading motion
+          const inkSpread = Math.sin(frame * 0.02 + p.angle * 5) * 3;
+          const inkDrift = Math.cos(frame * 0.015 + p.brightness * 8) * 2;
+          targetX = p.tx + inkSpread;
+          targetY = p.ty + inkDrift;
         }
 
         // Spring physics
@@ -247,6 +287,16 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
         drawSpiral(ctx, particles, frame);
       } else if (style === "constellation") {
         drawConstellation(ctx, particles, frame);
+      } else if (style === "magnetic") {
+        drawMagnetic(ctx, particles, frame);
+      } else if (style === "sketch") {
+        drawSketch(ctx, particles, frame);
+      } else if (style === "pulse") {
+        drawPulse(ctx, particles, frame, cw, ch);
+      } else if (style === "matrix") {
+        drawMatrix(ctx, particles, frame, ch);
+      } else if (style === "ink") {
+        drawInk(ctx, particles, frame);
       }
 
       animFrameRef.current = requestAnimationFrame(loop);
@@ -287,69 +337,73 @@ function drawOriginal(
   mouse: { x: number; y: number; inside: boolean },
   frame: number,
 ) {
-  // Convergence phase: particles visibly pull in over ~120 frames (~2s)
-  const convergeDuration = 120;
-  const convergeProgress = Math.min(1, frame / convergeDuration);
+  const scale = Math.min(cw, ch) * 0.88;
+  const ox = (cw - scale) / 2;
+  const oy = (ch - scale) / 2;
 
-  if (convergeProgress < 1 || (mouse.inside && mouse.x > 0)) {
-    // Draw particles (during convergence or while hovering)
-    // Fade in the PNG image behind as particles settle
-    if (img && img.complete && convergeProgress > 0.6) {
-      const imgAlpha = (convergeProgress - 0.6) / 0.4; // 0→1 over last 40% of convergence
-      ctx.save();
-      ctx.globalAlpha = imgAlpha * 0.95;
-      const scale = Math.min(cw, ch) * 0.88;
-      const ox = (cw - scale) / 2;
-      const oy = (ch - scale) / 2;
-      ctx.drawImage(img, ox, oy, scale, scale);
-      ctx.restore();
+  // Smooth convergence: particles fade out as PNG fades in over ~180 frames (~3s)
+  // Use eased progress for buttery smooth transition
+  const rawProgress = Math.min(1, frame / 180);
+  const progress = rawProgress * rawProgress * (3 - 2 * rawProgress); // smoothstep
 
-      // Erase where particles are displaced (hover effect)
-      if (mouse.inside && mouse.x > 0) {
-        ctx.save();
-        ctx.globalCompositeOperation = "destination-out";
-        for (const p of particles) {
-          const dx = p.x - p.tx;
-          const dy = p.y - p.ty;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > 2) {
-            ctx.globalAlpha = Math.min(0.8, dist / 15);
-            ctx.beginPath();
-            ctx.arc(p.tx, p.ty, 3, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-        ctx.restore();
-      }
-    }
+  // PNG opacity: starts at 0, reaches full at progress=1
+  // Begins showing faintly early (from 30%) to blend with particles
+  const imgAlpha = Math.max(0, (progress - 0.3) / 0.7);
+  // Particle opacity: full at start, fades to 0 by end
+  const particleAlpha = 1 - progress;
 
-    // Draw the particles themselves
+  // Draw PNG (fading in)
+  if (img && img.complete && imgAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = imgAlpha;
+    ctx.drawImage(img, ox, oy, scale, scale);
+    ctx.restore();
+
+    // Erase PNG where particles are still displaced (whether hovering or flying back)
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
     for (const p of particles) {
       const dx = p.x - p.tx;
       const dy = p.y - p.ty;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      // During convergence show all; during hover only show displaced ones
-      if (convergeProgress < 1 || dist > 2) {
-        const alpha = convergeProgress < 1
-          ? (p.a / 255) * Math.min(1, 0.3 + convergeProgress * 0.7)
-          : Math.min(1, (p.a / 255) * (dist / 10));
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+      if (dist > 1.5) {
+        ctx.globalAlpha = Math.min(0.9, dist / 10);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, convergeProgress < 1 ? 1.8 - convergeProgress * 0.5 : 2, 0, Math.PI * 2);
+        ctx.arc(p.tx, p.ty, 3.5, 0, Math.PI * 2);
         ctx.fill();
       }
     }
-    ctx.globalAlpha = 1;
-  } else {
-    // Fully settled — just draw the PNG
-    if (img && img.complete) {
-      const scale = Math.min(cw, ch) * 0.88;
-      const ox = (cw - scale) / 2;
-      const oy = (ch - scale) / 2;
-      ctx.drawImage(img, ox, oy, scale, scale);
-    }
+    ctx.restore();
   }
+
+  // Draw particles (during convergence, or whenever displaced from target)
+  for (const p of particles) {
+    const dx = p.x - p.tx;
+    const dy = p.y - p.ty;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    let alpha: number;
+    let size: number;
+
+    if (progress < 1) {
+      // During convergence: particles shrink and fade smoothly
+      alpha = (p.a / 255) * Math.max(0.05, particleAlpha + 0.1);
+      size = 1.8 * (0.4 + particleAlpha * 0.6);
+    } else if (dist > 1.5) {
+      // Displaced from target (hover or flying back)
+      alpha = Math.min(1, (p.a / 255) * (dist / 8));
+      size = 2;
+    } else {
+      continue; // Settled — skip
+    }
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
 }
 
 
@@ -678,4 +732,169 @@ function drawElectric(ctx: CanvasRenderingContext2D, particles: Particle[], fram
     ctx.stroke();
   }
   ctx.restore();
+}
+
+function drawMagnetic(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  ctx.save();
+  ctx.lineWidth = 0.8;
+
+  const step = 5;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    for (let j = i + step; j < Math.min(particles.length, i + step * 5); j += step) {
+      const q = particles[j];
+      const dx = p.x - q.x;
+      const dy = p.y - q.y;
+      const dist = dx * dx + dy * dy;
+      if (dist < 180) {
+        const avg = ((p.r + p.g + p.b + q.r + q.g + q.b) / 6) | 0;
+        ctx.globalAlpha = 0.2;
+        ctx.strokeStyle = `rgb(${avg}, ${Math.min(255, avg + 40)}, ${Math.min(255, avg + 80)})`;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        const cx = (p.x + q.x) / 2 + Math.sin(frame * 0.02 + i) * 6;
+        const cy = (p.y + q.y) / 2 + Math.cos(frame * 0.02 + j) * 6;
+        ctx.quadraticCurveTo(cx, cy, q.x, q.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  for (const p of particles) {
+    const shimmer = Math.sin(frame * 0.03 + p.angle * 4) * 0.2 + 0.8;
+    ctx.globalAlpha = (p.a / 255) * shimmer;
+    ctx.fillStyle = `rgb(${Math.min(255, p.r + 30)},${Math.min(255, p.g + 20)},${Math.min(255, p.b + 50)})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 1.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSketch(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  ctx.save();
+  ctx.lineWidth = 0.7;
+  ctx.lineCap = "round";
+
+  const step = 3;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    const len = (1 - p.brightness) * 5 + 1;
+    const tremor = Math.sin(frame * 0.05 + p.angle * 8) * 0.5;
+
+    ctx.globalAlpha = (p.a / 255) * 0.7;
+    ctx.strokeStyle = p.brightness > 0.6 ? "#c8c8c8" : "#404040";
+
+    ctx.beginPath();
+    ctx.moveTo(p.x - len + tremor, p.y - len);
+    ctx.lineTo(p.x + len + tremor, p.y + len);
+    ctx.stroke();
+
+    if (p.brightness < 0.4) {
+      ctx.globalAlpha = (p.a / 255) * 0.4;
+      ctx.beginPath();
+      ctx.moveTo(p.x + len + tremor, p.y - len);
+      ctx.lineTo(p.x - len + tremor, p.y + len);
+      ctx.stroke();
+    }
+  }
+
+  for (const p of particles) {
+    ctx.globalAlpha = (p.a / 255) * 0.5;
+    ctx.fillStyle = p.brightness > 0.5 ? "#d4d4d4" : "#333";
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 1, 1);
+  }
+  ctx.restore();
+}
+
+function drawPulse(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, cw: number, ch: number) {
+  const centerX = cw / 2;
+  const centerY = ch / 2;
+
+  ctx.save();
+  const ringCount = 5;
+  for (let r = 0; r < ringCount; r++) {
+    const radius = ((frame * 1.5 + r * 50) % 250);
+    ctx.globalAlpha = Math.max(0, 0.1 * (1 - radius / 250));
+    ctx.strokeStyle = "#6e56cf";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  for (const p of particles) {
+    const pdx = p.x - centerX;
+    const pdy = p.y - centerY;
+    const pDist = Math.sqrt(pdx * pdx + pdy * pdy);
+    const ringPhase = (frame * 1.5) % 250;
+    const nearRing = Math.abs(pDist - ringPhase) < 15;
+    const boost = nearRing ? 1.5 : 1;
+
+    ctx.globalAlpha = Math.min(1, (p.a / 255) * 0.9 * boost);
+    const br = Math.min(255, p.r * boost) | 0;
+    const bg = Math.min(255, p.g * boost) | 0;
+    const bb = Math.min(255, p.b * boost) | 0;
+    ctx.fillStyle = `rgb(${br},${bg},${bb})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * (nearRing ? 2 : 1.3), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawMatrix(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, ch: number) {
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = "#00ff41";
+  ctx.font = "8px monospace";
+  const cols = 30;
+  for (let c = 0; c < cols; c++) {
+    const x = (c / cols) * 240 + 4;
+    const y = ((frame * 2 + c * 37) % (ch + 100)) - 50;
+    const char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+    ctx.fillText(char, x, y);
+  }
+  ctx.restore();
+
+  for (const p of particles) {
+    const rainCycle = (frame * 0.8 + p.angle * 200) % 300;
+    const isFalling = rainCycle < 150;
+    const greenTint = isFalling ? 0.7 : 0;
+
+    const mr = Math.round(p.r * (1 - greenTint) + 0 * greenTint);
+    const mg = Math.round(p.g * (1 - greenTint) + 255 * greenTint);
+    const mb = Math.round(p.b * (1 - greenTint) + 65 * greenTint);
+
+    ctx.globalAlpha = (p.a / 255) * (isFalling ? 0.7 : 0.9);
+    ctx.fillStyle = `rgb(${mr},${mg},${mb})`;
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, isFalling ? 3 : 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawInk(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  for (const p of particles) {
+    const bleedPhase = Math.sin(frame * 0.015 + p.angle * 3);
+    const bleedSize = p.size * (1.5 + bleedPhase * 0.5);
+    const alpha = (p.a / 255) * (0.5 + bleedPhase * 0.2);
+
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.3;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, bleedSize * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.85;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, bleedSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
 }
