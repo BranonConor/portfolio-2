@@ -138,6 +138,17 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
     mouseRef.current = { ...mouseRef.current, inside: false };
   }, []);
 
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseRef.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top, inside: true };
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    mouseRef.current = { ...mouseRef.current, inside: false };
+  }, []);
+
   // Main render loop
   useEffect(() => {
     if (!ready) return;
@@ -312,6 +323,8 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
       onClick={handleClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       width={width}
       height={height}
       style={{
@@ -321,6 +334,7 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
         transform: "rotate(-6deg)",
         cursor: "pointer",
         pointerEvents: "auto",
+        touchAction: "none",
       }}
     />
   );
