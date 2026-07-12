@@ -862,19 +862,9 @@ function HomeContent() {
       <AnimatePresence>
         {!isActive && (
           <motion.div
-            initial="visible"
-            animate="visible"
-            exit="hidden"
-            variants={{
-              visible: { opacity: 1 },
-              hidden: {
-                opacity: 0,
-                transition: {
-                  staggerChildren: 0.06,
-                  staggerDirection: 1,
-                },
-              },
-            }}
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 60, rotate: 1, transition: { duration: 0.45, ease: "easeIn" } }}
           >
       <Flex
         gap={4}
@@ -882,13 +872,6 @@ function HomeContent() {
         alignItems="flex-start"
       >
         {/* Left column */}
-        <motion.div
-          variants={{
-            visible: { opacity: 1, y: 0 },
-            hidden: { opacity: 0, y: 80, rotate: 2, transition: { duration: 0.4, ease: "easeIn" } },
-          }}
-          style={{ flex: 1, minWidth: 0 }}
-        >
         <Flex
           flexDirection="column"
           gap={4}
@@ -1309,16 +1292,8 @@ function HomeContent() {
             </Section>
           </Box>
         </Flex>
-        </motion.div>
 
         {/* Right column */}
-        <motion.div
-          variants={{
-            visible: { opacity: 1, y: 0 },
-            hidden: { opacity: 0, y: 100, rotate: -1.5, transition: { duration: 0.45, ease: "easeIn", delay: 0.08 } },
-          }}
-          style={{ flex: 1, minWidth: 0 }}
-        >
         <Flex
           flexDirection="column"
           gap={4}
@@ -1729,7 +1704,6 @@ function HomeContent() {
             </Section>
           </Box>
         </Flex>
-        </motion.div>
       </Flex>
           </motion.div>
         )}
