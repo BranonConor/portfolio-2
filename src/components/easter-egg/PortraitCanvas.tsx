@@ -4,21 +4,16 @@ import { useEffect, useRef, useCallback, useState } from "react";
 
 const STYLES = [
   "original",       // Actual PNG image drawn on canvas
-  "pointillism",    // Bold colored dots
   "glitch",         // RGB split + scanlines + displacement
-  "thermal",        // Heat map colors
+  "electric",       // Electric arcs + sparks
+  "liquify",        // Wave distortion
   "mosaic",         // Bold pixel blocks
   "wireframe",      // Grid + connections
-  "neon",           // Glowing neon edges
   "chromatic",      // RGB channel separation
   "halftone",       // Newspaper dot pattern
   "shatter",        // Triangular displaced shards
-  "strokes",        // Paint stroke clusters
   "spiral",         // Local spiral motion
   "constellation",  // Star points + lines
-  "pop",            // Pop art bold colors
-  "liquify",        // Wave distortion
-  "electric",       // Electric arcs + sparks
 ] as const;
 
 type StyleKey = (typeof STYLES)[number];
@@ -59,22 +54,10 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
   const frameRef = useRef(0);
   const mouseRef = useRef({ x: -1, y: -1, inside: false });
   const sizeRef = useRef({ width, height });
-  const strokeImgsRef = useRef<HTMLImageElement[]>([]);
   const portraitImgRef = useRef<HTMLImageElement | null>(null);
   const scaleRef = useRef({ scale: 1, ox: 0, oy: 0, sampleSize: 160 });
 
   useEffect(() => { sizeRef.current = { width, height }; }, [width, height]);
-
-  // Preload paint stroke images
-  useEffect(() => {
-    const imgs: HTMLImageElement[] = [];
-    for (let i = 1; i <= 6; i++) {
-      const img = new window.Image();
-      img.src = `/s${i}.png`;
-      imgs.push(img);
-    }
-    strokeImgsRef.current = imgs;
-  }, []);
 
   // Load and sample portrait
   useEffect(() => {
@@ -240,36 +223,26 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
 
       if (style === "original") {
         drawOriginal(ctx, cw, ch, portraitImgRef.current, particles, mouse);
-      } else if (style === "pointillism") {
-        drawPointillism(ctx, particles);
       } else if (style === "glitch") {
         drawGlitch(ctx, particles, frame, cw, ch);
-      } else if (style === "thermal") {
-        drawThermal(ctx, particles);
+      } else if (style === "electric") {
+        drawElectric(ctx, particles, frame, cw, ch);
+      } else if (style === "liquify") {
+        drawLiquify(ctx, particles);
       } else if (style === "mosaic") {
         drawMosaic(ctx, particles);
       } else if (style === "wireframe") {
         drawWireframe(ctx, particles);
-      } else if (style === "neon") {
-        drawNeon(ctx, particles);
       } else if (style === "chromatic") {
         drawChromatic(ctx, particles);
       } else if (style === "halftone") {
         drawHalftone(ctx, particles);
       } else if (style === "shatter") {
         drawShatter(ctx, particles, frame);
-      } else if (style === "strokes") {
-        drawStrokes(ctx, particles, strokeImgsRef.current);
       } else if (style === "spiral") {
         drawSpiral(ctx, particles, frame);
       } else if (style === "constellation") {
         drawConstellation(ctx, particles, frame);
-      } else if (style === "pop") {
-        drawPop(ctx, particles);
-      } else if (style === "liquify") {
-        drawLiquify(ctx, particles);
-      } else if (style === "electric") {
-        drawElectric(ctx, particles, frame, cw, ch);
       }
 
       animFrameRef.current = requestAnimationFrame(loop);
@@ -353,16 +326,6 @@ function drawOriginal(
   }
 }
 
-function drawPointillism(ctx: CanvasRenderingContext2D, particles: Particle[]) {
-  for (const p of particles) {
-    ctx.globalAlpha = Math.min(1, (p.a / 255) * 1.1);
-    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size * 1.8, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-}
 
 function drawGlitch(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, cw: number, ch: number) {
   const scanY = (frame * 3) % (ch + 40) - 20;
@@ -417,29 +380,6 @@ function drawGlitch(ctx: CanvasRenderingContext2D, particles: Particle[], frame:
   ctx.restore();
 }
 
-function drawThermal(ctx: CanvasRenderingContext2D, particles: Particle[]) {
-  for (const p of particles) {
-    const b = p.brightness;
-    // Map brightness to thermal: dark=blue/purple, mid=red/orange, bright=yellow/white
-    let tr: number, tg: number, tb: number;
-    if (b < 0.25) {
-      tr = 30; tg = 0; tb = 120 + b * 4 * 135;
-    } else if (b < 0.5) {
-      const t = (b - 0.25) * 4;
-      tr = 30 + t * 225; tg = 0; tb = 255 * (1 - t);
-    } else if (b < 0.75) {
-      const t = (b - 0.5) * 4;
-      tr = 255; tg = t * 200; tb = 0;
-    } else {
-      const t = (b - 0.75) * 4;
-      tr = 255; tg = 200 + t * 55; tb = t * 180;
-    }
-    ctx.globalAlpha = Math.min(1, (p.a / 255) * 1.2);
-    ctx.fillStyle = `rgb(${Math.round(tr)},${Math.round(tg)},${Math.round(tb)})`;
-    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 2.5, 2.5);
-  }
-  ctx.globalAlpha = 1;
-}
 
 function drawMosaic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
   const blockSize = 8;
@@ -502,27 +442,6 @@ function drawWireframe(ctx: CanvasRenderingContext2D, particles: Particle[]) {
   ctx.restore();
 }
 
-function drawNeon(ctx: CanvasRenderingContext2D, particles: Particle[]) {
-  // Edge-detect: brighter particles near dark ones glow
-  for (const p of particles) {
-    const isEdge = p.brightness > 0.3 && p.brightness < 0.8;
-    ctx.save();
-    if (isEdge) {
-      ctx.globalAlpha = (p.a / 255) * 0.9;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = `rgb(${Math.min(255, p.r + 80)},${Math.min(255, p.g + 40)},${Math.min(255, p.b + 100)})`;
-      ctx.fillStyle = `rgb(${Math.min(255, p.r + 60)},${Math.min(255, p.g + 30)},${Math.min(255, p.b + 80)})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      ctx.globalAlpha = (p.a / 255) * 0.3;
-      ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-      ctx.fillRect(Math.round(p.x), Math.round(p.y), 1.5, 1.5);
-    }
-    ctx.restore();
-  }
-}
 
 function drawChromatic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
   // Draw 3 passes with channel separation
@@ -627,41 +546,6 @@ function drawShatter(ctx: CanvasRenderingContext2D, particles: Particle[], frame
   }
 }
 
-function drawStrokes(ctx: CanvasRenderingContext2D, particles: Particle[], strokeImgs: HTMLImageElement[]) {
-  const clusterSize = 6;
-  for (let i = 0; i < particles.length; i += clusterSize) {
-    const cluster = particles.slice(i, i + clusterSize);
-    if (cluster.length < 2) continue;
-
-    let ax = 0, ay = 0, ar = 0, ag = 0, ab = 0;
-    for (const p of cluster) { ax += p.x; ay += p.y; ar += p.r; ag += p.g; ab += p.b; }
-    const n = cluster.length;
-    ax /= n; ay /= n; ar /= n; ag /= n; ab /= n;
-
-    const img = strokeImgs[i % strokeImgs.length];
-    if (img && img.complete && img.naturalWidth > 0) {
-      ctx.save();
-      ctx.translate(ax, ay);
-      ctx.rotate(Math.atan2(cluster[n - 1].y - cluster[0].y, cluster[n - 1].x - cluster[0].x));
-      ctx.globalAlpha = 0.6;
-      const sw = 28 + n * 2;
-      const sh = 6;
-      ctx.drawImage(img, -sw / 2, -sh / 2, sw, sh);
-      ctx.globalCompositeOperation = "multiply";
-      ctx.fillStyle = `rgb(${Math.round(ar)},${Math.round(ag)},${Math.round(ab)})`;
-      ctx.fillRect(-sw / 2, -sh / 2, sw, sh);
-      ctx.globalCompositeOperation = "source-over";
-      ctx.restore();
-    }
-
-    for (const p of cluster) {
-      ctx.globalAlpha = (p.a / 255) * 0.5;
-      ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
-      ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
-    }
-  }
-  ctx.globalAlpha = 1;
-}
 
 function drawSpiral(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
   for (const p of particles) {
@@ -716,31 +600,6 @@ function drawConstellation(ctx: CanvasRenderingContext2D, particles: Particle[],
   ctx.restore();
 }
 
-function drawPop(ctx: CanvasRenderingContext2D, particles: Particle[]) {
-  // Bold, high-contrast Warhol-style color mapping
-  for (const p of particles) {
-    const b = p.brightness;
-    let pr: number, pg: number, pb: number;
-    // Quantize to bold pop art palette
-    if (b < 0.2) {
-      pr = 20; pg = 10; pb = 40;
-    } else if (b < 0.35) {
-      pr = 180; pg = 30; pb = 90; // Hot pink
-    } else if (b < 0.5) {
-      pr = 230; pg = 60; pb = 20; // Orange
-    } else if (b < 0.65) {
-      pr = 250; pg = 220; pb = 0; // Yellow
-    } else if (b < 0.8) {
-      pr = 60; pg = 200; pb = 220; // Cyan
-    } else {
-      pr = 255; pg = 255; pb = 240; // Near white
-    }
-    ctx.globalAlpha = Math.min(1, (p.a / 255) * 1.2);
-    ctx.fillStyle = `rgb(${pr},${pg},${pb})`;
-    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 2.8, 2.8);
-  }
-  ctx.globalAlpha = 1;
-}
 
 function drawLiquify(ctx: CanvasRenderingContext2D, particles: Particle[]) {
   for (const p of particles) {
