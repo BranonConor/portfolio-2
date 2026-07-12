@@ -1,2 +1,1 @@
-export { EasterEggProvider, useEasterEgg } from "./EasterEggProvider";
-export { DoodleJumpGame } from "./DoodleJumpGame";
+export { PortraitCanvas } from "./PortraitCanvas";

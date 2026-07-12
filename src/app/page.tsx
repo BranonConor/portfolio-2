@@ -10,11 +10,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
-import { EasterEggProvider, useEasterEgg } from "@/components/easter-egg";
+import { PortraitCanvas } from "@/components/easter-egg";
 
 const SparkleIcon = () => (
   <svg
@@ -383,16 +383,12 @@ const Section = ({
 export default function Home() {
   return (
     <PageWrapper>
-      <EasterEggProvider portraitSrc="/me-light.png">
-        <HomeContent />
-      </EasterEggProvider>
+      <HomeContent />
     </PageWrapper>
   );
 }
 
 function HomeContent() {
-  const { onPortraitMouseDown, onPortraitMouseUp, isActive, isMobile, isGameRunning } =
-    useEasterEgg();
 
   return (
     <>
@@ -556,16 +552,6 @@ function HomeContent() {
           </Box>
 
           {/* Peace sign graphic */}
-          <motion.div
-            animate={isGameRunning
-              ? { scale: 0, opacity: 0, rotate: -15 }
-              : { scale: 1, opacity: 1, rotate: 0 }
-            }
-            transition={isGameRunning
-              ? { duration: 0.4, ease: "easeIn" }
-              : { duration: 0.5, ease: "easeOut", type: "spring" }
-            }
-          >
           <Box
             position="relative"
             flexShrink={0}
@@ -668,6 +654,7 @@ function HomeContent() {
               flip
               display={["none", "none", "block"]}
             />
+            {/* Mobile: static image */}
             <Image
               src="/me-light.png"
               alt="Branon doing peace signs"
@@ -679,14 +666,21 @@ function HomeContent() {
               height="100%"
               objectFit="contain"
               zIndex={1}
-              cursor={!isMobile ? "grab" : undefined}
-              onMouseDown={onPortraitMouseDown}
-              onMouseUp={onPortraitMouseUp}
-              onMouseLeave={onPortraitMouseUp}
-              _hover={!isMobile ? { filter: "brightness(1.1)" } : undefined}
-              transition="filter 0.2s"
               userSelect="none"
+              display={["block", "block", "none"]}
             />
+            {/* Desktop: interactive particle canvas */}
+            <Box
+              display={["none", "none", "block"]}
+              position="absolute"
+              top={0}
+              left={0}
+              width="100%"
+              height="100%"
+              zIndex={1}
+            >
+              <PortraitCanvas src="/me-light.png" width={240} height={240} />
+            </Box>
             {/* Mobile sparkles — emanate from portrait */}
             {[
               {
@@ -854,18 +848,10 @@ function HomeContent() {
               </motion.div>
             ))}
           </Box>
-          </motion.div>
         </Flex>
       </Box>
 
       {/* Two-column layout */}
-      <AnimatePresence>
-        {!isActive && (
-          <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60, rotate: 1, transition: { duration: 0.45, ease: "easeIn" } }}
-          >
       <Flex
         gap={4}
         flexDirection={["column", "column", "row"]}
@@ -1705,9 +1691,6 @@ function HomeContent() {
           </Box>
         </Flex>
       </Flex>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
