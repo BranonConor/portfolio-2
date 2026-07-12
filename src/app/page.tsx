@@ -887,7 +887,7 @@ function HomeContent() {
             visible: { opacity: 1, y: 0 },
             hidden: { opacity: 0, y: 80, rotate: 2, transition: { duration: 0.4, ease: "easeIn" } },
           }}
-          style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1, width: "100%" }}
+          style={{ flex: 1, minWidth: 0 }}
         >
         <Flex
           flexDirection="column"
@@ -1317,7 +1317,7 @@ function HomeContent() {
             visible: { opacity: 1, y: 0 },
             hidden: { opacity: 0, y: 100, rotate: -1.5, transition: { duration: 0.45, ease: "easeIn", delay: 0.08 } },
           }}
-          style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1, width: "100%" }}
+          style={{ flex: 1, minWidth: 0 }}
         >
         <Flex
           flexDirection="column"
