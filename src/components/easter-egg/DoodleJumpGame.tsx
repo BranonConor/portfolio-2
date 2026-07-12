@@ -153,10 +153,13 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
     squash: 1,
     isBoosting: false,
     boostTimer: 0,
+    jumpsLeft: 2, // double jump
+    canDoubleJump: true,
   });
   const platformsRef = useRef<Platform[]>([]);
   const boostsRef = useRef<Boost[]>([]);
   const particlesRef = useRef<Particle[]>([]);
+  const strokeImgsRef = useRef<HTMLImageElement[]>([]);
   const strokesRef = useRef<StrokeDecor[]>([]);
   const scoreRef = useRef(0);
   const maxHeightRef = useRef(0);
@@ -176,20 +179,32 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
     };
   }, [portraitSrc]);
 
-  // Generate background paint strokes
+  // Preload paint stroke images (the actual site PNGs)
+  useEffect(() => {
+    const srcs = ["/s1.png", "/s2.png", "/s3.png", "/s4.png", "/s5.png", "/s6.png"];
+    const imgs: HTMLImageElement[] = [];
+    for (const src of srcs) {
+      const img = new window.Image();
+      img.src = src;
+      imgs.push(img);
+    }
+    strokeImgsRef.current = imgs;
+  }, []);
+
+  // Generate background paint stroke positions
   useEffect(() => {
     const strokes: StrokeDecor[] = [];
     const colors = [COLORS.stroke1, COLORS.stroke2, COLORS.stroke3];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 10; i++) {
       strokes.push({
         x: Math.random(),
         y: Math.random(),
-        width: Math.random() * 120 + 40,
-        height: Math.random() * 8 + 3,
+        width: Math.random() * 200 + 80,
+        height: Math.random() * 30 + 10,
         color: colors[i % colors.length],
-        opacity: Math.random() * 0.06 + 0.02,
-        speed: Math.random() * 0.15 + 0.05,
-        rotation: Math.random() * 40 - 20,
+        opacity: Math.random() * 0.12 + 0.04,
+        speed: Math.random() * 0.12 + 0.04,
+        rotation: Math.random() * 50 - 25,
       });
     }
     strokesRef.current = strokes;
@@ -313,6 +328,8 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       squash: 1,
       isBoosting: false,
       boostTimer: 0,
+      jumpsLeft: 2,
+      canDoubleJump: true,
     };
     platformsRef.current = generatePlatforms();
     boostsRef.current = generateBoosts();
@@ -326,13 +343,41 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
   }, [generatePlatforms, generateBoosts]);
 
   // Key handlers
+  const doubleJumpPressedRef = useRef(false);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       keysRef.current.add(e.key);
       if (e.key === "Escape") onClose();
+      // Double jump on space or up arrow (only triggers once per press)
+      if (
+        (e.key === " " || e.key === "ArrowUp" || e.key === "w") &&
+        !doubleJumpPressedRef.current &&
+        gameStarted &&
+        !gameOver
+      ) {
+        doubleJumpPressedRef.current = true;
+        const player = playerRef.current;
+        if (player.jumpsLeft > 0 && player.vy > -8) {
+          player.vy = JUMP_FORCE * 0.85;
+          player.jumpsLeft--;
+          player.squash = 0.7;
+          const { width } = canvasSizeRef.current;
+          const playerSize = width * PLAYER_RATIO;
+          spawnParticles(
+            player.x + playerSize / 2,
+            player.y + playerSize,
+            4,
+            "jump",
+            COLORS.particle
+          );
+        }
+      }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
       keysRef.current.delete(e.key);
+      if (e.key === " " || e.key === "ArrowUp" || e.key === "w") {
+        doubleJumpPressedRef.current = false;
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
@@ -340,7 +385,7 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [onClose]);
+  }, [onClose, gameStarted, gameOver, spawnParticles]);
 
   // Game loop
   useEffect(() => {
@@ -450,6 +495,7 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
               player.vy = JUMP_FORCE;
               player.y = plat.y - playerSize;
               player.squash = 0.65;
+              player.jumpsLeft = 2; // Reset double jump on landing
               spawnParticles(
                 player.x + playerSize / 2,
                 plat.y,
@@ -601,11 +647,25 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       ctx.fillStyle = COLORS.bg1;
       ctx.fillRect(-10, -10, width + 20, height + 20);
 
-      // Drifting paint strokes in the void background
+      // Drifting paint strokes in the void background (real PNGs)
       const strokes = strokesRef.current;
-      for (const s of strokes) {
+      const strokeImgs = strokeImgsRef.current;
+      for (let si = 0; si < strokes.length; si++) {
+        const s = strokes[si];
         const sy = ((s.y * height + frameCountRef.current * s.speed) % (height + 100)) - 50;
-        drawPaintStroke(ctx, s.x * width, sy, s.width, s.height, s.color, s.opacity, s.rotation);
+        const img = strokeImgs[si % strokeImgs.length];
+        if (img && img.complete && img.naturalWidth > 0) {
+          ctx.save();
+          const sx = s.x * width;
+          ctx.translate(sx + s.width / 2, sy + s.height / 2);
+          ctx.rotate((s.rotation * Math.PI) / 180);
+          ctx.globalAlpha = s.opacity;
+          ctx.drawImage(img, -s.width / 2, -s.height / 2, s.width, s.height);
+          ctx.restore();
+        } else {
+          // Fallback: draw pixelated stroke shape
+          drawPaintStroke(ctx, s.x * width, sy, s.width, s.height, s.color, s.opacity, s.rotation);
+        }
       }
 
       // Subtle vignette via dark corners
@@ -944,7 +1004,9 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
               >
                 [←][→] or [A][D] to move
                 <br />
-                jump · climb · collect boosts!
+                [SPACE] to double jump
+                <br />
+                climb · collect boosts!
               </Text>
 
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

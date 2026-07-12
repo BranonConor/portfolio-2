@@ -391,7 +391,7 @@ export default function Home() {
 }
 
 function HomeContent() {
-  const { onPortraitMouseDown, onPortraitMouseUp, isActive, isMobile } =
+  const { onPortraitMouseDown, onPortraitMouseUp, isActive, isMobile, isGameRunning } =
     useEasterEgg();
 
   return (
@@ -556,6 +556,16 @@ function HomeContent() {
           </Box>
 
           {/* Peace sign graphic */}
+          <motion.div
+            animate={isGameRunning
+              ? { scale: 0, opacity: 0, rotate: -15 }
+              : { scale: 1, opacity: 1, rotate: 0 }
+            }
+            transition={isGameRunning
+              ? { duration: 0.4, ease: "easeIn" }
+              : { duration: 0.5, ease: "easeOut", type: "spring" }
+            }
+          >
           <Box
             position="relative"
             flexShrink={0}
@@ -844,6 +854,7 @@ function HomeContent() {
               </motion.div>
             ))}
           </Box>
+          </motion.div>
         </Flex>
       </Box>
 
@@ -851,9 +862,19 @@ function HomeContent() {
       <AnimatePresence>
         {!isActive && (
           <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60, transition: { duration: 0.4, ease: "easeIn" } }}
-            animate={{ opacity: 1, y: 0 }}
+            initial="visible"
+            animate="visible"
+            exit="hidden"
+            variants={{
+              visible: { opacity: 1 },
+              hidden: {
+                opacity: 0,
+                transition: {
+                  staggerChildren: 0.06,
+                  staggerDirection: 1,
+                },
+              },
+            }}
           >
       <Flex
         gap={4}
@@ -861,6 +882,13 @@ function HomeContent() {
         alignItems="flex-start"
       >
         {/* Left column */}
+        <motion.div
+          variants={{
+            visible: { opacity: 1, y: 0 },
+            hidden: { opacity: 0, y: 80, rotate: 2, transition: { duration: 0.4, ease: "easeIn" } },
+          }}
+          style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1, width: "100%" }}
+        >
         <Flex
           flexDirection="column"
           gap={4}
@@ -1281,8 +1309,16 @@ function HomeContent() {
             </Section>
           </Box>
         </Flex>
+        </motion.div>
 
         {/* Right column */}
+        <motion.div
+          variants={{
+            visible: { opacity: 1, y: 0 },
+            hidden: { opacity: 0, y: 100, rotate: -1.5, transition: { duration: 0.45, ease: "easeIn", delay: 0.08 } },
+          }}
+          style={{ display: "flex", flexDirection: "column", gap: "16px", flex: 1, width: "100%" }}
+        >
         <Flex
           flexDirection="column"
           gap={4}
@@ -1693,6 +1729,7 @@ function HomeContent() {
             </Section>
           </Box>
         </Flex>
+        </motion.div>
       </Flex>
           </motion.div>
         )}

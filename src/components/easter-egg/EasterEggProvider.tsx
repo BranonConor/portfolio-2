@@ -107,6 +107,7 @@ export function EasterEggProvider({
           onPortraitMouseUp: handlePortraitMouseUp,
           isActive,
           isMobile,
+          isGameRunning: state === "game" || state === "holding" || state === "dropped",
         }}
       >
         <Box position="relative">
@@ -238,6 +239,7 @@ interface EasterEggContextValue {
   onPortraitMouseUp: () => void;
   isActive: boolean;
   isMobile: boolean;
+  isGameRunning: boolean;
 }
 
 const EasterEggContext = createContext<EasterEggContextValue>({
@@ -245,6 +247,7 @@ const EasterEggContext = createContext<EasterEggContextValue>({
   onPortraitMouseUp: () => {},
   isActive: false,
   isMobile: true,
+  isGameRunning: false,
 });
 
 export function useEasterEgg() {
