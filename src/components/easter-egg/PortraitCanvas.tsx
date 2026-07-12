@@ -491,7 +491,7 @@ function drawMosaic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
     }
   }
 
-  for (const [key, cell] of grid) {
+  grid.forEach((cell, key) => {
     const [gxs, gys] = key.split(",");
     const gx = parseInt(gxs) * blockSize;
     const gy = parseInt(gys) * blockSize;
@@ -499,7 +499,7 @@ function drawMosaic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
     ctx.globalAlpha = Math.min(1, (cell.a / n / 255) * 1.3);
     ctx.fillStyle = `rgb(${Math.round(cell.r / n)},${Math.round(cell.g / n)},${Math.round(cell.b / n)})`;
     ctx.fillRect(gx - blockSize / 2 + 0.5, gy - blockSize / 2 + 0.5, blockSize - 1, blockSize - 1);
-  }
+  });
   ctx.globalAlpha = 1;
 }
 
@@ -578,7 +578,7 @@ function drawHalftone(ctx: CanvasRenderingContext2D, particles: Particle[]) {
     }
   }
 
-  for (const [key, cell] of grid) {
+  grid.forEach((cell, key) => {
     const [gxs, gys] = key.split(",");
     const cx = parseInt(gxs) * cellSize;
     const cy = parseInt(gys) * cellSize;
@@ -590,7 +590,7 @@ function drawHalftone(ctx: CanvasRenderingContext2D, particles: Particle[]) {
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.fill();
-  }
+  });
   ctx.globalAlpha = 1;
 }
 
@@ -608,8 +608,8 @@ function drawShatter(ctx: CanvasRenderingContext2D, particles: Particle[], frame
     else grid.set(key, [p]);
   }
 
-  for (const [key, group] of grid) {
-    if (group.length < 1) continue;
+  grid.forEach((group, key) => {
+    if (group.length < 1) return;
     const [gxs, gys] = key.split(",");
     const gx = parseInt(gxs) * triSize;
     const gy = parseInt(gys) * triSize;
@@ -637,7 +637,7 @@ function drawShatter(ctx: CanvasRenderingContext2D, particles: Particle[], frame
     ctx.fill();
     ctx.stroke();
     ctx.restore();
-  }
+  });
 }
 
 
