@@ -6,16 +6,40 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const STORAGE_KEY = "doodle-jump-high-score";
 
-// Game constants (relative to canvas size)
-const PLAYER_RATIO = 0.08; // player size relative to canvas width
-const PLATFORM_W_RATIO = 0.12;
-const PLATFORM_H = 10;
-const GRAVITY = 0.35;
-const JUMP_FORCE = -11.5;
+// Game constants
+const PLAYER_RATIO = 0.07;
+const PLATFORM_W_RATIO = 0.14;
+const PLATFORM_H = 8;
+const GRAVITY = 0.38;
+const JUMP_FORCE = -11.8;
+const BOOST_FORCE = -20;
 const MOVE_SPEED = 5.5;
-const PLATFORM_COUNT = 8;
+const PLATFORM_COUNT = 9;
 
-// Particle types
+// Max gap a normal jump can clear (derived from physics)
+// Jump height = v^2 / (2*g) ≈ 11.8^2 / (2*0.38) ≈ 183px
+// Safe max gap is ~75% of that to account for horizontal movement
+const MAX_PLATFORM_GAP = 140;
+const MIN_PLATFORM_GAP = 50;
+
+// 8-bit color palette — paint stroke void theme
+const COLORS = {
+  bg1: "#0a0a0c",
+  bg2: "#111114",
+  bg3: "#1a1a1f",
+  platformNormal: "#6e56cf",
+  platformMoving: "#e5484d",
+  platformFragile: "#464650",
+  boost: "#f5d90a",
+  boostGlow: "rgba(245, 217, 10, 0.5)",
+  particle: "#a78bfa",
+  stroke1: "#6e56cf",
+  stroke2: "#e5484d",
+  stroke3: "#3e63dd",
+  text: "#ededef",
+  textMuted: "#706f78",
+};
+
 interface Particle {
   x: number;
   y: number;
@@ -25,7 +49,8 @@ interface Particle {
   maxLife: number;
   size: number;
   color: string;
-  type: "jump" | "trail" | "death" | "star" | "landing";
+  type: "jump" | "trail" | "death" | "boost" | "stroke";
+  pixel?: boolean;
 }
 
 interface Platform {
@@ -35,12 +60,73 @@ interface Platform {
   type: "normal" | "moving" | "fragile";
   dx?: number;
   broken?: boolean;
-  glowPhase?: number;
+  pulsePhase?: number;
+}
+
+interface Boost {
+  x: number;
+  y: number;
+  size: number;
+  collected: boolean;
+  pulsePhase: number;
+}
+
+// Paint stroke decorations that float in the void
+interface StrokeDecor {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+  opacity: number;
+  speed: number;
+  rotation: number;
 }
 
 interface DoodleJumpGameProps {
   onClose: () => void;
   portraitSrc: string;
+}
+
+// Pixel-perfect rectangle drawing helper (8-bit feel)
+function pixelRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+) {
+  ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+}
+
+// Draw a pixelated paint stroke shape
+function drawPaintStroke(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  color: string,
+  opacity: number,
+  rotation: number
+) {
+  ctx.save();
+  ctx.translate(x + width / 2, y + height / 2);
+  ctx.rotate((rotation * Math.PI) / 180);
+  ctx.globalAlpha = opacity;
+  ctx.fillStyle = color;
+
+  // Pixelated brush stroke — several offset rectangles
+  const step = Math.max(2, Math.floor(height / 3));
+  for (let i = 0; i < 5; i++) {
+    const offsetX = (i - 2) * step * 0.8;
+    const offsetY = Math.sin(i * 1.2) * step * 0.4;
+    const w = width * (0.7 + Math.sin(i * 0.9) * 0.3);
+    const h = height * (0.5 + Math.cos(i * 1.1) * 0.3);
+    pixelRect(ctx, -w / 2 + offsetX, -h / 2 + offsetY, w, h);
+  }
+
+  ctx.restore();
 }
 
 export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
@@ -64,12 +150,14 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
     vy: JUMP_FORCE,
     vx: 0,
     facingLeft: false,
-    rotation: 0,
     squash: 1,
+    isBoosting: false,
+    boostTimer: 0,
   });
   const platformsRef = useRef<Platform[]>([]);
+  const boostsRef = useRef<Boost[]>([]);
   const particlesRef = useRef<Particle[]>([]);
-  const starsRef = useRef<{ x: number; y: number; size: number; twinkle: number; speed: number }[]>([]);
+  const strokesRef = useRef<StrokeDecor[]>([]);
   const scoreRef = useRef(0);
   const maxHeightRef = useRef(0);
 
@@ -88,19 +176,23 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
     };
   }, [portraitSrc]);
 
-  // Generate background stars
+  // Generate background paint strokes
   useEffect(() => {
-    const stars = [];
-    for (let i = 0; i < 80; i++) {
-      stars.push({
+    const strokes: StrokeDecor[] = [];
+    const colors = [COLORS.stroke1, COLORS.stroke2, COLORS.stroke3];
+    for (let i = 0; i < 12; i++) {
+      strokes.push({
         x: Math.random(),
         y: Math.random(),
-        size: Math.random() * 2 + 0.5,
-        twinkle: Math.random() * Math.PI * 2,
-        speed: Math.random() * 0.3 + 0.1,
+        width: Math.random() * 120 + 40,
+        height: Math.random() * 8 + 3,
+        color: colors[i % colors.length],
+        opacity: Math.random() * 0.06 + 0.02,
+        speed: Math.random() * 0.15 + 0.05,
+        rotation: Math.random() * 40 - 20,
       });
     }
-    starsRef.current = stars;
+    strokesRef.current = strokes;
   }, []);
 
   // Resize handler
@@ -122,61 +214,91 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
 
   // Spawn particles
   const spawnParticles = useCallback(
-    (
-      x: number,
-      y: number,
-      count: number,
-      type: Particle["type"],
-      baseColor: string
-    ) => {
+    (x: number, y: number, count: number, type: Particle["type"], baseColor: string) => {
       const particles = particlesRef.current;
       for (let i = 0; i < count; i++) {
         const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
-        const speed = type === "death" ? Math.random() * 6 + 2 : Math.random() * 3 + 1;
+        const speed =
+          type === "death"
+            ? Math.random() * 5 + 2
+            : type === "boost"
+            ? Math.random() * 4 + 1
+            : Math.random() * 3 + 1;
         particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed - (type === "jump" ? 2 : 0),
           life: 1,
-          maxLife: type === "death" ? 60 : type === "jump" ? 25 : 15,
-          size: type === "death" ? Math.random() * 5 + 3 : Math.random() * 3 + 1.5,
+          maxLife: type === "death" ? 50 : type === "boost" ? 35 : 20,
+          size:
+            type === "death"
+              ? Math.random() * 4 + 2
+              : Math.random() * 3 + 1.5,
           color: baseColor,
           type,
+          pixel: true,
         });
       }
     },
     []
   );
 
+  // Generate platforms with guaranteed reachability
   const generatePlatforms = useCallback(() => {
     const { width, height } = canvasSizeRef.current;
     const platWidth = width * PLATFORM_W_RATIO;
     const platforms: Platform[] = [];
+
+    // Start platform directly under player
+    let lastY = height - 60;
     platforms.push({
       x: width / 2 - platWidth / 2,
-      y: height - 60,
+      y: lastY,
       width: platWidth,
       type: "normal",
-      glowPhase: Math.random() * Math.PI * 2,
+      pulsePhase: Math.random() * Math.PI * 2,
     });
+
+    // Generate upward with guaranteed reachable gaps
     for (let i = 1; i < PLATFORM_COUNT; i++) {
-      const y = height - 60 - i * (height / PLATFORM_COUNT);
+      const gap = MIN_PLATFORM_GAP + Math.random() * (MAX_PLATFORM_GAP - MIN_PLATFORM_GAP);
+      lastY -= gap;
       const x = Math.random() * (width - platWidth);
       const rand = Math.random();
       let type: Platform["type"] = "normal";
-      if (rand > 0.85) type = "moving";
-      else if (rand > 0.7) type = "fragile";
+      // Only allow moving/fragile after first few platforms, never two fragile in a row
+      if (i > 2 && rand > 0.82) type = "moving";
+      else if (i > 3 && rand > 0.68 && platforms[i - 1].type !== "fragile")
+        type = "fragile";
+
       platforms.push({
         x,
-        y,
+        y: lastY,
         width: platWidth,
         type,
-        dx: type === "moving" ? (Math.random() > 0.5 ? 2 : -2) : 0,
-        glowPhase: Math.random() * Math.PI * 2,
+        dx: type === "moving" ? (Math.random() > 0.5 ? 1.8 : -1.8) : 0,
+        pulsePhase: Math.random() * Math.PI * 2,
       });
     }
     return platforms;
+  }, []);
+
+  // Generate boosts (rockets/springs)
+  const generateBoosts = useCallback(() => {
+    const { width, height } = canvasSizeRef.current;
+    const boosts: Boost[] = [];
+    // One boost every ~3 screens worth initially
+    if (Math.random() > 0.5) {
+      boosts.push({
+        x: Math.random() * (width - 30) + 15,
+        y: height * 0.3 + Math.random() * height * 0.3,
+        size: 18,
+        collected: false,
+        pulsePhase: Math.random() * Math.PI * 2,
+      });
+    }
+    return boosts;
   }, []);
 
   const startGame = useCallback(() => {
@@ -188,10 +310,12 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       vy: JUMP_FORCE,
       vx: 0,
       facingLeft: false,
-      rotation: 0,
       squash: 1,
+      isBoosting: false,
+      boostTimer: 0,
     };
     platformsRef.current = generatePlatforms();
+    boostsRef.current = generateBoosts();
     particlesRef.current = [];
     scoreRef.current = 0;
     maxHeightRef.current = 0;
@@ -199,7 +323,7 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
     setScore(0);
     setGameOver(false);
     setGameStarted(true);
-  }, [generatePlatforms]);
+  }, [generatePlatforms, generateBoosts]);
 
   // Key handlers
   useEffect(() => {
@@ -233,11 +357,12 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       const platWidth = width * PLATFORM_W_RATIO;
       const player = playerRef.current;
       const platforms = platformsRef.current;
+      const boosts = boostsRef.current;
       const particles = particlesRef.current;
       const keys = keysRef.current;
       frameCountRef.current++;
 
-      // Input
+      // --- INPUT ---
       if (keys.has("ArrowLeft") || keys.has("a")) {
         player.vx = -MOVE_SPEED;
         player.facingLeft = true;
@@ -245,38 +370,61 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
         player.vx = MOVE_SPEED;
         player.facingLeft = false;
       } else {
-        player.vx *= 0.85; // Smooth deceleration
+        player.vx *= 0.82;
       }
 
-      // Physics
-      player.vy += GRAVITY;
+      // --- PHYSICS ---
+      if (player.isBoosting) {
+        player.boostTimer--;
+        if (player.boostTimer <= 0) {
+          player.isBoosting = false;
+        }
+        // Reduced gravity during boost
+        player.vy += GRAVITY * 0.2;
+      } else {
+        player.vy += GRAVITY;
+      }
       player.x += player.vx;
       player.y += player.vy;
 
       // Squash & stretch
       if (player.vy < -2) {
-        player.squash = 0.85 + Math.min(Math.abs(player.vy) * 0.01, 0.15);
+        player.squash = 0.82 + Math.min(Math.abs(player.vy) * 0.008, 0.15);
       } else if (player.vy > 2) {
-        player.squash = 1.15 - Math.min(player.vy * 0.01, 0.15);
+        player.squash = 1.18 - Math.min(player.vy * 0.008, 0.15);
       } else {
-        player.squash += (1 - player.squash) * 0.1;
+        player.squash += (1 - player.squash) * 0.12;
       }
 
-      // Subtle rotation based on horizontal velocity
-      player.rotation = player.vx * 1.5;
-
-      // Trail particles while moving fast
-      if (Math.abs(player.vy) > 4 && frameCountRef.current % 3 === 0) {
+      // Boost trail
+      if (player.isBoosting && frameCountRef.current % 2 === 0) {
         particles.push({
-          x: player.x + playerSize / 2 + (Math.random() - 0.5) * 10,
+          x: player.x + playerSize / 2 + (Math.random() - 0.5) * 8,
           y: player.y + playerSize,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: player.vy > 0 ? -0.5 : 0.5,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: Math.random() * 2 + 1,
           life: 1,
-          maxLife: 15,
+          maxLife: 20,
+          size: Math.random() * 4 + 2,
+          color: COLORS.boost,
+          type: "boost",
+          pixel: true,
+        });
+      }
+
+      // Normal trail
+      if (!player.isBoosting && Math.abs(player.vy) > 5 && frameCountRef.current % 4 === 0) {
+        particles.push({
+          x: player.x + playerSize / 2 + (Math.random() - 0.5) * 6,
+          y: player.y + playerSize,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: 0.3,
+          life: 1,
+          maxLife: 12,
           size: Math.random() * 2 + 1,
-          color: "#58a6ff",
+          color: COLORS.particle,
           type: "trail",
+          pixel: true,
         });
       }
 
@@ -284,9 +432,10 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       if (player.x > width) player.x = -playerSize;
       if (player.x + playerSize < 0) player.x = width;
 
-      // Platform collision (only when falling)
-      if (player.vy > 0) {
+      // --- PLATFORM COLLISION (only when falling) ---
+      if (player.vy > 0 && !player.isBoosting) {
         for (const plat of platforms) {
+          if (plat.broken) continue;
           if (
             player.x + playerSize > plat.x + 5 &&
             player.x < plat.x + plat.width - 5 &&
@@ -295,30 +444,44 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
           ) {
             if (plat.type === "fragile") {
               plat.broken = true;
-              // Fragile break particles
-              spawnParticles(
-                plat.x + plat.width / 2,
-                plat.y,
-                8,
-                "death",
-                "#da3633"
-              );
+              spawnParticles(plat.x + plat.width / 2, plat.y, 6, "death", COLORS.platformFragile);
               shakeRef.current.intensity = 3;
             } else {
               player.vy = JUMP_FORCE;
               player.y = plat.y - playerSize;
-              player.squash = 0.7;
-              // Jump particles
+              player.squash = 0.65;
               spawnParticles(
                 player.x + playerSize / 2,
                 plat.y,
-                6,
+                5,
                 "jump",
-                plat.type === "moving" ? "#f0883e" : "#58a6ff"
+                plat.type === "moving" ? COLORS.platformMoving : COLORS.platformNormal
               );
             }
           }
         }
+      }
+
+      // --- BOOST COLLISION ---
+      for (const boost of boosts) {
+        if (boost.collected) continue;
+        const bx = boost.x;
+        const by = boost.y;
+        const bs = boost.size;
+        if (
+          player.x + playerSize > bx - bs &&
+          player.x < bx + bs &&
+          player.y + playerSize > by - bs &&
+          player.y < by + bs
+        ) {
+          boost.collected = true;
+          player.vy = BOOST_FORCE;
+          player.isBoosting = true;
+          player.boostTimer = 40;
+          spawnParticles(bx, by, 10, "boost", COLORS.boost);
+          shakeRef.current.intensity = 4;
+        }
+        boost.pulsePhase += 0.06;
       }
 
       // Move moving platforms
@@ -329,13 +492,10 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
             plat.dx *= -1;
           }
         }
-        // Animate glow phase
-        if (plat.glowPhase !== undefined) {
-          plat.glowPhase += 0.03;
-        }
+        if (plat.pulsePhase !== undefined) plat.pulsePhase += 0.04;
       }
 
-      // Scroll world
+      // --- SCROLL WORLD ---
       const scrollThreshold = height * 0.35;
       if (player.y < scrollThreshold) {
         const offset = scrollThreshold - player.y;
@@ -344,70 +504,84 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
         scoreRef.current = Math.floor(maxHeightRef.current / 8);
         setScore(scoreRef.current);
 
-        for (const plat of platforms) {
-          plat.y += offset;
-        }
-        // Scroll particles too
-        for (const p of particles) {
-          p.y += offset;
-        }
+        for (const plat of platforms) plat.y += offset;
+        for (const boost of boosts) boost.y += offset;
+        for (const p of particles) p.y += offset;
 
-        // Recycle platforms
+        // Recycle platforms with guaranteed reachability
+        // Sort by y ascending to know what's highest
+        let highestY = Math.min(...platforms.map((p) => p.y));
+
         for (let i = platforms.length - 1; i >= 0; i--) {
           if (platforms[i].y > height + 20) {
-            const newY = Math.random() * -80 - 20;
+            // Place new platform reachable from the current highest
+            const gap = MIN_PLATFORM_GAP + Math.random() * (MAX_PLATFORM_GAP - MIN_PLATFORM_GAP);
+            const newY = highestY - gap;
             const newX = Math.random() * (width - platWidth);
             const rand = Math.random();
             let type: Platform["type"] = "normal";
-            if (scoreRef.current > 50 && rand > 0.75) type = "moving";
-            else if (scoreRef.current > 30 && rand > 0.6) type = "fragile";
+            if (scoreRef.current > 60 && rand > 0.78) type = "moving";
+            else if (
+              scoreRef.current > 40 &&
+              rand > 0.62 &&
+              platforms.filter((p) => p.type === "fragile" && !p.broken).length < 2
+            )
+              type = "fragile";
+
             platforms[i] = {
               x: newX,
               y: newY,
               width: platWidth,
               type,
-              dx: type === "moving" ? (Math.random() > 0.5 ? 2.5 : -2.5) : 0,
+              dx: type === "moving" ? (Math.random() > 0.5 ? 2 : -2) : 0,
               broken: false,
-              glowPhase: Math.random() * Math.PI * 2,
+              pulsePhase: Math.random() * Math.PI * 2,
             };
+            highestY = newY;
           }
+        }
+
+        // Recycle boosts — spawn new ones occasionally
+        for (let i = boosts.length - 1; i >= 0; i--) {
+          if (boosts[i].y > height + 50) {
+            boosts.splice(i, 1);
+          }
+        }
+        // Chance to spawn a new boost above
+        if (boosts.length < 2 && Math.random() < 0.008) {
+          boosts.push({
+            x: Math.random() * (width - 30) + 15,
+            y: -30 - Math.random() * 100,
+            size: 18,
+            collected: false,
+            pulsePhase: Math.random() * Math.PI * 2,
+          });
         }
       }
 
-      // Update screen shake
+      // --- SCREEN SHAKE ---
       if (shakeRef.current.intensity > 0) {
         shakeRef.current.x = (Math.random() - 0.5) * shakeRef.current.intensity * 2;
         shakeRef.current.y = (Math.random() - 0.5) * shakeRef.current.intensity * 2;
-        shakeRef.current.intensity *= 0.85;
+        shakeRef.current.intensity *= 0.82;
         if (shakeRef.current.intensity < 0.1) shakeRef.current.intensity = 0;
       }
 
-      // Update particles
+      // --- UPDATE PARTICLES ---
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
         p.life -= 1 / p.maxLife;
-        if (p.type === "jump" || p.type === "death") {
-          p.vy += 0.1;
-        }
-        if (p.life <= 0) {
-          particles.splice(i, 1);
-        }
+        if (p.type === "jump" || p.type === "death") p.vy += 0.12;
+        if (p.type === "boost") p.vy += 0.05;
+        if (p.life <= 0) particles.splice(i, 1);
       }
 
-      // Game over: fell below screen
+      // --- GAME OVER ---
       if (player.y > height + 50) {
-        // Death explosion
-        spawnParticles(
-          player.x + playerSize / 2,
-          height - 100,
-          20,
-          "death",
-          "#ff6b6b"
-        );
+        spawnParticles(player.x + playerSize / 2, height - 80, 16, "death", COLORS.platformMoving);
         shakeRef.current.intensity = 8;
-
         const finalScore = scoreRef.current;
         const stored = localStorage.getItem(STORAGE_KEY);
         const currentHigh = stored ? parseInt(stored, 10) : 0;
@@ -419,95 +593,136 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
         return;
       }
 
-      // === DRAW ===
+      // ========== DRAW ==========
       ctx.save();
       ctx.translate(shakeRef.current.x, shakeRef.current.y);
 
-      // Background - deep space gradient
-      const bg = ctx.createLinearGradient(0, 0, 0, height);
-      bg.addColorStop(0, "#030810");
-      bg.addColorStop(0.4, "#0a1628");
-      bg.addColorStop(1, "#0d1117");
-      ctx.fillStyle = bg;
+      // Background — void with subtle layered darkness
+      ctx.fillStyle = COLORS.bg1;
       ctx.fillRect(-10, -10, width + 20, height + 20);
 
-      // Background stars with parallax twinkle
-      const stars = starsRef.current;
-      for (const star of stars) {
-        const sx = star.x * width;
-        const sy = ((star.y * height + frameCountRef.current * star.speed * 0.3) % height);
-        const twinkle = Math.sin(frameCountRef.current * 0.02 + star.twinkle) * 0.4 + 0.6;
-        ctx.globalAlpha = twinkle * 0.7;
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
-        ctx.fill();
+      // Drifting paint strokes in the void background
+      const strokes = strokesRef.current;
+      for (const s of strokes) {
+        const sy = ((s.y * height + frameCountRef.current * s.speed) % (height + 100)) - 50;
+        drawPaintStroke(ctx, s.x * width, sy, s.width, s.height, s.color, s.opacity, s.rotation);
       }
-      ctx.globalAlpha = 1;
 
-      // Platforms with glow effect
+      // Subtle vignette via dark corners
+      const vignette = ctx.createRadialGradient(
+        width / 2, height / 2, height * 0.3,
+        width / 2, height / 2, height * 0.8
+      );
+      vignette.addColorStop(0, "transparent");
+      vignette.addColorStop(1, "rgba(0, 0, 0, 0.4)");
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, width, height);
+
+      // --- PLATFORMS (8-bit pixel style) ---
       for (const plat of platforms) {
         if (plat.broken) continue;
 
-        const glowIntensity = Math.sin(plat.glowPhase || 0) * 0.3 + 0.7;
-        let color = "#58a6ff";
-        let glowColor = "rgba(88, 166, 255, 0.4)";
-        if (plat.type === "moving") {
-          color = "#f0883e";
-          glowColor = "rgba(240, 136, 62, 0.4)";
-        } else if (plat.type === "fragile") {
-          color = "#da3633";
-          glowColor = "rgba(218, 54, 51, 0.3)";
-        }
+        const pulse = Math.sin(plat.pulsePhase || 0) * 0.2 + 0.8;
+        let color = COLORS.platformNormal;
+        if (plat.type === "moving") color = COLORS.platformMoving;
+        else if (plat.type === "fragile") color = COLORS.platformFragile;
 
-        // Glow
+        // Platform glow (subtle)
         ctx.save();
-        ctx.shadowBlur = 12 * glowIntensity;
-        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 8 * pulse;
+        ctx.shadowColor = color;
         ctx.fillStyle = color;
-        ctx.beginPath();
-        if (ctx.roundRect) {
-          ctx.roundRect(plat.x, plat.y, plat.width, PLATFORM_H, 5);
-        } else {
-          ctx.rect(plat.x, plat.y, plat.width, PLATFORM_H);
-        }
-        ctx.fill();
 
-        // Highlight on top edge
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.15 * glowIntensity})`;
-        ctx.fillRect(plat.x + 2, plat.y, plat.width - 4, 2);
+        // Pixelated platform (stacked rects for 8-bit look)
+        const px = Math.round(plat.x);
+        const py = Math.round(plat.y);
+        const pw = Math.round(plat.width);
+        // Main body
+        pixelRect(ctx, px + 2, py, pw - 4, PLATFORM_H);
+        // Top/bottom insets for pixel look
+        pixelRect(ctx, px, py + 2, pw, PLATFORM_H - 4);
+
+        // Highlight
+        ctx.fillStyle = `rgba(255,255,255,${0.15 * pulse})`;
+        pixelRect(ctx, px + 2, py, pw - 4, 2);
+
         ctx.restore();
       }
 
-      // Particles
+      // --- BOOSTS (pulsing pixel diamond) ---
+      for (const boost of boosts) {
+        if (boost.collected) continue;
+        const pulse = Math.sin(boost.pulsePhase) * 0.3 + 0.7;
+        const bx = Math.round(boost.x);
+        const by = Math.round(boost.y);
+        const bs = Math.round(boost.size * pulse);
+
+        ctx.save();
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = COLORS.boostGlow;
+        ctx.fillStyle = COLORS.boost;
+
+        // Diamond shape (pixel)
+        const half = Math.round(bs / 2);
+        ctx.beginPath();
+        ctx.moveTo(bx, by - half);
+        ctx.lineTo(bx + half, by);
+        ctx.lineTo(bx, by + half);
+        ctx.lineTo(bx - half, by);
+        ctx.closePath();
+        ctx.fill();
+
+        // Inner highlight
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        const inner = Math.round(half * 0.4);
+        ctx.beginPath();
+        ctx.moveTo(bx, by - inner);
+        ctx.lineTo(bx + inner, by);
+        ctx.lineTo(bx, by + inner);
+        ctx.lineTo(bx - inner, by);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      // --- PARTICLES (pixel squares) ---
       for (const p of particles) {
         ctx.save();
         ctx.globalAlpha = p.life;
         ctx.fillStyle = p.color;
-        ctx.shadowBlur = p.type === "death" ? 8 : 4;
-        ctx.shadowColor = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-        ctx.fill();
+        if (p.pixel) {
+          // 8-bit square particles
+          const s = Math.round(p.size * p.life);
+          pixelRect(ctx, Math.round(p.x) - s / 2, Math.round(p.y) - s / 2, s, s);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.restore();
       }
 
-      // Player with rotation and squash/stretch
+      // --- PLAYER ---
       ctx.save();
-      const px = player.x + playerSize / 2;
-      const py = player.y + playerSize / 2;
-      ctx.translate(px, py);
-      ctx.rotate((player.rotation * Math.PI) / 180);
+      const ppx = player.x + playerSize / 2;
+      const ppy = player.y + playerSize / 2;
+      ctx.translate(ppx, ppy);
       ctx.scale(2 - player.squash, player.squash);
 
       // Player glow
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = "rgba(88, 166, 255, 0.5)";
+      if (player.isBoosting) {
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = COLORS.boostGlow;
+      } else {
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "rgba(110, 86, 207, 0.4)";
+      }
 
       if (portraitImgRef.current) {
-        if (player.facingLeft) {
-          ctx.scale(-1, 1);
-        }
+        if (player.facingLeft) ctx.scale(-1, 1);
+        // Pixelate slightly by disabling smoothing
+        ctx.imageSmoothingEnabled = false;
         ctx.drawImage(
           portraitImgRef.current,
           -playerSize / 2,
@@ -515,19 +730,18 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
           playerSize,
           playerSize
         );
+        ctx.imageSmoothingEnabled = true;
       } else {
-        ctx.fillStyle = "#58a6ff";
-        ctx.beginPath();
-        ctx.arc(0, 0, playerSize / 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = COLORS.platformNormal;
+        pixelRect(ctx, -playerSize / 2, -playerSize / 2, playerSize, playerSize);
       }
       ctx.restore();
 
-      // Score display on canvas (subtle, top-left)
+      // --- HUD on canvas (8-bit font style) ---
       ctx.save();
-      ctx.font = "bold 14px -apple-system, BlinkMacSystemFont, sans-serif";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-      ctx.fillText(`↑ ${scoreRef.current}`, 16, 30);
+      ctx.font = "bold 12px monospace";
+      ctx.fillStyle = COLORS.textMuted;
+      ctx.fillText(`SCORE ${scoreRef.current}`, 12, 24);
       ctx.restore();
 
       ctx.restore(); // End shake transform
@@ -548,7 +762,7 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
       minHeight="500px"
       overflow="hidden"
       borderRadius="12px"
-      bg="#030810"
+      bg={COLORS.bg1}
     >
       {/* Full-bleed game canvas */}
       <canvas
@@ -559,10 +773,11 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
           height: "100%",
           position: "absolute",
           inset: 0,
+          imageRendering: "pixelated",
         }}
       />
 
-      {/* HUD overlay — always on top */}
+      {/* HUD overlay */}
       <Flex
         position="absolute"
         top={0}
@@ -572,33 +787,39 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
         align="center"
         px={4}
         py={3}
-        bg="linear-gradient(to bottom, rgba(3,8,16,0.7), transparent)"
         zIndex={2}
         pointerEvents="none"
       >
         <Flex align="center" gap={3} pointerEvents="auto">
-          <Text fontSize="13px" fontWeight="700" color="white" opacity={0.9}>
-            Score: {score}
+          <Text
+            fontSize="12px"
+            fontWeight="700"
+            color={COLORS.text}
+            fontFamily="monospace"
+            opacity={0.8}
+          >
+            SCORE: {score}
           </Text>
-          <Text fontSize="11px" color="whiteAlpha.600">
-            Best: {highScore}
+          <Text fontSize="11px" color={COLORS.textMuted} fontFamily="monospace">
+            BEST: {highScore}
           </Text>
         </Flex>
         <Button
           size="xs"
           variant="ghost"
           onClick={onClose}
-          color="whiteAlpha.700"
-          _hover={{ color: "white", bg: "whiteAlpha.100" }}
+          color={COLORS.textMuted}
+          _hover={{ color: COLORS.text, bg: "whiteAlpha.100" }}
           fontSize="11px"
+          fontFamily="monospace"
           pointerEvents="auto"
-          borderRadius="6px"
+          borderRadius="4px"
         >
-          ✕ ESC
+          [ESC]
         </Button>
       </Flex>
 
-      {/* Platform legend — bottom */}
+      {/* Legend — bottom */}
       {gameStarted && !gameOver && (
         <Flex
           position="absolute"
@@ -608,21 +829,30 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
           justify="center"
           gap={4}
           py={2}
-          bg="linear-gradient(to top, rgba(3,8,16,0.6), transparent)"
           zIndex={2}
           pointerEvents="none"
+          fontFamily="monospace"
         >
-          <Flex align="center" gap={1} fontSize="10px" color="whiteAlpha.500">
-            <Box w="8px" h="4px" bg="#58a6ff" borderRadius="1px" />
-            Normal
+          <Flex align="center" gap={1} fontSize="9px" color={COLORS.textMuted}>
+            <Box w="8px" h="4px" bg={COLORS.platformNormal} />
+            PLAT
           </Flex>
-          <Flex align="center" gap={1} fontSize="10px" color="whiteAlpha.500">
-            <Box w="8px" h="4px" bg="#f0883e" borderRadius="1px" />
-            Moving
+          <Flex align="center" gap={1} fontSize="9px" color={COLORS.textMuted}>
+            <Box w="8px" h="4px" bg={COLORS.platformMoving} />
+            MOVE
           </Flex>
-          <Flex align="center" gap={1} fontSize="10px" color="whiteAlpha.500">
-            <Box w="8px" h="4px" bg="#da3633" borderRadius="1px" />
-            Fragile
+          <Flex align="center" gap={1} fontSize="9px" color={COLORS.textMuted}>
+            <Box w="8px" h="4px" bg={COLORS.platformFragile} />
+            FRAG
+          </Flex>
+          <Flex align="center" gap={1} fontSize="9px" color={COLORS.textMuted}>
+            <Box
+              w="6px"
+              h="6px"
+              bg={COLORS.boost}
+              transform="rotate(45deg)"
+            />
+            BOOST
           </Flex>
         </Flex>
       )}
@@ -648,30 +878,27 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
               direction="column"
               align="center"
               justify="center"
-              bg="rgba(3, 8, 16, 0.85)"
-              backdropFilter="blur(12px)"
-              borderRadius="16px"
-              border="1px solid rgba(88, 166, 255, 0.15)"
+              bg="rgba(10, 10, 12, 0.92)"
+              backdropFilter="blur(8px)"
+              borderRadius="12px"
+              border={`1px solid ${COLORS.platformNormal}33`}
               p={8}
               gap={4}
-              maxWidth="320px"
-              boxShadow="0 0 60px rgba(88, 166, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.05)"
+              maxWidth="300px"
+              fontFamily="monospace"
             >
               <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
                 <Image
                   src={portraitSrc}
                   alt="Player character"
-                  width="70px"
-                  height="70px"
+                  width="60px"
+                  height="60px"
                   objectFit="contain"
-                  filter="drop-shadow(0 0 12px rgba(88, 166, 255, 0.4))"
+                  filter={`drop-shadow(0 0 10px ${COLORS.platformNormal}66)`}
+                  style={{ imageRendering: "pixelated" } as React.CSSProperties}
                 />
               </motion.div>
 
@@ -683,54 +910,58 @@ export function DoodleJumpGame({ onClose, portraitSrc }: DoodleJumpGameProps) {
                     transition={{ delay: 0.1, type: "spring" }}
                   >
                     <Text
-                      fontSize="22px"
+                      fontSize="20px"
                       fontWeight="800"
-                      color="white"
-                      letterSpacing="-0.02em"
+                      color={COLORS.text}
+                      textTransform="uppercase"
+                      letterSpacing="0.1em"
                     >
                       Game Over
                     </Text>
                   </motion.div>
-                  <Text fontSize="14px" color="whiteAlpha.700">
-                    Score: {score}
-                    {score >= highScore && score > 0 && " 🎉 New Best!"}
+                  <Text fontSize="13px" color={COLORS.textMuted}>
+                    SCORE: {score}
+                    {score >= highScore && score > 0 && " ★ NEW BEST"}
                   </Text>
                 </>
               ) : (
                 <Text
-                  fontSize="18px"
+                  fontSize="16px"
                   fontWeight="700"
-                  color="white"
-                  letterSpacing="-0.01em"
+                  color={COLORS.text}
+                  textTransform="uppercase"
+                  letterSpacing="0.08em"
                 >
                   Doodle Jump
                 </Text>
               )}
 
               <Text
-                fontSize="12px"
-                color="whiteAlpha.500"
+                fontSize="11px"
+                color={COLORS.textMuted}
                 textAlign="center"
-                lineHeight="1.5"
+                lineHeight="1.6"
               >
-                ← → or A/D to move
+                [←][→] or [A][D] to move
                 <br />
-                Jump on platforms · climb high!
+                jump · climb · collect boosts!
               </Text>
 
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   size="sm"
-                  bg="linear-gradient(135deg, #58a6ff, #388bfd)"
+                  bg={COLORS.platformNormal}
                   color="white"
                   fontWeight="700"
-                  _hover={{ bg: "linear-gradient(135deg, #79b8ff, #58a6ff)" }}
+                  fontFamily="monospace"
+                  textTransform="uppercase"
+                  letterSpacing="0.05em"
+                  _hover={{ opacity: 0.9 }}
                   onClick={startGame}
-                  borderRadius="8px"
+                  borderRadius="4px"
                   px={6}
-                  boxShadow="0 4px 20px rgba(88, 166, 255, 0.3)"
                 >
-                  {gameOver ? "Play Again" : "Start Game"}
+                  {gameOver ? "[RETRY]" : "[START]"}
                 </Button>
               </motion.div>
             </Flex>
