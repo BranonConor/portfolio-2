@@ -288,14 +288,10 @@ export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
       width={width}
       height={height}
       style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%) rotate(-6deg)",
+        display: "block",
         width: "100%",
         height: "100%",
-        objectFit: "contain",
-        zIndex: 1,
+        transform: "rotate(-6deg)",
         cursor: "pointer",
         pointerEvents: "auto",
       }}
