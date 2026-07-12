@@ -129,12 +129,12 @@ export function EasterEggProvider({
                 {state === "game" ? (
                   <Box
                     border="1px solid"
-                    borderColor="brand.border"
+                    borderColor="rgba(88, 166, 255, 0.15)"
                     borderRadius="12px"
-                    bg="rgba(20, 20, 22, 0.85)"
-                    backdropFilter="blur(16px)"
-                    p={4}
+                    overflow="hidden"
                     width="100%"
+                    height="600px"
+                    bg="#030810"
                   >
                     <DoodleJumpGame
                       onClose={handleClose}
