@@ -1,0 +1,914 @@
+"use client";
+
+import { useEffect, useRef, useCallback, useState } from "react";
+
+const STYLES = [
+  "original",       // Actual PNG image drawn on canvas
+  "glitch",         // RGB split + scanlines + displacement
+  "electric",       // Electric arcs + sparks
+  "liquify",        // Wave distortion
+  "mosaic",         // Bold pixel blocks
+  "wireframe",      // Grid + connections
+  "chromatic",      // RGB channel separation
+  "halftone",       // Newspaper dot pattern
+  "shatter",        // Triangular displaced shards
+  "spiral",         // Local spiral motion
+  "constellation",  // Star points + lines
+  "magnetic",       // Ferrofluid field lines
+  "sketch",         // Cross-hatch pencil drawing
+  "pulse",          // Concentric ring ripples
+  "matrix",         // Digital rain reformation
+  "ink",            // Ink bleed / watercolor spread
+] as const;
+
+type StyleKey = (typeof STYLES)[number];
+
+interface Particle {
+  tx: number;
+  ty: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+  size: number;
+  angle: number;
+  speed: number;
+  brightness: number;
+  // Grid position for reference
+  gx: number;
+  gy: number;
+}
+
+interface PortraitCanvasProps {
+  src: string;
+  width: number;
+  height: number;
+}
+
+export function PortraitCanvas({ src, width, height }: PortraitCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animFrameRef = useRef<number>(0);
+  const particlesRef = useRef<Particle[]>([]);
+  const [styleIndex, setStyleIndex] = useState(0);
+  const currentStyleRef = useRef<StyleKey>("original");
+  const [ready, setReady] = useState(false);
+  const frameRef = useRef(0);
+  const mouseRef = useRef({ x: -1, y: -1, inside: false });
+  const sizeRef = useRef({ width, height });
+  const portraitImgRef = useRef<HTMLImageElement | null>(null);
+  const scaleRef = useRef({ scale: 1, ox: 0, oy: 0, sampleSize: 160 });
+
+  useEffect(() => { sizeRef.current = { width, height }; }, [width, height]);
+
+  // Load and sample portrait
+  useEffect(() => {
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.src = src;
+    img.onload = () => {
+      portraitImgRef.current = img;
+      const sampleSize = 180;
+      const offscreen = document.createElement("canvas");
+      offscreen.width = sampleSize;
+      offscreen.height = sampleSize;
+      const octx = offscreen.getContext("2d");
+      if (!octx) return;
+      octx.drawImage(img, 0, 0, sampleSize, sampleSize);
+      const imageData = octx.getImageData(0, 0, sampleSize, sampleSize);
+
+      const { width: cw, height: ch } = sizeRef.current;
+      const particles: Particle[] = [];
+      const step = 2;
+      const scale = Math.min(cw, ch) / sampleSize * 0.88;
+      const ox = (cw - sampleSize * scale) / 2;
+      const oy = (ch - sampleSize * scale) / 2;
+      scaleRef.current = { scale, ox, oy, sampleSize };
+
+      for (let py = 0; py < sampleSize; py += step) {
+        for (let px = 0; px < sampleSize; px += step) {
+          const i = (py * sampleSize + px) * 4;
+          const r = imageData.data[i];
+          const g = imageData.data[i + 1];
+          const b = imageData.data[i + 2];
+          const a = imageData.data[i + 3];
+          if (a < 20) continue;
+
+          const tx = px * scale + ox;
+          const ty = py * scale + oy;
+          const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+
+          particles.push({
+            tx, ty,
+            // Start scattered — converge on load
+            x: cw / 2 + (Math.random() - 0.5) * cw * 0.9,
+            y: ch / 2 + (Math.random() - 0.5) * ch * 0.9,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            r, g, b, a,
+            size: Math.random() * 1.0 + 1.2,
+            angle: Math.random() * Math.PI * 2,
+            speed: Math.random() * 0.012 + 0.004,
+            brightness,
+            gx: px, gy: py,
+          });
+        }
+      }
+
+      particlesRef.current = particles;
+      setReady(true);
+    };
+  }, [src]);
+
+  const handleClick = useCallback(() => {
+    const next = (styleIndex + 1) % STYLES.length;
+    setStyleIndex(next);
+    currentStyleRef.current = STYLES[next];
+  }, [styleIndex]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top, inside: true };
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    mouseRef.current = { ...mouseRef.current, inside: false };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseRef.current = { x: touch.clientX - rect.left, y: touch.clientY - rect.top, inside: true };
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    mouseRef.current = { ...mouseRef.current, inside: false };
+  }, []);
+
+  // Main render loop
+  useEffect(() => {
+    if (!ready) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const loop = () => {
+      const { width: cw, height: ch } = sizeRef.current;
+      canvas.width = cw;
+      canvas.height = ch;
+      const particles = particlesRef.current;
+      const mouse = mouseRef.current;
+      const style = currentStyleRef.current;
+      const frame = ++frameRef.current;
+
+      // --- UPDATE PARTICLES ---
+      for (const p of particles) {
+        let targetX = p.tx;
+        let targetY = p.ty;
+
+        // Per-style target offsets (all maintain shape)
+        if (style === "glitch") {
+          const band = Math.floor(p.ty / 20);
+          const glitchOff = Math.sin(frame * 0.1 + band * 2) * 12;
+          const burst = (frame % 90 < 3) ? (Math.random() - 0.5) * 30 : 0;
+          targetX = p.tx + glitchOff + burst;
+          targetY = p.ty + ((frame % 120 < 2) ? (Math.random() - 0.5) * 15 : 0);
+        } else if (style === "wireframe") {
+          const grid = 5;
+          targetX = Math.round(p.tx / grid) * grid;
+          targetY = Math.round(p.ty / grid) * grid;
+        } else if (style === "mosaic") {
+          const block = 8;
+          targetX = Math.round(p.tx / block) * block + block / 2;
+          targetY = Math.round(p.ty / block) * block + block / 2;
+        } else if (style === "spiral") {
+          const spiralAngle = p.angle + frame * p.speed * 2;
+          const spiralR = 3 + Math.sin(frame * 0.01 + p.angle) * 2;
+          targetX = p.tx + Math.cos(spiralAngle) * spiralR;
+          targetY = p.ty + Math.sin(spiralAngle) * spiralR;
+        } else if (style === "shatter") {
+          const shardAngle = Math.floor(p.angle * 6) / 6 * Math.PI * 2;
+          const shardDist = 3 + Math.sin(frame * 0.02 + p.angle * 4) * 4;
+          targetX = p.tx + Math.cos(shardAngle) * shardDist;
+          targetY = p.ty + Math.sin(shardAngle) * shardDist;
+        } else if (style === "liquify") {
+          const waveX = Math.sin(frame * 0.03 + p.ty * 0.04) * 8;
+          const waveY = Math.cos(frame * 0.025 + p.tx * 0.04) * 5;
+          targetX = p.tx + waveX;
+          targetY = p.ty + waveY;
+        } else if (style === "chromatic") {
+          // Slight separation based on channel dominance
+          const dominant = p.r > p.g && p.r > p.b ? -3 : p.b > p.g ? 3 : 0;
+          targetX = p.tx + dominant;
+          targetY = p.ty;
+        } else if (style === "electric") {
+          const jitter = (frame % 4 < 2) ? (Math.random() - 0.5) * 3 : 0;
+          targetX = p.tx + jitter;
+          targetY = p.ty + jitter * 0.5;
+        } else if (style === "magnetic") {
+          // Particles align along curved field lines
+          const fieldAngle = Math.atan2(p.ty - ch / 2, p.tx - cw / 2);
+          const fieldDist = Math.sin(fieldAngle * 3 + frame * 0.015) * 4;
+          targetX = p.tx + Math.cos(fieldAngle + Math.PI / 2) * fieldDist;
+          targetY = p.ty + Math.sin(fieldAngle + Math.PI / 2) * fieldDist;
+        } else if (style === "sketch") {
+          // Slight jitter to simulate pencil tremor
+          const tremor = Math.sin(frame * 0.1 + p.angle * 10) * 1.2;
+          targetX = p.tx + tremor;
+          targetY = p.ty + Math.cos(frame * 0.08 + p.angle * 7) * 0.8;
+        } else if (style === "pulse") {
+          // Radial pulse from center
+          const pdx = p.tx - cw / 2;
+          const pdy = p.ty - ch / 2;
+          const pDist = Math.sqrt(pdx * pdx + pdy * pdy);
+          const wave = Math.sin(frame * 0.04 - pDist * 0.06) * 4;
+          targetX = p.tx + (pdx / (pDist || 1)) * wave;
+          targetY = p.ty + (pdy / (pDist || 1)) * wave;
+        } else if (style === "matrix") {
+          // Particles rain down then reform
+          const rainCycle = (frame * 0.8 + p.angle * 200) % 300;
+          if (rainCycle < 150) {
+            targetX = p.tx;
+            targetY = p.ty + (rainCycle / 150) * 20;
+          } else {
+            targetX = p.tx;
+            targetY = p.ty;
+          }
+        } else if (style === "ink") {
+          // Organic spreading motion
+          const inkSpread = Math.sin(frame * 0.02 + p.angle * 5) * 3;
+          const inkDrift = Math.cos(frame * 0.015 + p.brightness * 8) * 2;
+          targetX = p.tx + inkSpread;
+          targetY = p.ty + inkDrift;
+        }
+
+        // Spring physics
+        const dx = targetX - p.x;
+        const dy = targetY - p.y;
+        const ease = style === "original" ? 0.12 : 0.06;
+        p.vx += dx * ease;
+        p.vy += dy * ease;
+        p.vx *= 0.84;
+        p.vy *= 0.84;
+
+        // Mouse repulsion
+        if (mouse.inside && mouse.x > 0) {
+          const mdx = p.x - mouse.x;
+          const mdy = p.y - mouse.y;
+          const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+          const repelRadius = 55;
+          if (mDist < repelRadius) {
+            const force = ((repelRadius - mDist) / repelRadius) * 6;
+            p.vx += (mdx / (mDist || 1)) * force;
+            p.vy += (mdy / (mDist || 1)) * force;
+          }
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      // --- DRAW ---
+      ctx.clearRect(0, 0, cw, ch);
+
+      if (style === "original") {
+        drawOriginal(ctx, cw, ch, portraitImgRef.current, particles, mouse, frame);
+      } else if (style === "glitch") {
+        drawGlitch(ctx, particles, frame, cw, ch);
+      } else if (style === "electric") {
+        drawElectric(ctx, particles, frame, cw, ch);
+      } else if (style === "liquify") {
+        drawLiquify(ctx, particles);
+      } else if (style === "mosaic") {
+        drawMosaic(ctx, particles);
+      } else if (style === "wireframe") {
+        drawWireframe(ctx, particles);
+      } else if (style === "chromatic") {
+        drawChromatic(ctx, particles);
+      } else if (style === "halftone") {
+        drawHalftone(ctx, particles);
+      } else if (style === "shatter") {
+        drawShatter(ctx, particles, frame);
+      } else if (style === "spiral") {
+        drawSpiral(ctx, particles, frame);
+      } else if (style === "constellation") {
+        drawConstellation(ctx, particles, frame);
+      } else if (style === "magnetic") {
+        drawMagnetic(ctx, particles, frame);
+      } else if (style === "sketch") {
+        drawSketch(ctx, particles, frame);
+      } else if (style === "pulse") {
+        drawPulse(ctx, particles, frame, cw, ch);
+      } else if (style === "matrix") {
+        drawMatrix(ctx, particles, frame, ch);
+      } else if (style === "ink") {
+        drawInk(ctx, particles, frame);
+      }
+
+      animFrameRef.current = requestAnimationFrame(loop);
+    };
+
+    animFrameRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animFrameRef.current);
+  }, [ready]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      width={width}
+      height={height}
+      style={{
+        display: "block",
+        width: "100%",
+        height: "100%",
+        transform: "rotate(-6deg)",
+        cursor: "pointer",
+        pointerEvents: "auto",
+        touchAction: "none",
+      }}
+    />
+  );
+}
+
+// ======== DRAWING STYLES ========
+
+function drawOriginal(
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number,
+  img: HTMLImageElement | null,
+  particles: Particle[],
+  mouse: { x: number; y: number; inside: boolean },
+  frame: number,
+) {
+  const scale = Math.min(cw, ch) * 0.88;
+  const ox = (cw - scale) / 2;
+  const oy = (ch - scale) / 2;
+
+  // Smooth convergence: particles fade out as PNG fades in over ~180 frames (~3s)
+  // Use eased progress for buttery smooth transition
+  const rawProgress = Math.min(1, frame / 180);
+  const progress = rawProgress * rawProgress * (3 - 2 * rawProgress); // smoothstep
+
+  // PNG opacity: starts at 0, reaches full at progress=1
+  // Begins showing faintly early (from 30%) to blend with particles
+  const imgAlpha = Math.max(0, (progress - 0.3) / 0.7);
+  // Particle opacity: full at start, fades to 0 by end
+  const particleAlpha = 1 - progress;
+
+  // Draw PNG (fading in)
+  if (img && img.complete && imgAlpha > 0) {
+    ctx.save();
+    ctx.globalAlpha = imgAlpha;
+    ctx.drawImage(img, ox, oy, scale, scale);
+    ctx.restore();
+
+    // Erase PNG where particles are still displaced (whether hovering or flying back)
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    for (const p of particles) {
+      const dx = p.x - p.tx;
+      const dy = p.y - p.ty;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 1.5) {
+        ctx.globalAlpha = Math.min(0.9, dist / 10);
+        ctx.beginPath();
+        ctx.arc(p.tx, p.ty, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  // Draw particles (during convergence, or whenever displaced from target)
+  for (const p of particles) {
+    const dx = p.x - p.tx;
+    const dy = p.y - p.ty;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    let alpha: number;
+    let size: number;
+
+    if (progress < 1) {
+      // During convergence: particles shrink and fade smoothly
+      alpha = (p.a / 255) * Math.max(0.05, particleAlpha + 0.1);
+      size = 1.8 * (0.4 + particleAlpha * 0.6);
+    } else if (dist > 1.5) {
+      // Displaced from target (hover or flying back)
+      alpha = Math.min(1, (p.a / 255) * (dist / 8));
+      size = 2;
+    } else {
+      continue; // Settled — skip
+    }
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+
+function drawGlitch(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, cw: number, ch: number) {
+  const scanY = (frame * 3) % (ch + 40) - 20;
+  const scanY2 = ((frame * 2 + ch / 2) % (ch + 40)) - 20;
+
+  for (const p of particles) {
+    const nearScan = Math.abs(p.y - scanY) < 15 || Math.abs(p.y - scanY2) < 8;
+    if (nearScan) {
+      // Bold RGB split
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = `rgb(${Math.min(255, p.r + 60)},0,0)`;
+      ctx.fillRect(Math.round(p.x) - 4, Math.round(p.y), 2.5, 2.5);
+      ctx.fillStyle = `rgb(0,${Math.min(255, p.g + 40)},0)`;
+      ctx.fillRect(Math.round(p.x), Math.round(p.y), 2.5, 2.5);
+      ctx.fillStyle = `rgb(0,0,${Math.min(255, p.b + 60)})`;
+      ctx.fillRect(Math.round(p.x) + 4, Math.round(p.y), 2.5, 2.5);
+    } else {
+      ctx.globalAlpha = (p.a / 255) * 0.9;
+      ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+      ctx.fillRect(Math.round(p.x), Math.round(p.y), 2.2, 2.2);
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // Scanline bars
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, scanY - 1, cw, 2);
+  ctx.globalAlpha = 0.06;
+  ctx.fillRect(0, scanY2 - 1, cw, 1.5);
+  ctx.restore();
+
+  // Glitch blocks
+  if (frame % 60 < 3) {
+    for (let i = 0; i < 3; i++) {
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = ["#6e56cf", "#e5484d", "#3e63dd", "#f5d90a"][Math.floor(Math.random() * 4)];
+      ctx.fillRect(Math.random() * cw * 0.8, Math.random() * ch, Math.random() * 80 + 20, Math.random() * 3 + 1);
+      ctx.restore();
+    }
+  }
+
+  // CRT lines overlay
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  for (let y = 0; y < ch; y += 3) {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, y, cw, 1);
+  }
+  ctx.restore();
+}
+
+
+function drawMosaic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+  const blockSize = 8;
+  const grid = new Map<string, { r: number; g: number; b: number; a: number; n: number }>();
+
+  for (const p of particles) {
+    const gx = Math.round(p.x / blockSize);
+    const gy = Math.round(p.y / blockSize);
+    const key = `${gx},${gy}`;
+    const cell = grid.get(key);
+    if (cell) {
+      cell.r += p.r; cell.g += p.g; cell.b += p.b; cell.a += p.a; cell.n++;
+    } else {
+      grid.set(key, { r: p.r, g: p.g, b: p.b, a: p.a, n: 1 });
+    }
+  }
+
+  grid.forEach((cell, key) => {
+    const [gxs, gys] = key.split(",");
+    const gx = parseInt(gxs) * blockSize;
+    const gy = parseInt(gys) * blockSize;
+    const n = cell.n;
+    ctx.globalAlpha = Math.min(1, (cell.a / n / 255) * 1.3);
+    ctx.fillStyle = `rgb(${Math.round(cell.r / n)},${Math.round(cell.g / n)},${Math.round(cell.b / n)})`;
+    ctx.fillRect(gx - blockSize / 2 + 0.5, gy - blockSize / 2 + 0.5, blockSize - 1, blockSize - 1);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawWireframe(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+  ctx.save();
+  // Bolder connections
+  ctx.strokeStyle = "rgba(110, 86, 207, 0.2)";
+  ctx.lineWidth = 0.6;
+
+  const step = 4;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    for (let j = i + step; j < Math.min(particles.length, i + step * 8); j += step) {
+      const q = particles[j];
+      const dx = p.x - q.x;
+      const dy = p.y - q.y;
+      if (dx * dx + dy * dy < 200) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Bold dots at vertices
+  for (const p of particles) {
+    ctx.globalAlpha = (p.a / 255) * 0.8;
+    ctx.fillStyle = p.brightness > 0.5 ? "#ededef" : "#6e56cf";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+
+function drawChromatic(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+  // Draw 3 passes with channel separation
+  ctx.save();
+  // Red channel offset left
+  ctx.globalAlpha = 0.6;
+  for (const p of particles) {
+    ctx.fillStyle = `rgb(${p.r},0,0)`;
+    ctx.fillRect(Math.round(p.x) - 3, Math.round(p.y), 2, 2);
+  }
+  // Green channel center
+  ctx.globalAlpha = 0.7;
+  for (const p of particles) {
+    ctx.fillStyle = `rgb(0,${p.g},0)`;
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
+  }
+  // Blue channel offset right
+  ctx.globalAlpha = 0.6;
+  for (const p of particles) {
+    ctx.fillStyle = `rgb(0,0,${p.b})`;
+    ctx.fillRect(Math.round(p.x) + 3, Math.round(p.y), 2, 2);
+  }
+  ctx.restore();
+}
+
+function drawHalftone(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+  // Group into cells, draw circles whose size maps to brightness
+  const cellSize = 6;
+  const grid = new Map<string, { brightness: number; r: number; g: number; b: number; n: number }>();
+
+  for (const p of particles) {
+    const gx = Math.round(p.x / cellSize);
+    const gy = Math.round(p.y / cellSize);
+    const key = `${gx},${gy}`;
+    const cell = grid.get(key);
+    if (cell) {
+      cell.brightness += p.brightness; cell.r += p.r; cell.g += p.g; cell.b += p.b; cell.n++;
+    } else {
+      grid.set(key, { brightness: p.brightness, r: p.r, g: p.g, b: p.b, n: 1 });
+    }
+  }
+
+  grid.forEach((cell, key) => {
+    const [gxs, gys] = key.split(",");
+    const cx = parseInt(gxs) * cellSize;
+    const cy = parseInt(gys) * cellSize;
+    const n = cell.n;
+    const avgBright = cell.brightness / n;
+    const radius = (1 - avgBright) * (cellSize * 0.55) + 0.8;
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = `rgb(${Math.round(cell.r / n)},${Math.round(cell.g / n)},${Math.round(cell.b / n)})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawShatter(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  // Draw triangular shards that shift slightly
+  const triSize = 10;
+  const grid = new Map<string, Particle[]>();
+
+  for (const p of particles) {
+    const gx = Math.floor(p.x / triSize);
+    const gy = Math.floor(p.y / triSize);
+    const key = `${gx},${gy}`;
+    const arr = grid.get(key);
+    if (arr) arr.push(p);
+    else grid.set(key, [p]);
+  }
+
+  grid.forEach((group, key) => {
+    if (group.length < 1) return;
+    const [gxs, gys] = key.split(",");
+    const gx = parseInt(gxs) * triSize;
+    const gy = parseInt(gys) * triSize;
+
+    let ar = 0, ag = 0, ab = 0;
+    for (const p of group) { ar += p.r; ag += p.g; ab += p.b; }
+    const n = group.length;
+    ar /= n; ag /= n; ab /= n;
+
+    // Slight displacement per shard
+    const shardPhase = Math.sin(frame * 0.015 + parseInt(gxs) * 0.7 + parseInt(gys) * 1.1);
+    const offX = shardPhase * 2;
+    const offY = Math.cos(frame * 0.012 + parseInt(gys) * 0.9) * 1.5;
+
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = `rgb(${Math.round(ar)},${Math.round(ag)},${Math.round(ab)})`;
+    ctx.strokeStyle = "rgba(255,255,255,0.1)";
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(gx + offX, gy + offY);
+    ctx.lineTo(gx + triSize + offX, gy + offY);
+    ctx.lineTo(gx + triSize / 2 + offX, gy + triSize + offY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+
+function drawSpiral(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  for (const p of particles) {
+    const trail = Math.sin(frame * 0.02 + p.angle * 3) * 0.4 + 0.6;
+    ctx.globalAlpha = (p.a / 255) * 0.9 * trail;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    // Subtle trail
+    const trailAngle = p.angle + frame * p.speed * 2 + Math.PI;
+    const tx = p.x + Math.cos(trailAngle) * 3;
+    const ty = p.y + Math.sin(trailAngle) * 3;
+    ctx.globalAlpha = (p.a / 255) * 0.3;
+    ctx.beginPath();
+    ctx.arc(tx, ty, p.size * 0.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawConstellation(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  ctx.save();
+  // Bold connections
+  ctx.strokeStyle = "rgba(237, 237, 239, 0.1)";
+  ctx.lineWidth = 0.5;
+  const step = 3;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    for (let j = i + step; j < Math.min(particles.length, i + step * 6); j += step) {
+      const q = particles[j];
+      const dx = p.x - q.x;
+      const dy = p.y - q.y;
+      if (dx * dx + dy * dy < 200) {
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Star points with twinkle
+  for (const p of particles) {
+    const twinkle = Math.sin(frame * 0.04 + p.angle * 5) * 0.3 + 0.7;
+    ctx.globalAlpha = (p.a / 255) * 0.85 * twinkle;
+    ctx.fillStyle = p.brightness > 0.5 ? "#ededef" : `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * twinkle, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+
+function drawLiquify(ctx: CanvasRenderingContext2D, particles: Particle[]) {
+  for (const p of particles) {
+    ctx.globalAlpha = (p.a / 255) * 0.9;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    // Slightly elongated ellipses to suggest fluid motion
+    ctx.ellipse(p.x, p.y, p.size * 1.8, p.size * 1.2, Math.atan2(p.vy, p.vx), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawElectric(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, cw: number, ch: number) {
+  // Base particles
+  for (const p of particles) {
+    ctx.save();
+    ctx.globalAlpha = (p.a / 255) * 0.85;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 2.2, 2.2);
+    ctx.restore();
+  }
+
+  // Electric arcs between random bright particles
+  ctx.save();
+  ctx.lineWidth = 1.5;
+  const arcCount = 4 + Math.floor(Math.sin(frame * 0.05) * 2);
+  for (let a = 0; a < arcCount; a++) {
+    const idx = Math.floor((Math.sin(frame * 0.1 + a * 1.7) * 0.5 + 0.5) * particles.length);
+    const p = particles[idx % particles.length];
+    const jdx = (idx + 20 + Math.floor(Math.random() * 40)) % particles.length;
+    const q = particles[jdx];
+    if (!p || !q) continue;
+
+    ctx.globalAlpha = 0.6;
+    ctx.strokeStyle = frame % 6 < 3 ? "#a78bfa" : "#60a5fa";
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    // Jagged lightning path
+    const steps = 4;
+    for (let s = 1; s <= steps; s++) {
+      const t = s / (steps + 1);
+      const mx = p.x + (q.x - p.x) * t + (Math.random() - 0.5) * 12;
+      const my = p.y + (q.y - p.y) * t + (Math.random() - 0.5) * 12;
+      ctx.lineTo(mx, my);
+    }
+    ctx.lineTo(q.x, q.y);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawMagnetic(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  ctx.save();
+  ctx.lineWidth = 0.8;
+
+  const step = 5;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    for (let j = i + step; j < Math.min(particles.length, i + step * 5); j += step) {
+      const q = particles[j];
+      const dx = p.x - q.x;
+      const dy = p.y - q.y;
+      const dist = dx * dx + dy * dy;
+      if (dist < 180) {
+        const avg = ((p.r + p.g + p.b + q.r + q.g + q.b) / 6) | 0;
+        ctx.globalAlpha = 0.2;
+        ctx.strokeStyle = `rgb(${avg}, ${Math.min(255, avg + 40)}, ${Math.min(255, avg + 80)})`;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        const cx = (p.x + q.x) / 2 + Math.sin(frame * 0.02 + i) * 6;
+        const cy = (p.y + q.y) / 2 + Math.cos(frame * 0.02 + j) * 6;
+        ctx.quadraticCurveTo(cx, cy, q.x, q.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  for (const p of particles) {
+    const shimmer = Math.sin(frame * 0.03 + p.angle * 4) * 0.2 + 0.8;
+    ctx.globalAlpha = (p.a / 255) * shimmer;
+    ctx.fillStyle = `rgb(${Math.min(255, p.r + 30)},${Math.min(255, p.g + 20)},${Math.min(255, p.b + 50)})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 1.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSketch(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  ctx.save();
+  ctx.lineWidth = 0.7;
+  ctx.lineCap = "round";
+
+  const step = 3;
+  for (let i = 0; i < particles.length; i += step) {
+    const p = particles[i];
+    const len = (1 - p.brightness) * 5 + 1;
+    const tremor = Math.sin(frame * 0.05 + p.angle * 8) * 0.5;
+
+    ctx.globalAlpha = (p.a / 255) * 0.7;
+    ctx.strokeStyle = p.brightness > 0.6 ? "#c8c8c8" : "#404040";
+
+    ctx.beginPath();
+    ctx.moveTo(p.x - len + tremor, p.y - len);
+    ctx.lineTo(p.x + len + tremor, p.y + len);
+    ctx.stroke();
+
+    if (p.brightness < 0.4) {
+      ctx.globalAlpha = (p.a / 255) * 0.4;
+      ctx.beginPath();
+      ctx.moveTo(p.x + len + tremor, p.y - len);
+      ctx.lineTo(p.x - len + tremor, p.y + len);
+      ctx.stroke();
+    }
+  }
+
+  for (const p of particles) {
+    ctx.globalAlpha = (p.a / 255) * 0.5;
+    ctx.fillStyle = p.brightness > 0.5 ? "#d4d4d4" : "#333";
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 1, 1);
+  }
+  ctx.restore();
+}
+
+function drawPulse(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, cw: number, ch: number) {
+  const centerX = cw / 2;
+  const centerY = ch / 2;
+
+  ctx.save();
+  const ringCount = 5;
+  for (let r = 0; r < ringCount; r++) {
+    const radius = ((frame * 1.5 + r * 50) % 250);
+    ctx.globalAlpha = Math.max(0, 0.1 * (1 - radius / 250));
+    ctx.strokeStyle = "#6e56cf";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  for (const p of particles) {
+    const pdx = p.x - centerX;
+    const pdy = p.y - centerY;
+    const pDist = Math.sqrt(pdx * pdx + pdy * pdy);
+    const ringPhase = (frame * 1.5) % 250;
+    const nearRing = Math.abs(pDist - ringPhase) < 15;
+    const boost = nearRing ? 1.5 : 1;
+
+    ctx.globalAlpha = Math.min(1, (p.a / 255) * 0.9 * boost);
+    const br = Math.min(255, p.r * boost) | 0;
+    const bg = Math.min(255, p.g * boost) | 0;
+    const bb = Math.min(255, p.b * boost) | 0;
+    ctx.fillStyle = `rgb(${br},${bg},${bb})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * (nearRing ? 2 : 1.3), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawMatrix(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number, ch: number) {
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = "#00ff41";
+  ctx.font = "8px monospace";
+  const cols = 30;
+  for (let c = 0; c < cols; c++) {
+    const x = (c / cols) * 240 + 4;
+    const y = ((frame * 2 + c * 37) % (ch + 100)) - 50;
+    const char = String.fromCharCode(0x30A0 + Math.floor(Math.random() * 96));
+    ctx.fillText(char, x, y);
+  }
+  ctx.restore();
+
+  for (const p of particles) {
+    const rainCycle = (frame * 0.8 + p.angle * 200) % 300;
+    const isFalling = rainCycle < 150;
+    const greenTint = isFalling ? 0.7 : 0;
+
+    const mr = Math.round(p.r * (1 - greenTint) + 0 * greenTint);
+    const mg = Math.round(p.g * (1 - greenTint) + 255 * greenTint);
+    const mb = Math.round(p.b * (1 - greenTint) + 65 * greenTint);
+
+    ctx.globalAlpha = (p.a / 255) * (isFalling ? 0.7 : 0.9);
+    ctx.fillStyle = `rgb(${mr},${mg},${mb})`;
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, isFalling ? 3 : 2);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawInk(ctx: CanvasRenderingContext2D, particles: Particle[], frame: number) {
+  for (const p of particles) {
+    const bleedPhase = Math.sin(frame * 0.015 + p.angle * 3);
+    const bleedSize = p.size * (1.5 + bleedPhase * 0.5);
+    const alpha = (p.a / 255) * (0.5 + bleedPhase * 0.2);
+
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.3;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, bleedSize * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = alpha * 0.85;
+    ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, bleedSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+}
