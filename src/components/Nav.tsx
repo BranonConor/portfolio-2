@@ -4,6 +4,7 @@ import { Flex, Text, Box, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { JSX } from "react";
 
 type IconProps = { color: string };
 
