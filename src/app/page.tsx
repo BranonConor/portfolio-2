@@ -257,6 +257,14 @@ const engagements = [
 
 const inTheWild = [
   {
+    title: "GitHub Code Quality is now GA",
+    source: "GitHub",
+    date: "July 2026",
+    logo: "/github.png",
+    link: "https://github.blog/changelog/2026-07-20-github-code-quality-is-now-generally-available/",
+    external: true,
+  },
+  {
     title: "Secret scanning extended metadata",
     titleMobile: "Secret scanning extended metadata",
     source: "GitHub",

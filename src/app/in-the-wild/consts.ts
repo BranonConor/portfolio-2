@@ -20,6 +20,15 @@ export interface WildItem {
 
 export const inTheWild: WildItem[] = [
   {
+    title: "GitHub Code Quality is now generally available",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Contributed to the GitHub Code Quality product",
+    link: "https://github.blog/changelog/2026-07-20-github-code-quality-is-now-generally-available/",
+    external: true,
+    date: "July 2026",
+  },
+  {
     title: "Secret scanning public monitoring for enterprises",
     category: "Shipped",
     source: "GitHub",
