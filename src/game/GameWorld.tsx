@@ -22,7 +22,7 @@ interface GameWorldProps {
 }
 
 export function GameWorld({ onExitToClassic }: GameWorldProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<WorldHandle | null>(null);
   const [nearby, setNearby] = useState<BuildingId | null>(null);
   const [openBuilding, setOpenBuilding] = useState<BuildingId | null>(null);
@@ -36,10 +36,10 @@ export function GameWorld({ onExitToClassic }: GameWorldProps) {
   }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const handle = bootWorld(canvas, {
+    const handle = bootWorld(container, {
       onInteract: (id) => setOpenBuilding(id),
       onNearbyChange: (id) => setNearby(id),
       onReady: () => {
@@ -85,9 +85,9 @@ export function GameWorld({ onExitToClassic }: GameWorldProps) {
       role="application"
       aria-label="Interactive portfolio world. Use arrow keys or WASD to move, E to enter buildings."
     >
-      <canvas
-        ref={canvasRef}
-        style={{ width: "100%", height: "100%", display: "block" }}
+      <div
+        ref={containerRef}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       />
 
       {/* Persistent, obvious classic-site toggle (SEO + a11y escape hatch). */}

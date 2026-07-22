@@ -498,7 +498,7 @@ function HomeContent() {
                     y: [-4, -20],
                   },
                 ].map((s, i) => (
-                  <motion.div
+                  <motion.span
                     key={i}
                     style={{
                       position: "absolute",
@@ -533,7 +533,7 @@ function HomeContent() {
                       objectFit="contain"
                       borderRadius="100%"
                     />
-                  </motion.div>
+                  </motion.span>
                 ))}
               </Text>
               . I shape the craft and quality of interfaces used by millions —

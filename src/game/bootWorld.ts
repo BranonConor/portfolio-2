@@ -30,9 +30,18 @@ const BUILDING_W = 3;
 const BUILDING_H = 3;
 
 export function bootWorld(
-  canvas: HTMLCanvasElement,
+  container: HTMLElement,
   cb: WorldCallbacks,
 ): WorldHandle {
+  // Create a dedicated canvas per boot. React StrictMode (dev) mounts effects
+  // twice; giving each boot its own fresh canvas + WebGL context avoids two
+  // Kaplay instances fighting over one reused context (which renders blank).
+  const canvas = document.createElement("canvas");
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.display = "block";
+  container.appendChild(canvas);
+
   const k = kaplay({
     canvas,
     background: [38, 54, 40],
@@ -269,6 +278,7 @@ export function bootWorld(
       } catch {
         /* no-op */
       }
+      canvas.remove();
     },
     setPaused: (p: boolean) => {
       paused = p;
