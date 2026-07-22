@@ -47,6 +47,25 @@ export const PageWrapper: React.FC<BoxProps> = ({
 
         <Nav />
         <MobileNav />
+        {/* Global film grain — unifies flat UI with the painterly art and kills
+            gradient banding. Fixed, non-interactive, ultra-subtle (P6). */}
+        <Box
+          as="img"
+          src="/noise.png"
+          alt=""
+          aria-hidden="true"
+          position="fixed"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          objectFit="cover"
+          pointerEvents="none"
+          userSelect="none"
+          opacity={0.04}
+          zIndex={2}
+          mixBlendMode="overlay"
+        />
         <Box
           as={motion.div}
           maxWidth="960px"
