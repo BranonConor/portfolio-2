@@ -15,6 +15,7 @@ import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
 import { AnimatedPaintStroke } from "@/components/AnimatedPaintStroke";
+import { HeroParallax } from "@/components/HeroParallax";
 import { Magnetic } from "@/components/Magnetic";
 import { PortraitCanvas } from "@/components/easter-egg";
 
@@ -573,6 +574,7 @@ function HomeContent() {
             height={["180px", "200px", "240px"]}
             alignSelf={["center", "center", "auto"]}
           >
+            <HeroParallax position="relative" width="100%" height="100%">
             {/* Subtle paint strokes behind portrait — mobile */}
             <PaintStroke
               variant={4}
@@ -683,6 +685,7 @@ function HomeContent() {
             >
               <PortraitCanvas src="/me-light.png" width={240} height={240} />
             </Box>
+            </HeroParallax>
           </Box>
         </Flex>
       </Box>
