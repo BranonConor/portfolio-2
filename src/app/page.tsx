@@ -550,9 +550,11 @@ function HomeContent() {
                   as={Link}
                   href="/projects"
                   size="sm"
-                  leftIcon={<SparkleIcon />}
                 >
-                  See my work
+                  <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                    <SparkleIcon />
+                    See my work
+                  </Box>
                 </Button>
               </Magnetic>
               <Magnetic>
@@ -562,9 +564,11 @@ function HomeContent() {
                   download
                   href="/resume.pdf"
                   size="sm"
-                  leftIcon={<DownloadIcon />}
                 >
-                  Download resume
+                  <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                    <DownloadIcon />
+                    Download resume
+                  </Box>
                 </Button>
               </Magnetic>
             </Flex>
