@@ -3121,6 +3121,11 @@ json5@^1.0.2:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
+kaplay@^3000.1.17:
+  version "3000.1.17"
+  resolved "https://registry.yarnpkg.com/kaplay/-/kaplay-3000.1.17.tgz#941c73b6a711c4bee8e1d36821921ed0017c1092"
+  integrity sha512-h2dwFuxGS7jrTTQafRLzxbBbG/M6yvV3kT4DvmbefWzwYr//68cNKl1Rz4l61bTDjEZTXcOzNwtsS2mwEJl5FQ==
+
 keyv@^4.5.3:
   version "4.5.4"
   resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.4.tgz#a879a99e29452f942439f2a405e3af8b31d4de93"
