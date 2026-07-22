@@ -2,6 +2,7 @@
 
 import { Image, Box } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { dur, ease } from "@/lib/motion";
 
 interface IHeaderImageProps {
   image: string;
@@ -24,7 +25,7 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
       animate={{
         top: 0,
         scale: 1,
-        transition: { duration: 0.2, type: "intertia" },
+        transition: { duration: dur.base, ease: ease.out },
       }}
       exit={{ top: "-25%" }}
     >
@@ -43,7 +44,7 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
         initial={{ top: "-15%" }}
         animate={{
           top: 0,
-          transition: { duration: 0.35, type: "tween" },
+          transition: { duration: dur.slow, ease: ease.out },
         }}
         exit={{ top: "-15%" }}
       />
