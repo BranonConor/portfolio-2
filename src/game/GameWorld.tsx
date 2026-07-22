@@ -142,7 +142,13 @@ export function GameWorld({ onExitToClassic }: GameWorldProps) {
 
       {isTouch && <MobileControls hasInteract={!!nearby} />}
 
-      <Modal isOpen={!!openBuilding} onClose={closePanel} isCentered size="xl">
+      <Modal
+        isOpen={!!openBuilding}
+        onClose={closePanel}
+        isCentered
+        size="2xl"
+        scrollBehavior="inside"
+      >
         <ModalOverlay backdropFilter="blur(4px)" />
         <ModalContent
           bg="rgba(20, 20, 22, 0.96)"
@@ -150,6 +156,7 @@ export function GameWorld({ onExitToClassic }: GameWorldProps) {
           borderColor="brand.border"
           borderRadius="14px"
           mx={4}
+          maxH="82vh"
         >
           <ModalCloseButton color="brand.textMuted" />
           <ModalBody p={6}>

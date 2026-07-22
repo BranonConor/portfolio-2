@@ -11,20 +11,33 @@ All in-world visuals are **procedurally drawn programmer-art** (colored rectangl
 generated at runtime in `src/game/bootWorld.ts`). There are **no external art assets in
 the bundle yet**.
 
+## Art direction (confirmed by Branon)
+
+**Bespoke / original pixel art**, authored for Branon's brand — tied to his existing
+paint-stroke / playful identity and color palette (blue `#60a5fa` → purple `#a78bfa`,
+pink `#f472b6`, near-black `#09090b`). Original / CC0 preferred; CC-BY acceptable **only**
+with correct attribution here.
+
+Sequencing (so the build isn't blocked):
+- **Phase 0–1:** clearly-labeled placeholder shapes to get the world walkable fast.
+- **Phase 2:** original pixel art for the player, buildings, and decor tiles — authored
+  in-repo (`src/game/spriteData.js`) as original pixel grids. **No third-party asset
+  packs.** Rendered to sprites at runtime; nothing copied.
+
+### Placeholder vs bespoke (Phase 2)
+| Asset | Status | Notes for a future human pixel artist |
+|---|---|---|
+| Player character | Bespoke (original grid) | Add more walk frames + idle blink; refine shading. |
+| Buildings (7) | Bespoke (original grids) | More per-section silhouette variety + interior peeks. |
+| Ground / path / decor tiles | Bespoke (original grids) | Seasonal variants, animated water/foliage. |
+| Hero / branding tiles | TODO | Best place for a human artist to inject brand polish. |
+
 ## Code dependencies
 
 | Package | License | Use |
 |---|---|---|
 | [Kaplay](https://kaplayjs.com/) | MIT | 2D game engine (rendering, input, collision, camera). |
 
-## Planned art sources (Phase 2 — to be filled in as assets are added)
-
-When real pixel art is introduced, every asset will be listed here with author, source
-URL, and license. Candidate sources (CC0 preferred):
-
-- **Kenney.nl** — CC0 top-down / farm / roguelike packs.
-- **itch.io** — curated CC0 cozy farm/town tilesets & character bases.
-- **OpenGameArt / LPC** — CC-BY-SA / GPL (used only with correct attribution).
-- **Original pixel art** — authored for this project.
-
-> Rule: CC0 first. Any CC-BY / CC-BY-SA asset must be attributed here before it ships.
+> Rule: everything shipping today is **original**. If any CC0/CC-BY external asset is ever
+> added, it must be listed here (author, source URL, license) before it ships — CC0 first,
+> CC-BY only with attribution.

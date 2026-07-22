@@ -7,6 +7,7 @@ import {
   WORLD_SCALE,
   type BuildingId,
 } from "./config";
+import { loadWorldSprites } from "./pixelArt";
 
 export interface WorldHandle {
   destroy: () => void;
@@ -14,48 +15,27 @@ export interface WorldHandle {
 }
 
 export interface WorldCallbacks {
-  // Fired when the player presses interact (E / tap) inside a building zone.
   onInteract: (buildingId: BuildingId) => void;
-  // Fired when the "nearby" building changes (null = none), to drive the
-  // in-world "Press E" prompt rendered by React.
   onNearbyChange: (buildingId: BuildingId | null) => void;
-  // Fired once assets/scene are ready so React can hide the loading screen.
   onReady: () => void;
 }
 
-// Cozy palette (all programmer-art for Phase 0/1 — real CC0/original pixel art
-// lands in Phase 2, tracked in docs/CREDITS.md).
-const COLORS = {
-  grass: [124, 179, 66],
-  grassAlt: [139, 195, 74],
-  path: [200, 178, 128],
-  water: [79, 143, 186],
-};
+const ART = 16; // px per source art tile
+const TILE_SCALE = TILE / ART; // upscale art tiles to logical tile size
+const BUILDING_SCALE = 3; // 32px building art -> ~3 tiles wide
+const PLAYER_SCALE = 2;
 
-const BUILDING_COLORS: Record<BuildingId, number[]> = {
-  farmhouse: [198, 108, 92],
-  workshop: [150, 123, 182],
-  library: [96, 155, 173],
-  townhall: [212, 170, 90],
-  gallery: [124, 168, 133],
-  recordshop: [176, 120, 150],
-  photowall: [120, 150, 190],
-};
+// Buildings occupy a 3-wide footprint; collision only covers the lower body.
+const BUILDING_W = 3;
+const BUILDING_H = 3;
 
-const BUILDING_W = 3; // tiles
-const BUILDING_H = 3; // tiles
-
-/**
- * Boots the Kaplay walkable world onto the given canvas element.
- * Uses only procedurally-drawn shapes so it runs with zero external assets.
- */
 export function bootWorld(
   canvas: HTMLCanvasElement,
   cb: WorldCallbacks,
 ): WorldHandle {
   const k = kaplay({
     canvas,
-    background: [46, 62, 43],
+    background: [38, 54, 40],
     scale: WORLD_SCALE,
     crisp: true,
     pixelDensity: Math.min(
@@ -67,24 +47,45 @@ export function bootWorld(
   });
 
   k.setGravity(0);
+  loadWorldSprites(k);
 
   const worldPxW = MAP_TILES_WIDE * TILE;
   const worldPxH = MAP_TILES_HIGH * TILE;
 
-  // ---- Ground layer (checkerboard grass) ----
+  // ---- Ground: grass everywhere, a path spine, a small pond ----
+  const pondTiles = new Set<string>();
+  for (let ty = 2; ty <= 4; ty++)
+    for (let tx = 33; tx <= 37; tx++) pondTiles.add(`${tx},${ty}`);
+
+  const pathCols = new Set([13, 14]); // vertical path
+  const pathRows = new Set([10, 11]); // horizontal path
+
   for (let ty = 0; ty < MAP_TILES_HIGH; ty++) {
     for (let tx = 0; tx < MAP_TILES_WIDE; tx++) {
-      const c = (tx + ty) % 2 === 0 ? COLORS.grass : COLORS.grassAlt;
+      const key = `${tx},${ty}`;
+      let name = "t_grass";
+      if (pondTiles.has(key)) name = "t_water";
+      else if (pathCols.has(tx) || pathRows.has(ty)) name = "t_path";
       k.add([
-        k.rect(TILE, TILE),
+        k.sprite(name),
         k.pos(tx * TILE, ty * TILE),
-        k.color(c[0], c[1], c[2]),
+        k.scale(TILE_SCALE),
         k.z(0),
       ]);
     }
   }
 
-  // ---- World bounds (invisible solid walls) ----
+  // Pond is impassable.
+  k.add([
+    k.rect(5 * TILE, 3 * TILE),
+    k.pos(33 * TILE, 2 * TILE),
+    k.area(),
+    k.body({ isStatic: true }),
+    k.opacity(0),
+    "wall",
+  ]);
+
+  // ---- World bounds ----
   const wall = (x: number, y: number, w: number, h: number) =>
     k.add([
       k.rect(w, h),
@@ -94,52 +95,63 @@ export function bootWorld(
       k.opacity(0),
       "wall",
     ]);
-  const T = TILE;
-  wall(-T, -T, worldPxW + 2 * T, T); // top
-  wall(-T, worldPxH, worldPxW + 2 * T, T); // bottom
-  wall(-T, 0, T, worldPxH); // left
-  wall(worldPxW, 0, T, worldPxH); // right
+  wall(-TILE, -TILE, worldPxW + 2 * TILE, TILE);
+  wall(-TILE, worldPxH, worldPxW + 2 * TILE, TILE);
+  wall(-TILE, 0, TILE, worldPxH);
+  wall(worldPxW, 0, TILE, worldPxH);
 
-  // ---- Buildings + interaction zones ----
+  // ---- Decor (placed to avoid building footprints) ----
+  const decor: Array<[string, number, number]> = [
+    ["d_tree", 3, 3],
+    ["d_tree", 5, 17],
+    ["d_tree", 34, 16],
+    ["d_tree", 27, 3],
+    ["d_tree", 19, 18],
+    ["d_bush", 11, 9],
+    ["d_bush", 20, 11],
+    ["d_bush", 28, 15],
+    ["d_flower", 15, 5],
+    ["d_flower", 10, 18],
+    ["d_flower", 25, 12],
+    ["d_flower", 33, 8],
+  ];
+  for (const [name, tx, ty] of decor) {
+    k.add([
+      k.sprite(name),
+      k.pos(tx * TILE, ty * TILE),
+      k.scale(TILE_SCALE),
+      k.z(ty), // rough depth sort by row
+    ]);
+  }
+
+  // ---- Buildings (sprite + footprint collision + interaction zone) ----
   for (const b of BUILDINGS) {
     const px = b.tileX * TILE;
     const py = b.tileY * TILE;
     const w = BUILDING_W * TILE;
     const h = BUILDING_H * TILE;
-    const col = BUILDING_COLORS[b.id];
 
-    // Solid building body.
     k.add([
-      k.rect(w, h),
+      k.sprite(`bld_${b.id}`),
       k.pos(px, py),
-      k.color(col[0], col[1], col[2]),
-      k.outline(2, k.rgb(30, 30, 40)),
+      k.scale(BUILDING_SCALE),
+      k.z(py + h),
+    ]);
+
+    // Solid footprint: lower portion only, so the player can walk near the roof.
+    k.add([
+      k.rect(w * 0.86, h * 0.4),
+      k.pos(px + w * 0.07, py + h * 0.52),
       k.area(),
       k.body({ isStatic: true }),
-      k.z(2),
+      k.opacity(0),
       "building",
     ]);
 
-    // Little roof accent.
+    // Interaction zone around the doorway.
     k.add([
-      k.rect(w, TILE * 0.6),
-      k.pos(px, py - TILE * 0.3),
-      k.color(col[0] * 0.75, col[1] * 0.75, col[2] * 0.75),
-      k.z(3),
-    ]);
-
-    // Door marker.
-    k.add([
-      k.rect(TILE * 0.8, TILE * 0.9),
-      k.pos(px + w / 2 - TILE * 0.4, py + h - TILE * 0.9),
-      k.color(60, 45, 40),
-      k.z(3),
-    ]);
-
-    // Interaction zone (in front of / around the building). Not solid.
-    k.add([
-      k.rect(w + TILE * 2, h + TILE * 2),
-      k.pos(px - TILE, py - TILE),
+      k.rect(w + TILE, h * 0.6 + TILE),
+      k.pos(px - TILE * 0.5, py + h * 0.4),
       k.area(),
       k.opacity(0),
       k.z(1),
@@ -148,35 +160,36 @@ export function bootWorld(
     ]);
   }
 
-  // ---- Player ----
-  const startX = worldPxW / 2;
-  const startY = worldPxH / 2;
+  // ---- Player (animated sprite) ----
+  const startX = 13.5 * TILE;
+  const startY = 12.5 * TILE;
   const player = k.add([
-    k.rect(TILE * 0.7, TILE * 0.9),
+    k.sprite("player", { anim: "idle-down" }),
     k.pos(startX, startY),
-    k.color(245, 233, 210),
-    k.outline(2, k.rgb(40, 40, 50)),
-    k.area(),
+    k.scale(PLAYER_SCALE),
+    k.area({
+      shape: new k.Rect(k.vec2(-14, 2), 28, 12),
+    }),
     k.body(),
     k.anchor("center"),
-    k.z(5),
+    k.z(500),
     "player",
   ]);
 
-  // Simple facing indicator (a small nose that moves with direction).
-  const nose = k.add([
-    k.rect(TILE * 0.28, TILE * 0.28),
-    k.pos(startX, startY + TILE * 0.4),
-    k.color(70, 70, 90),
-    k.anchor("center"),
-    k.z(6),
-  ]);
-
   const SPEED = 150;
-  let facing = k.vec2(0, 1);
   let paused = false;
-  // Virtual controls bridged from React (mobile dpad + interact button).
   let virtualDir = k.vec2(0, 0);
+  let curAnim = "idle-down";
+  let facing: "down" | "up" | "side" = "down";
+  let flip = false;
+
+  const setAnim = (name: string) => {
+    if (name !== curAnim) {
+      curAnim = name;
+      player.play(name);
+    }
+    player.flipX = flip;
+  };
 
   k.onUpdate(() => {
     if (paused) return;
@@ -185,18 +198,24 @@ export function bootWorld(
     if (k.isKeyDown("right") || k.isKeyDown("d")) dir.x += 1;
     if (k.isKeyDown("up") || k.isKeyDown("w")) dir.y -= 1;
     if (k.isKeyDown("down") || k.isKeyDown("s")) dir.y += 1;
-
-    // Touch/virtual dpad direction (set via window event below).
     dir = dir.add(virtualDir);
 
-    if (dir.len() > 0) {
+    const moving = dir.len() > 0;
+    if (moving) {
       dir = dir.unit();
-      facing = dir;
       player.move(dir.scale(SPEED));
+      if (Math.abs(dir.x) > Math.abs(dir.y)) {
+        facing = "side";
+        flip = dir.x < 0;
+      } else {
+        facing = dir.y < 0 ? "up" : "down";
+      }
+      setAnim(`walk-${facing}`);
+    } else {
+      setAnim(`idle-${facing}`);
     }
-    nose.pos = player.pos.add(facing.scale(TILE * 0.45));
+    player.z = 500 + player.pos.y; // depth vs buildings
 
-    // Camera follows player, clamped to map bounds.
     const halfW = k.width() / 2;
     const halfH = k.height() / 2;
     const camX = Math.max(halfW, Math.min(worldPxW - halfW, player.pos.x));
@@ -231,7 +250,6 @@ export function bootWorld(
   k.onKeyPress("enter", interact);
   k.onKeyPress("space", interact);
 
-  // Virtual controls bridged from React (mobile dpad + interact button).
   const onVirtualMove = (e: Event) => {
     const d = (e as CustomEvent).detail as { x: number; y: number };
     virtualDir = k.vec2(d.x, d.y);
@@ -240,7 +258,6 @@ export function bootWorld(
   window.addEventListener("world:move", onVirtualMove as EventListener);
   window.addEventListener("world:interact", onVirtualInteract);
 
-  // Signal readiness on next frame (scene fully built).
   k.wait(0, () => cb.onReady());
 
   return {

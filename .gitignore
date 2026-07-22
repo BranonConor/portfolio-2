@@ -35,3 +35,4 @@ yarn-error.log*
 .vercel
 # typescript build info
 *.tsbuildinfo
+scripts/sprite-preview.png
