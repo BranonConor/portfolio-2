@@ -2,6 +2,7 @@
 
 import { Flex, Text, Box, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { Magnetic } from "./Magnetic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { JSX } from "react";
@@ -181,37 +182,38 @@ export const Nav = () => {
       paddingY={2}
       overflow="visible"
     >
-      <Box
-        as={Link}
-        href="/"
-        position="relative"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        width="18px"
-        height="18px"
-        mr={1}
-        overflow="visible"
-        flexShrink={0}
-        _hover={{ opacity: 0.8 }}
-        transition="0.15s ease all"
-      >
-        <Image
-          src="/s0.png"
-          alt="Branon Eusebio"
-          position="absolute"
-          top="50%"
-          left="50%"
-          style={{
-            width: "38px",
-            height: "38px",
-            transform: "translate(-50%, -50%)",
-          }}
-          objectFit="contain"
-          pointerEvents="none"
-          maxWidth="none"
-        />
-      </Box>
+      <Magnetic strength={4} mr={1}>
+        <Box
+          as={Link}
+          href="/"
+          position="relative"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          width="18px"
+          height="18px"
+          overflow="visible"
+          flexShrink={0}
+          _hover={{ opacity: 0.8 }}
+          transition="0.15s ease all"
+        >
+          <Image
+            src="/s0.png"
+            alt="Branon Eusebio"
+            position="absolute"
+            top="50%"
+            left="50%"
+            style={{
+              width: "38px",
+              height: "38px",
+              transform: "translate(-50%, -50%)",
+            }}
+            objectFit="contain"
+            pointerEvents="none"
+            maxWidth="none"
+          />
+        </Box>
+      </Magnetic>
       {navItems.map((item) => {
         const isActive =
           pathname === item.href ||

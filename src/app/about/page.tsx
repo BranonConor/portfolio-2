@@ -145,18 +145,22 @@ export default function About() {
                 as={Link}
                 href="/projects"
                 size="sm"
-                leftIcon={<SparkleIcon />}
               >
-                See my work
+                <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                  <SparkleIcon />
+                  See my work
+                </Box>
               </Button>
               <Button
                 variant="secondary"
                 as={Link}
                 href="/blog"
                 size="sm"
-                leftIcon={<PencilIcon />}
               >
-                Visit blog
+                <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                  <PencilIcon />
+                  Visit blog
+                </Box>
               </Button>
             </Flex>
           </Box>

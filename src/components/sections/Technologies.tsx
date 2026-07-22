@@ -76,64 +76,95 @@ export const Technologies = () => {
         ]}
         transition="0.2s ease all"
       >
-        {technologies.map((item) => {
-          const boundingRef = useRef<DOMRect | null>(null);
-          return (
-            <Tooltip
-              id={item.name}
-              borderRadius={10}
-              label={item.name}
-              fontSize="md"
-              placement="top"
-              bg="brand.gradient"
-              color="white"
-              fontWeight="bold"
-              gutter={8}
-            >
-              <Image
-                draggable="false"
-                as={motion.img}
-                borderRadius={12}
-                src={`/logos/${item.image}`}
-                padding={1}
-                boxSizing="border-box"
-                bg={logoBg}
-                onMouseLeave={() => (boundingRef.current = null)}
-                onMouseEnter={(ev: any) => {
-                  boundingRef.current =
-                    ev.currentTarget.getBoundingClientRect();
-                }}
-                onMouseMove={(ev: any) => {
-                  if (!boundingRef.current) return;
-                  const x = ev.clientX - boundingRef.current.left;
-                  const y = ev.clientY - boundingRef.current.top;
-                  const xPercentage = x / boundingRef.current.width;
-                  const yPercentage = y / boundingRef.current.height;
-                  const xRotation = (xPercentage - 0.5) * 20;
-                  const yRotation = (0.5 - yPercentage) * -20;
-
-                  setYRotationValue(yRotation);
-                  setXRotationValue(xRotation);
-                }}
-                whileHover={{
-                  scale: 1.15,
-                  transition: { duration: 0.05, type: "spring" },
-                  translateX: `${xRotationValue}px`,
-                  translateY: `${yRotationValue}px`,
-                  rotateX: `${xRotationValue * 2}deg`,
-                  rotateY: `${yRotationValue * 2}deg`,
-                  boxShadow: itemShadow,
-                  zIndex: 5,
-                }}
-                whileTap={{
-                  scale: 1.2,
-                  transition: { duration: 0.1 },
-                }}
-              />
-            </Tooltip>
-          );
-        })}
+        {technologies.map((item) => (
+          <TechnologyItem
+            key={item.name}
+            item={item}
+            logoBg={logoBg}
+            itemShadow={itemShadow}
+            xRotationValue={xRotationValue}
+            yRotationValue={yRotationValue}
+            setXRotationValue={setXRotationValue}
+            setYRotationValue={setYRotationValue}
+          />
+        ))}
       </Grid>
     </Box>
+  );
+};
+
+interface TechnologyItemProps {
+  item: { name: string; image: string };
+  logoBg: string;
+  itemShadow: string;
+  xRotationValue: number;
+  yRotationValue: number;
+  setXRotationValue: (v: number) => void;
+  setYRotationValue: (v: number) => void;
+}
+
+const TechnologyItem: React.FC<TechnologyItemProps> = ({
+  item,
+  logoBg,
+  itemShadow,
+  xRotationValue,
+  yRotationValue,
+  setXRotationValue,
+  setYRotationValue,
+}) => {
+  const boundingRef = useRef<DOMRect | null>(null);
+  return (
+    <Tooltip
+      id={item.name}
+      borderRadius={10}
+      label={item.name}
+      fontSize="md"
+      placement="top"
+      bg="brand.gradient"
+      color="white"
+      fontWeight="bold"
+      gutter={8}
+    >
+      <Image
+        draggable="false"
+        as={motion.img}
+        borderRadius={12}
+        src={`/logos/${item.image}`}
+        padding={1}
+        boxSizing="border-box"
+        bg={logoBg}
+        alt={item.name}
+        onMouseLeave={() => (boundingRef.current = null)}
+        onMouseEnter={(ev: any) => {
+          boundingRef.current = ev.currentTarget.getBoundingClientRect();
+        }}
+        onMouseMove={(ev: any) => {
+          if (!boundingRef.current) return;
+          const x = ev.clientX - boundingRef.current.left;
+          const y = ev.clientY - boundingRef.current.top;
+          const xPercentage = x / boundingRef.current.width;
+          const yPercentage = y / boundingRef.current.height;
+          const xRotation = (xPercentage - 0.5) * 20;
+          const yRotation = (0.5 - yPercentage) * -20;
+
+          setYRotationValue(yRotation);
+          setXRotationValue(xRotation);
+        }}
+        whileHover={{
+          scale: 1.15,
+          transition: { duration: 0.05, type: "spring" },
+          translateX: `${xRotationValue}px`,
+          translateY: `${yRotationValue}px`,
+          rotateX: `${xRotationValue * 2}deg`,
+          rotateY: `${yRotationValue * 2}deg`,
+          boxShadow: itemShadow,
+          zIndex: 5,
+        }}
+        whileTap={{
+          scale: 1.2,
+          transition: { duration: 0.1 },
+        }}
+      />
+    </Tooltip>
   );
 };

@@ -3,6 +3,8 @@
 import { Flex, Text, Heading, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { motion, useReducedMotion } from "framer-motion";
+import { revealItem, revealItemReduced, inViewOnce } from "@/lib/motion";
 import Link from "next/link";
 import { useState } from "react";
 import { mentoring, publicSpeaking } from "./consts";
@@ -17,6 +19,7 @@ const categories = [
 const allEngagements = [...publicSpeaking, ...mentoring];
 
 export default function Engagements() {
+  const reduce = useReducedMotion();
   const [currentFilter, setCurrentFilter] = useState("all");
 
   const filteredEngagements =
@@ -124,6 +127,11 @@ export default function Engagements() {
 
           {/* Engagement List */}
           <Flex
+            as={motion.div}
+            initial="hidden"
+            whileInView="show"
+            viewport={inViewOnce}
+            variants={reduce ? revealItemReduced : revealItem}
             flexDirection="column"
             width="100%"
             gap={0}

@@ -66,7 +66,7 @@ export const PasswordForm = ({
         <FancyHeading>Password Check 🔓</FancyHeading>
         <Text mb={4}>
           This project is pretty detailed and not entirely public - check with
-          me and I'll get you a PIN.
+          me and I&apos;ll get you a PIN.
         </Text>
         <FormLabel htmlFor="password">Enter super secret PIN 👇🏽</FormLabel>
         <Flex gap={2} width="300px">

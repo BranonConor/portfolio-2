@@ -2,6 +2,7 @@ import { Box, Flex, Heading } from "@chakra-ui/react";
 import React from "react";
 import MetadataBar from "./MetadataBar";
 import { PaintStroke } from "../PaintStroke";
+import { GradientArt } from "../GradientArt";
 
 interface HeroStripProps {
   title: string;
@@ -32,6 +33,8 @@ const HeroStrip: React.FC<HeroStripProps> = ({
         borderBottom="1px solid"
         borderBottomColor="brand.border"
       >
+        {/* Generative gradient wash tinted from the post title (P9) */}
+        <GradientArt seed={title} opacity={0.32} />
         <PaintStroke
           variant={2}
           top="-40px"

@@ -11,6 +11,8 @@ const strokes = [
   "/s6.png",
 ];
 
+export const strokeSrcs = strokes;
+
 interface PaintStrokeProps extends BoxProps {
   /** Which stroke variant to use (1–6) */
   variant?: 1 | 2 | 3 | 4 | 5 | 6;

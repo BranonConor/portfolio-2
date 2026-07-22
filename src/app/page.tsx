@@ -14,6 +14,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { AnimatedPaintStroke } from "@/components/AnimatedPaintStroke";
+import { HeroParallax } from "@/components/HeroParallax";
+import { Magnetic } from "@/components/Magnetic";
 import { PortraitCanvas } from "@/components/easter-egg";
 
 const SparkleIcon = () => (
@@ -396,6 +399,10 @@ export default function Home() {
   );
 }
 
+// P8 Tier B (optional r3f hero) lives in src/components/hero3d/ but is intentionally
+// NOT wired in: three's global JSX augmentation conflicts with Chakra's polymorphic
+// `as` typing. Ship Tier A (HeroParallax) as default; see hero3d/README.md to enable.
+
 function HomeContent() {
 
   return (
@@ -537,25 +544,33 @@ function HomeContent() {
 
             {/* CTAs */}
             <Flex mt={5} gap={3}>
-              <Button
-                variant="primary"
-                as={Link}
-                href="/projects"
-                size="sm"
-                leftIcon={<SparkleIcon />}
-              >
-                See my work
-              </Button>
-              <Button
-                variant="secondary"
-                as="a"
-                download
-                href="/resume.pdf"
-                size="sm"
-                leftIcon={<DownloadIcon />}
-              >
-                Download resume
-              </Button>
+              <Magnetic>
+                <Button
+                  variant="primary"
+                  as={Link}
+                  href="/projects"
+                  size="sm"
+                >
+                  <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                    <SparkleIcon />
+                    See my work
+                  </Box>
+                </Button>
+              </Magnetic>
+              <Magnetic>
+                <Button
+                  variant="secondary"
+                  as="a"
+                  download
+                  href="/resume.pdf"
+                  size="sm"
+                >
+                  <Box as="span" display="inline-flex" alignItems="center" gap="0.5em">
+                    <DownloadIcon />
+                    Download resume
+                  </Box>
+                </Button>
+              </Magnetic>
             </Flex>
           </Box>
 
@@ -567,6 +582,7 @@ function HomeContent() {
             height={["180px", "200px", "240px"]}
             alignSelf={["center", "center", "auto"]}
           >
+            <HeroParallax position="relative" width="100%" height="100%">
             {/* Subtle paint strokes behind portrait — mobile */}
             <PaintStroke
               variant={4}
@@ -631,34 +647,37 @@ function HomeContent() {
               display={["none", "block", "none"]}
             />
 
-            {/* Subtle paint strokes behind portrait — tablet & desktop */}
-            <PaintStroke
+            {/* Subtle paint strokes behind portrait — tablet & desktop (cursor-reactive, P5) */}
+            <AnimatedPaintStroke
               variant={4}
               top="-10px"
               right="-20px"
               width={["250px", "250px", "260px"]}
               opacity={0.3}
-              rotate={40}
+              baseRotate={40}
               scale={1.4}
+              intensity={1.1}
               display={["none", "none", "block"]}
             />
-            <PaintStroke
+            <AnimatedPaintStroke
               variant={1}
               bottom="-80px"
               left="-84px"
               width={["280px", "280px", "300px"]}
               opacity={0.22}
-              rotate={20}
+              baseRotate={20}
               scale={1.2}
+              intensity={0.7}
               display={["none", "none", "block"]}
             />
-            <PaintStroke
+            <AnimatedPaintStroke
               variant={2}
               top="35%"
               left="40%"
               width={["180px", "180px", "190px"]}
               opacity={0.16}
-              rotate={85}
+              baseRotate={85}
+              intensity={1.4}
               flip
               display={["none", "none", "block"]}
             />
@@ -674,6 +693,7 @@ function HomeContent() {
             >
               <PortraitCanvas src="/me-light.png" width={240} height={240} />
             </Box>
+            </HeroParallax>
           </Box>
         </Flex>
       </Box>

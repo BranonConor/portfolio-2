@@ -1,15 +1,32 @@
 "use client";
 
 import { Image, Box } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
+import { useRef } from "react";
+import { dur, ease } from "@/lib/motion";
 
 interface IHeaderImageProps {
   image: string;
 }
 
 const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  // Gentle scroll parallax on the image (P9). Disabled under reduced-motion.
+  const parallaxY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+
   return (
     <Box
+      ref={ref}
       as={motion.div}
       width="100%"
       position="relative"
@@ -24,29 +41,26 @@ const HeaderImage: React.FC<IHeaderImageProps> = ({ image }) => {
       animate={{
         top: 0,
         scale: 1,
-        transition: { duration: 0.2, type: "intertia" },
+        transition: { duration: dur.base, ease: ease.out },
       }}
       exit={{ top: "-25%" }}
     >
-      <Image
-        as={motion.img}
-        src={image}
-        objectFit="cover"
-        objectPosition={["center", "center", "top center"]}
-        position="absolute"
-        transform={[
-          "translateY(0px)",
-          "translateY(0px)",
-          "translateY(0px)",
-          "translateY(-200px)",
-        ]}
-        initial={{ top: "-15%" }}
-        animate={{
-          top: 0,
-          transition: { duration: 0.35, type: "tween" },
-        }}
-        exit={{ top: "-15%" }}
-      />
+      <motion.div
+        style={
+          reduce
+            ? { position: "absolute", inset: 0, height: "100%" }
+            : { position: "absolute", inset: 0, height: "120%", y: parallaxY }
+        }
+      >
+        <Image
+          src={image}
+          alt=""
+          objectFit="cover"
+          objectPosition={["center", "center", "top center"]}
+          width="100%"
+          height="100%"
+        />
+      </motion.div>
     </Box>
   );
 };
