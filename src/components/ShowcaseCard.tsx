@@ -168,7 +168,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
             opacity={!!link ? 1 : 0.45}
             pointerEvents={!!link ? "auto" : "none"}
           >
-            <Image src={linkIcon} draggable="false" />
+            <Image src={linkIcon} draggable="false" alt="Open live link" />
           </Link>
           <Link
             as={motion.a}
@@ -190,7 +190,7 @@ export const ShowcaseCard: React.FC<IShowcaseCardProps> = ({
             opacity={!!codeLink ? 1 : 0.45}
             pointerEvents={!!codeLink ? "auto" : "none"}
           >
-            <Image src={codeIcon} draggable="false" />
+            <Image src={codeIcon} draggable="false" alt="View source code" />
           </Link>
         </Flex>
       </Flex>

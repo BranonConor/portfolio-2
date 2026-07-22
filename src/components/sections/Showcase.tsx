@@ -97,7 +97,7 @@ export const Showcase: React.FC = () => {
         Showcase
       </Heading>
       <Text as="p" mb={8}>
-        Here's some recent accomplishments, engagements, updates, and more!
+        Here&apos;s some recent accomplishments, engagements, updates, and more!
       </Text>
       <RevealGroup
         display="grid"
