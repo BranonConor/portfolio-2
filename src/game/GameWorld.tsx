@@ -59,6 +59,21 @@ export function GameWorld({ onExitToClassic }: GameWorldProps) {
     worldRef.current?.setPaused(openBuilding !== null);
   }, [openBuilding]);
 
+  // Pause the loop when the tab is hidden to save CPU/battery; resume only if
+  // no panel is open.
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.hidden) {
+        worldRef.current?.setPaused(true);
+      } else {
+        worldRef.current?.setPaused(openBuilding !== null);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibility);
+  }, [openBuilding]);
+
   const closePanel = useCallback(() => setOpenBuilding(null), []);
 
   return (

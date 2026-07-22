@@ -5,11 +5,12 @@ games. It uses **no** copyrighted game assets (no Stardew Valley sprites, tilese
 music, fonts, characters, or names). Everything is either original work or
 permissively-licensed (CC0-first) open assets.
 
-## Current status (Phase 0 / Phase 1)
+## Current status (Phase 2)
 
-All in-world visuals are **procedurally drawn programmer-art** (colored rectangles
-generated at runtime in `src/game/bootWorld.ts`). There are **no external art assets in
-the bundle yet**.
+All in-world visuals are **original pixel art authored in-repo** as character-grid sprite
+data (`src/game/spriteData.js`) and rendered to canvas sprites at runtime
+(`src/game/pixelArt.ts`). There are **no external / third-party art assets in the bundle** —
+nothing is copied from any asset pack or game.
 
 ## Art direction (confirmed by Branon)
 
