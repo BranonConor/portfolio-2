@@ -60,6 +60,23 @@ const styles = {
       bg: "brand.bg",
       color: "brand.text",
     },
+    // Accessible focus ring for keyboard users (P10).
+    "*:focus-visible": {
+      outline: "2px solid",
+      outlineColor: "brand.accent",
+      outlineOffset: "2px",
+      borderRadius: "4px",
+    },
+    // Reduced-motion safety net (P10): neutralize CSS transitions/animations
+    // for users who ask for it. Framer Motion is handled via useReducedMotion.
+    "@media (prefers-reduced-motion: reduce)": {
+      "*, *::before, *::after": {
+        animationDuration: "0.001ms !important",
+        animationIterationCount: "1 !important",
+        transitionDuration: "0.001ms !important",
+        scrollBehavior: "auto !important",
+      },
+    },
   },
 };
 

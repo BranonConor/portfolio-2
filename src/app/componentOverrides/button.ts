@@ -15,6 +15,12 @@ const makePrimary = (color: string) =>
       borderColor: `${color}66`,
       transform: "translateY(-1px)",
     },
+    _focusVisible: {
+      outline: "2px solid",
+      outlineColor: color,
+      outlineOffset: "2px",
+      boxShadow: "none",
+    },
     transition: "0.15s ease all",
   });
 
@@ -38,6 +44,12 @@ const secondary = defineStyle({
     borderColor: "brand.borderHover",
     color: "brand.text",
     transform: "translateY(-1px)",
+  },
+  _focusVisible: {
+    outline: "2px solid",
+    outlineColor: "brand.accent",
+    outlineOffset: "2px",
+    boxShadow: "none",
   },
   transition: "0.15s ease all",
 });
