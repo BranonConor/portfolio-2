@@ -15,6 +15,7 @@ import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
 import { PortraitCanvas } from "@/components/easter-egg";
+import { HomeExperience } from "./HomeExperience";
 
 const SparkleIcon = () => (
   <svg
@@ -389,6 +390,10 @@ const Section = ({
 );
 
 export default function Home() {
+  return <HomeExperience classic={<ClassicHome />} />;
+}
+
+function ClassicHome() {
   return (
     <PageWrapper>
       <HomeContent />
@@ -493,7 +498,7 @@ function HomeContent() {
                     y: [-4, -20],
                   },
                 ].map((s, i) => (
-                  <motion.div
+                  <motion.span
                     key={i}
                     style={{
                       position: "absolute",
@@ -528,7 +533,7 @@ function HomeContent() {
                       objectFit="contain"
                       borderRadius="100%"
                     />
-                  </motion.div>
+                  </motion.span>
                 ))}
               </Text>
               . I shape the craft and quality of interfaces used by millions —
