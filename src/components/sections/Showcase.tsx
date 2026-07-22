@@ -1,5 +1,6 @@
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { ShowcaseCard } from "../ShowcaseCard";
+import { RevealGroup, RevealItem } from "../Reveal";
 
 export const Showcase: React.FC = () => {
   const items: {
@@ -98,7 +99,8 @@ export const Showcase: React.FC = () => {
       <Text as="p" mb={8}>
         Here's some recent accomplishments, engagements, updates, and more!
       </Text>
-      <Grid
+      <RevealGroup
+        display="grid"
         gridGap={4}
         gridTemplateColumns={[
           "1fr",
@@ -109,17 +111,19 @@ export const Showcase: React.FC = () => {
         ]}
       >
         {items.map((item) => (
-          <ShowcaseCard
-            title={item.title}
-            description={item.description}
-            link={item.link}
-            codeLink={item?.codeLink}
-            role={item.role}
-            icon={item?.icon}
-            tag={item?.tag}
-          />
+          <RevealItem key={item.title} display="flex">
+            <ShowcaseCard
+              title={item.title}
+              description={item.description}
+              link={item.link}
+              codeLink={item?.codeLink}
+              role={item.role}
+              icon={item?.icon}
+              tag={item?.tag}
+            />
+          </RevealItem>
         ))}
-      </Grid>
+      </RevealGroup>
     </Flex>
   );
 };

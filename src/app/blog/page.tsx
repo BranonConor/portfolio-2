@@ -4,9 +4,12 @@ import { Flex, Heading, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { motion, useReducedMotion } from "framer-motion";
+import { revealItem, revealItemReduced, inViewOnce } from "@/lib/motion";
 import Link from "next/link";
 
 export default function Blog() {
+  const reduce = useReducedMotion();
   const posts = [
     {
       title: "The CLI is the New UI",
@@ -95,6 +98,11 @@ export default function Blog() {
           </Box>
 
           <Flex
+            as={motion.div}
+            initial="hidden"
+            whileInView="show"
+            viewport={inViewOnce}
+            variants={reduce ? revealItemReduced : revealItem}
             flexDirection="column"
             width="100%"
             gap={0}

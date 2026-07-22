@@ -3,6 +3,8 @@
 import { Flex, Text, Heading, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { motion, useReducedMotion } from "framer-motion";
+import { revealItem, revealItemReduced, inViewOnce } from "@/lib/motion";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -11,6 +13,7 @@ import { inTheWild } from "./consts";
 const ACCENT = "#fbbf24";
 
 export default function InTheWild() {
+  const reduce = useReducedMotion();
   const [currentFilter, setCurrentFilter] = useState("all");
 
   // Fixed source-based filters: GitHub work vs. everything else.
@@ -134,6 +137,11 @@ export default function InTheWild() {
 
           {/* List */}
           <Flex
+            as={motion.div}
+            initial="hidden"
+            whileInView="show"
+            viewport={inViewOnce}
+            variants={reduce ? revealItemReduced : revealItem}
             flexDirection="column"
             width="100%"
             gap={0}

@@ -3,6 +3,8 @@
 import { Flex, Text, Heading, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { motion, useReducedMotion } from "framer-motion";
+import { revealItem, revealItemReduced, inViewOnce } from "@/lib/motion";
 import Link from "next/link";
 import {
   brandingProjects,
@@ -77,6 +79,7 @@ const allProjects = [
 ].sort((a, b) => parseProjectDate(b.date) - parseProjectDate(a.date));
 
 export default function Projects() {
+  const reduce = useReducedMotion();
   const [currentFilter, setCurrentFilter] = useState("all");
 
   const filteredProjects =
@@ -188,6 +191,11 @@ export default function Projects() {
 
           {/* Project List */}
           <Flex
+            as={motion.div}
+            initial="hidden"
+            whileInView="show"
+            viewport={inViewOnce}
+            variants={reduce ? revealItemReduced : revealItem}
             flexDirection="column"
             width="100%"
             gap={0}
