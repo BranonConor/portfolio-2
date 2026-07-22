@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Flex,
   Heading,
@@ -6,13 +8,14 @@ import {
   Box,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { motion, useMotionTemplate } from "framer-motion";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { GradientArt } from "../GradientArt";
+import { useTilt } from "@/lib/useTilt";
 
 interface IPostCardProps {
   title: string;
-  image: string;
+  image?: string;
   link: string;
   category: string;
   date: string;
@@ -35,114 +38,116 @@ export const PostCard: React.FC<IPostCardProps> = ({
   hasPassword = false,
 }) => {
   const textColor = useColorModeValue("brand.lightBg", "brand.lightBg");
-  const [yRotationValue, setYRotationValue] = useState<number>(0);
-  const [xRotationValue, setXRotationValue] = useState<number>(0);
-  const boundingRef = useRef<DOMRect | null>(null);
+
+  // Damped cursor-following tilt + light-following sheen (P3).
+  const tilt = useTilt({ max: 7 });
+  const sheenBg = useMotionTemplate`radial-gradient(260px circle at ${tilt.sheen.x}% ${tilt.sheen.y}%, rgba(255,255,255,0.16), transparent 60%)`;
 
   return (
-    <Flex
-      key={title}
-      as={useExternalLink ? "a" : Link}
-      aria-label={`${buttonText} - ${title}`}
-      href={link}
-      target={useExternalLink ? "_blank" : ""}
-      rel="noreferrer noopenner"
-      flexDirection="column"
-      alignItems="flex-start"
-      justifyContent="flex-start"
-      borderRadius={16}
-      padding={4}
-      position="relative"
-      overflow="hidden"
-      minHeight="300px"
-      _hover={{
-        "@media only screen and (min-width: 450px)": {
-          "> img": {
-            "&:first-of-type": {
-              transform: `scale(1.2) translateX(${xRotationValue}px) translateY(${yRotationValue}px) rotateX(${
-                xRotationValue * 1.5
-              }deg) rotateY(${yRotationValue * 1.5}deg)`,
-              transition: "0.4 ease all",
-              filter: "blur(3px)",
-            },
-            "&:last-of-type": {
-              transform: "translateX(-70%) scale(3)",
-            },
-          },
-          p: {
-            bottom: "42%",
-            opacity: 1,
-            transform: `scale(5) translateX(${xRotationValue}px) translateY(${yRotationValue}px) rotateX(${
-              xRotationValue * 1.5
-            }deg) rotateY(${yRotationValue * 1.5}deg)`,
-            transition: "0.25 ease all",
-          },
-        },
-      }}
-      onMouseLeave={() => (boundingRef.current = null)}
-      onMouseEnter={(ev: any) => {
-        boundingRef.current = ev.currentTarget.getBoundingClientRect();
-      }}
-      onMouseMove={(ev: any) => {
-        if (!boundingRef.current) return;
-        const x = ev.clientX - boundingRef.current.left;
-        const y = ev.clientY - boundingRef.current.top;
-        const xPercentage = x / boundingRef.current.width;
-        const yPercentage = y / boundingRef.current.height;
-        const xRotation = (xPercentage - 0.5) * 20;
-        const yRotation = (0.5 - yPercentage) * -20;
-
-        setYRotationValue(yRotation);
-        setXRotationValue(xRotation);
-      }}
+    <Box
+      as={motion.div}
+      width="100%"
+      height="100%"
+      style={tilt.style}
+      {...tilt.handlers}
     >
-      <Text
-        as="p"
-        zIndex={5}
-        position="absolute"
-        bottom="-25%"
-        right="48%"
-        transition="0.2s ease all"
-        opacity={0}
-      >
-        {hoverIcon}
-      </Text>
-      <Image
-        as={motion.img}
-        src={image}
-        position="absolute"
-        top={0}
-        left={0}
-        width="100%"
-        height="100%"
-        objectFit="cover"
-        zIndex={0}
-        transition="0.15s ease all"
-      />
-      <Image
-        draggable="false"
-        src="/blog/gradient-dark.svg"
-        position="absolute"
-        top={0}
-        left={0}
-        width="100%"
-        height="100%"
-        objectFit="cover"
-        zIndex={0}
-        transition="0.45s ease all"
-      />
-
       <Flex
+        as={useExternalLink ? "a" : Link}
+        aria-label={`${buttonText} - ${title}`}
+        href={link}
+        target={useExternalLink ? "_blank" : ""}
+        rel="noreferrer noopener"
         flexDirection="column"
         alignItems="flex-start"
-        justifyContent="space-between"
+        justifyContent="flex-end"
+        borderRadius={16}
+        padding={4}
         position="relative"
-        zIndex={1}
-        color={textColor}
+        overflow="hidden"
+        minHeight="300px"
+        width="100%"
         height="100%"
+        role="group"
+        sx={{
+          "& .pc-media": { transition: "0.4s ease all" },
+        }}
+        _hover={{
+          "& .pc-media": { transform: "scale(1.06)" },
+          "& .pc-icon": { opacity: 1, transform: "translateY(0) scale(1)" },
+        }}
       >
-        <Box>
-          <Flex>
+        {/* Background: image if provided, otherwise generative gradient art (P4) */}
+        {image ? (
+          <Image
+            className="pc-media"
+            src={image}
+            alt=""
+            position="absolute"
+            top={0}
+            left={0}
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            zIndex={0}
+          />
+        ) : (
+          <Box className="pc-media" position="absolute" inset={0} zIndex={0}>
+            <GradientArt seed={title} animate />
+          </Box>
+        )}
+
+        {/* Legibility gradient */}
+        <Image
+          draggable="false"
+          src="/blog/gradient-dark.svg"
+          alt=""
+          position="absolute"
+          top={0}
+          left={0}
+          width="100%"
+          height="100%"
+          objectFit="cover"
+          zIndex={0}
+        />
+
+        {/* Light-following sheen (P3) */}
+        <Box
+          as={motion.div}
+          aria-hidden="true"
+          position="absolute"
+          inset={0}
+          zIndex={0}
+          pointerEvents="none"
+          style={{ background: sheenBg, opacity: tilt.sheen.opacity }}
+        />
+
+        {/* Hover emoji — keeps the playful brand touch */}
+        <Text
+          className="pc-icon"
+          as="span"
+          position="absolute"
+          top={4}
+          right={4}
+          fontSize="24px"
+          zIndex={2}
+          opacity={0}
+          transform="translateY(-6px) scale(0.8)"
+          transition="0.25s ease all"
+          pointerEvents="none"
+        >
+          {hoverIcon}
+        </Text>
+
+        <Flex
+          flexDirection="column"
+          alignItems="flex-start"
+          justifyContent="flex-end"
+          position="relative"
+          zIndex={1}
+          color={textColor}
+          width="100%"
+        >
+          <Flex mb={3}>
             <Text
               as="span"
               display="inline-flex"
@@ -171,14 +176,14 @@ export const PostCard: React.FC<IPostCardProps> = ({
               </Text>
             ) : null}
           </Flex>
-          <Heading as="h3" size="md" mt={3} mb={1}>
+          <Heading as="h3" size="md" mb={1}>
             {title}
           </Heading>
           <Text as="span" fontSize="12px">
             {date}
           </Text>
-        </Box>
+        </Flex>
       </Flex>
-    </Flex>
+    </Box>
   );
 };
