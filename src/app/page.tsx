@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
+import { Magnetic } from "@/components/Magnetic";
 import { PortraitCanvas } from "@/components/easter-egg";
 
 const SparkleIcon = () => (
@@ -537,25 +538,29 @@ function HomeContent() {
 
             {/* CTAs */}
             <Flex mt={5} gap={3}>
-              <Button
-                variant="primary"
-                as={Link}
-                href="/projects"
-                size="sm"
-                leftIcon={<SparkleIcon />}
-              >
-                See my work
-              </Button>
-              <Button
-                variant="secondary"
-                as="a"
-                download
-                href="/resume.pdf"
-                size="sm"
-                leftIcon={<DownloadIcon />}
-              >
-                Download resume
-              </Button>
+              <Magnetic>
+                <Button
+                  variant="primary"
+                  as={Link}
+                  href="/projects"
+                  size="sm"
+                  leftIcon={<SparkleIcon />}
+                >
+                  See my work
+                </Button>
+              </Magnetic>
+              <Magnetic>
+                <Button
+                  variant="secondary"
+                  as="a"
+                  download
+                  href="/resume.pdf"
+                  size="sm"
+                  leftIcon={<DownloadIcon />}
+                >
+                  Download resume
+                </Button>
+              </Magnetic>
             </Flex>
           </Box>
 
