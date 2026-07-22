@@ -399,6 +399,10 @@ export default function Home() {
   );
 }
 
+// P8 Tier B (optional r3f hero) lives in src/components/hero3d/ but is intentionally
+// NOT wired in: three's global JSX augmentation conflicts with Chakra's polymorphic
+// `as` typing. Ship Tier A (HeroParallax) as default; see hero3d/README.md to enable.
+
 function HomeContent() {
 
   return (
