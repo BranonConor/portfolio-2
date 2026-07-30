@@ -2,75 +2,158 @@
 
 import { useCallback, useRef } from "react";
 
+// A major pentatonic scale, spanning a couple of octaves, gives every note a
+// consonant/"heavenly" quality no matter which degree a given letter lands
+// on — this is what each letter's twinkle picks a pitch from.
+const PENTATONIC = [
+  523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98,
+  1760.0,
+];
+
+interface Chain {
+  ctx: AudioContext;
+  master: GainNode;
+}
+
 /**
- * Synthesizes an original ascending arpeggio "boot chime" with the Web Audio
- * API — evokes the classic handheld power-on ding without using any sampled
- * or copyrighted audio. Playback is gated behind a user gesture (browsers
- * block un-requested audio otherwise); call `playChime()` from inside a
- * gesture handler (click/keydown/touchstart).
+ * Synthesizes an original GBA-style boot audio set with the Web Audio API —
+ * no sampled or copyrighted audio. Two original sounds are produced:
+ *  - a soft, airy "heavenly" twinkle for each letter as it lands, built from
+ *    detuned sine pairs run through a feedback-delay shimmer for an airy tail
+ *  - a bright ascending "sparkle" for the rainbow shine sweep, layering a
+ *    quick bell arpeggio with a filtered noise burst
+ * Playback is gated behind a user gesture (browsers block un-requested
+ * audio); call `unlock()` from inside a gesture handler before using the
+ * other players.
  */
 export function useBootChime() {
-  const ctxRef = useRef<AudioContext | null>(null);
-  const playedRef = useRef(false);
+  const chainRef = useRef<Chain | null>(null);
+  const noiseBufferRef = useRef<AudioBuffer | null>(null);
 
-  const playChime = useCallback(() => {
-    if (playedRef.current) return;
-    playedRef.current = true;
+  const getChain = useCallback((): Chain | null => {
+    if (chainRef.current) return chainRef.current;
 
     const AudioContextClass =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext?: typeof AudioContext })
         .webkitAudioContext;
-    if (!AudioContextClass) return;
+    if (!AudioContextClass) return null;
 
-    const ctx = ctxRef.current ?? new AudioContextClass();
-    ctxRef.current = ctx;
-    if (ctx.state === "suspended") {
-      ctx.resume().catch(() => {});
-    }
+    const ctx = new AudioContextClass();
+    const master = ctx.createGain();
+    master.gain.value = 0.9;
 
-    // Rising arpeggio, roughly a major chord climbing an octave — bright and
-    // "ready to go" like the reference, but an entirely original melody.
-    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51]; // C5 E5 G5 C6 E6
-    const noteDuration = 0.11;
-    const start = ctx.currentTime + 0.02;
+    // A cheap "airy" feedback-delay shimmer shared by all sounds, so notes
+    // trail off softly instead of cutting out abruptly.
+    const delay = ctx.createDelay();
+    delay.delayTime.value = 0.22;
+    const feedback = ctx.createGain();
+    feedback.gain.value = 0.32;
+    const delayFilter = ctx.createBiquadFilter();
+    delayFilter.type = "lowpass";
+    delayFilter.frequency.value = 3200;
 
-    notes.forEach((freq, i) => {
-      const noteStart = start + i * noteDuration * 0.85;
+    master.connect(ctx.destination);
+    master.connect(delay);
+    delay.connect(delayFilter);
+    delayFilter.connect(feedback);
+    feedback.connect(delay);
+    delayFilter.connect(ctx.destination);
 
-      const osc = ctx.createOscillator();
-      osc.type = i === notes.length - 1 ? "triangle" : "square";
-      osc.frequency.setValueAtTime(freq, noteStart);
-
-      const gain = ctx.createGain();
-      const peak = i === notes.length - 1 ? 0.22 : 0.14;
-      gain.gain.setValueAtTime(0, noteStart);
-      gain.gain.linearRampToValueAtTime(peak, noteStart + 0.012);
-      gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        noteStart + noteDuration
-      );
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(noteStart);
-      osc.stop(noteStart + noteDuration + 0.02);
-    });
-
-    // Final sustained shimmer to land the "ready" feeling.
-    const shimmerStart = start + notes.length * noteDuration * 0.85;
-    const shimmer = ctx.createOscillator();
-    shimmer.type = "sine";
-    shimmer.frequency.setValueAtTime(1318.51, shimmerStart);
-    const shimmerGain = ctx.createGain();
-    shimmerGain.gain.setValueAtTime(0, shimmerStart);
-    shimmerGain.gain.linearRampToValueAtTime(0.18, shimmerStart + 0.02);
-    shimmerGain.gain.exponentialRampToValueAtTime(0.0001, shimmerStart + 0.4);
-    shimmer.connect(shimmerGain);
-    shimmerGain.connect(ctx.destination);
-    shimmer.start(shimmerStart);
-    shimmer.stop(shimmerStart + 0.42);
+    const chain = { ctx, master };
+    chainRef.current = chain;
+    return chain;
   }, []);
 
-  return { playChime };
+  const unlock = useCallback(() => {
+    const chain = getChain();
+    if (chain?.ctx.state === "suspended") {
+      chain.ctx.resume().catch(() => {});
+    }
+  }, [getChain]);
+
+  /** Soft ascending twinkle for the letter at `index` of `total` landing. */
+  const playLetterTwinkle = useCallback(
+    (index: number, total: number) => {
+      const chain = getChain();
+      if (!chain) return;
+      const { ctx, master } = chain;
+
+      const degree = Math.round((index / Math.max(total - 1, 1)) * (PENTATONIC.length - 1));
+      const freq = PENTATONIC[Math.min(degree, PENTATONIC.length - 1)];
+      const start = ctx.currentTime + 0.005;
+      const duration = 0.42;
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.16, start + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      gain.connect(master);
+
+      // Two gently detuned sines, "chorus" style, for a soft/heavenly tone
+      // rather than a harsh single-oscillator beep.
+      [0, 6].forEach((detune) => {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, start);
+        osc.detune.setValueAtTime(detune, start);
+        osc.connect(gain);
+        osc.start(start);
+        osc.stop(start + duration + 0.05);
+      });
+    },
+    [getChain]
+  );
+
+  /** Bright shimmering sparkle for the rainbow shine sweep. */
+  const playSparkle = useCallback(() => {
+    const chain = getChain();
+    if (!chain) return;
+    const { ctx, master } = chain;
+    const start = ctx.currentTime + 0.005;
+
+    // Quick ascending bell arpeggio.
+    const bellNotes = [1046.5, 1318.51, 1567.98, 2093.0];
+    bellNotes.forEach((freq, i) => {
+      const noteStart = start + i * 0.05;
+      const osc = ctx.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, noteStart);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, noteStart);
+      gain.gain.linearRampToValueAtTime(0.14, noteStart + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.3);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(noteStart);
+      osc.stop(noteStart + 0.32);
+    });
+
+    // Filtered noise burst layered underneath for a bright "sparkle" texture.
+    if (!noiseBufferRef.current) {
+      const bufferSize = ctx.sampleRate * 0.4;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      noiseBufferRef.current = buffer;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBufferRef.current;
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "highpass";
+    noiseFilter.frequency.setValueAtTime(6000, start);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0, start);
+    noiseGain.gain.linearRampToValueAtTime(0.06, start + 0.02);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(master);
+    noise.start(start);
+    noise.stop(start + 0.4);
+  }, [getChain]);
+
+  return { unlock, playLetterTwinkle, playSparkle };
 }

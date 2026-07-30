@@ -5,16 +5,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { BootLogoCanvas } from "./BootLogoCanvas";
 import { useBootChime } from "./useBootChime";
+import { pixelFont } from "./pixelFont";
 
 const NAME = "BRANON EUSEBIO";
 
-// Each letter pops in oversized and bounces down to size, staggered across
-// the word (wave effect), then the rainbow shine sweeps across the settled
-// logo once every letter has landed.
-const STAGGER_MS = 70;
-const LETTER_DURATION_MS = 550;
-const SWEEP_GAP_MS = 180;
-const SWEEP_DURATION_MS = 700;
+// Each letter rockets in oversized and bounces down to size, staggered
+// across the word (wave effect); once every letter has landed, the rainbow
+// shine sweeps across the settled logo. Slower/bigger than a first pass to
+// read more like the reference GBA boot sequence.
+const STAGGER_MS = 100;
+const LETTER_DURATION_MS = 850;
+const SWEEP_GAP_MS = 220;
+const SWEEP_DURATION_MS = 900;
 
 type Phase = "booting" | "prompt" | "dismissed";
 
@@ -28,7 +30,7 @@ export function BootIntro() {
   const [phase, setPhase] = useState<Phase>("booting");
   const [flash, setFlash] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const { playChime } = useBootChime();
+  const { unlock, playLetterTwinkle, playSparkle } = useBootChime();
   const chimeArmedRef = useRef(false);
 
   useEffect(() => {
@@ -39,28 +41,28 @@ export function BootIntro() {
     }
   }, []);
 
-  // Unlock + fire the chime on the very first user gesture, whenever it
-  // happens (during the boot animation or later, once the prompt is up).
-  // Audio can only start from a real gesture per browser autoplay policy.
+  // Unlock audio on the very first user gesture, whenever it happens (during
+  // the boot animation or later, once the prompt is up). Audio can only
+  // start from a real gesture per browser autoplay policy.
   useEffect(() => {
     if (reducedMotion) return;
 
-    const unlock = () => {
+    const armAudio = () => {
       if (chimeArmedRef.current) return;
       chimeArmedRef.current = true;
-      playChime();
+      unlock();
     };
 
-    window.addEventListener("pointerdown", unlock, { capture: true });
-    window.addEventListener("keydown", unlock, { capture: true });
-    window.addEventListener("touchstart", unlock, { capture: true });
+    window.addEventListener("pointerdown", armAudio, { capture: true });
+    window.addEventListener("keydown", armAudio, { capture: true });
+    window.addEventListener("touchstart", armAudio, { capture: true });
 
     return () => {
-      window.removeEventListener("pointerdown", unlock, { capture: true });
-      window.removeEventListener("keydown", unlock, { capture: true });
-      window.removeEventListener("touchstart", unlock, { capture: true });
+      window.removeEventListener("pointerdown", armAudio, { capture: true });
+      window.removeEventListener("keydown", armAudio, { capture: true });
+      window.removeEventListener("touchstart", armAudio, { capture: true });
     };
-  }, [playChime, reducedMotion]);
+  }, [unlock, reducedMotion]);
 
   const dismiss = useCallback(() => {
     setPhase((current) => (current === "dismissed" ? current : "dismissed"));
@@ -82,10 +84,21 @@ export function BootIntro() {
     };
   }, [phase, dismiss]);
 
+  const handleLetterStart = useCallback(
+    (index: number, total: number) => {
+      playLetterTwinkle(index, total);
+    },
+    [playLetterTwinkle]
+  );
+
   const handleLettersSettled = useCallback(() => {
     setFlash(true);
     window.setTimeout(() => setFlash(false), 160);
   }, []);
+
+  const handleSweepStart = useCallback(() => {
+    playSparkle();
+  }, [playSparkle]);
 
   const handleSweepComplete = useCallback(() => {
     setPhase((current) => (current === "booting" ? "prompt" : current));
@@ -141,8 +154,10 @@ export function BootIntro() {
           {reducedMotion ? (
             <Heading
               as="h1"
-              fontSize={["28px", "40px", "48px"]}
+              className={pixelFont.className}
+              fontSize={["18px", "26px", "32px"]}
               letterSpacing="0.08em"
+              lineHeight={1.6}
               color="white"
               textAlign="center"
             >
@@ -156,7 +171,9 @@ export function BootIntro() {
                 letterDurationMs={LETTER_DURATION_MS}
                 sweepGapMs={SWEEP_GAP_MS}
                 sweepDurationMs={SWEEP_DURATION_MS}
+                onLetterStart={handleLetterStart}
                 onLettersSettled={handleLettersSettled}
+                onSweepStart={handleSweepStart}
                 onSweepComplete={handleSweepComplete}
               />
             </Box>
@@ -186,9 +203,10 @@ export function BootIntro() {
           >
             <Text
               as={motion.span}
+              className={pixelFont.className}
               display="inline-block"
-              fontSize={["13px", "15px"]}
-              fontWeight={600}
+              fontSize={["9px", "11px"]}
+              fontWeight={400}
               letterSpacing="0.12em"
               color="whiteAlpha.900"
               animate={{

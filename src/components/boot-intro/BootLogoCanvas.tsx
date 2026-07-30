@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Box } from "@chakra-ui/react";
 import { Renderer, Program, Mesh, Texture, Geometry, Transform } from "ogl";
+import { pixelFont } from "./pixelFont";
 
 const VERTEX = /* glsl */ `
   attribute vec2 position;
@@ -26,6 +27,8 @@ const FRAGMENT = /* glsl */ `
   uniform float uSweep;
   uniform float uGlobalU0;
   uniform float uGlobalU1;
+  uniform vec3 uLetterColor;
+  uniform float uColorMix;
 
   void main() {
     // Nearest-filtered texture already gives the chunky pixelated look;
@@ -47,7 +50,11 @@ const FRAGMENT = /* glsl */ `
       6.28318 * (diag * 1.6 + uTime * 0.1) + vec3(0.0, 2.094, 4.188)
     );
 
-    vec3 base = vec3(0.96, 0.96, 0.98);
+    vec3 white = vec3(0.96, 0.96, 0.98);
+    // Each letter flashes its own assigned color as it flies in, settling
+    // back to white as it lands; the shared rainbow sweep washes over the
+    // top of that afterwards.
+    vec3 base = mix(white, uLetterColor, uColorMix);
     vec3 color = mix(base, rainbow, band * 0.92);
 
     gl_FragColor = vec4(color, mask * uOpacity);
@@ -70,6 +77,7 @@ interface LetterEntry {
   globalU0: number;
   globalU1: number;
   startDelayMs: number;
+  color: [number, number, number];
 }
 
 interface BootLogoCanvasProps {
@@ -78,15 +86,39 @@ interface BootLogoCanvasProps {
   letterDurationMs: number;
   sweepGapMs: number;
   sweepDurationMs: number;
+  /** Fired once per letter, the instant it begins its entrance. */
+  onLetterStart?: (index: number, total: number) => void;
   /** Fired once, the moment the last letter finishes its landing bounce. */
   onLettersSettled?: () => void;
+  /** Fired once the rainbow sweep begins. */
+  onSweepStart?: () => void;
   /** Fired once the rainbow sweep has fully played out. */
   onSweepComplete?: () => void;
 }
 
-const START_SCALE = 2.3; // letters enter oversized...
-const END_SCALE = 1; // ...and bounce down to their resting size
-const START_Y_LIFT = 0.14; // ...dropping in slightly from above as they land
+// Letters rocket in dramatically oversized, flash their own color, then
+// bounce/settle down to resting scale — evoking the GBA boot wordmark.
+const START_SCALE = 5.5;
+const END_SCALE = 1;
+const START_Y_LIFT = 0.32;
+
+/** Converts an HSL color (degrees, 0..1, 0..1) to a linear RGB triple. */
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hp = (h % 360) / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  let r = 0;
+  let g = 0;
+  let b = 0;
+  if (hp >= 0 && hp < 1) [r, g, b] = [c, x, 0];
+  else if (hp < 2) [r, g, b] = [x, c, 0];
+  else if (hp < 3) [r, g, b] = [0, c, x];
+  else if (hp < 4) [r, g, b] = [0, x, c];
+  else if (hp < 5) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const m = l - c / 2;
+  return [r + m, g + m, b + m];
+}
 
 /**
  * WebGL (via `ogl`) rendering of the boot logo, GBA-style: each letter of the
@@ -102,12 +134,24 @@ export function BootLogoCanvas({
   letterDurationMs,
   sweepGapMs,
   sweepDurationMs,
+  onLetterStart,
   onLettersSettled,
+  onSweepStart,
   onSweepComplete,
 }: BootLogoCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const callbacksRef = useRef({ onLettersSettled, onSweepComplete });
-  callbacksRef.current = { onLettersSettled, onSweepComplete };
+  const callbacksRef = useRef({
+    onLetterStart,
+    onLettersSettled,
+    onSweepStart,
+    onSweepComplete,
+  });
+  callbacksRef.current = {
+    onLetterStart,
+    onLettersSettled,
+    onSweepStart,
+    onSweepComplete,
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -118,26 +162,29 @@ export function BootLogoCanvas({
     let disposeGl: (() => void) | null = null;
 
     const setup = async () => {
-      // Give the self-hosted webfont a brief chance to be ready so letter
-      // measurements are accurate; fall back quickly if it never resolves.
+      const upperLabel = label.toUpperCase();
+      const fontFamily = `${pixelFont.style.fontFamily}, monospace`;
+      // Small atlas font size + nearest-neighbor sampling is what produces
+      // the blocky/pixelated GBA-style edges when scaled up on screen.
+      // Press Start 2P is already a chunky pixel font, so a modest size is
+      // plenty — it also keeps each glyph from getting too wide.
+      const atlasFontSize = 32;
+
+      // Force the self-hosted pixel font to actually load before we measure
+      // or draw with it — canvas text won't wait for @font-face on its own
+      // the way DOM text does, since nothing else on the page uses it.
       if (typeof document !== "undefined" && "fonts" in document) {
         await Promise.race([
-          document.fonts.ready,
-          new Promise((resolve) => setTimeout(resolve, 250)),
+          document.fonts.load(`${atlasFontSize}px ${fontFamily}`),
+          new Promise((resolve) => setTimeout(resolve, 400)),
         ]).catch(() => {});
       }
       if (destroyed || !container) return;
 
-      const upperLabel = label.toUpperCase();
-      const fontFamily =
-        '"Space Grotesk", "Arial Black", system-ui, sans-serif';
-      // Small atlas font size + nearest-neighbor sampling is what produces
-      // the blocky/pixelated GBA-style edges when scaled up on screen.
-      const atlasFontSize = 46;
       const measureCanvas = document.createElement("canvas");
       const mctx = measureCanvas.getContext("2d");
       if (!mctx) return;
-      mctx.font = `800 ${atlasFontSize}px ${fontFamily}`;
+      mctx.font = `${atlasFontSize}px ${fontFamily}`;
 
       let cursor = 0;
       const rawMetrics = Array.from(upperLabel).map((char) => {
@@ -158,7 +205,7 @@ export function BootLogoCanvas({
       actx.fillStyle = "#ffffff";
       actx.textAlign = "left";
       actx.textBaseline = "middle";
-      actx.font = `800 ${atlasFontSize}px ${fontFamily}`;
+      actx.font = `${atlasFontSize}px ${fontFamily}`;
       rawMetrics.forEach(({ char, x }) => {
         if (char !== " ") actx.fillText(char, x + 4, atlasH / 2 + 2);
       });
@@ -208,6 +255,7 @@ export function BootLogoCanvas({
       ro.observe(container);
 
       const letters: LetterEntry[] = [];
+      const visibleCount = rawMetrics.filter((m) => m.char !== " ").length;
       let visibleIndex = 0;
       rawMetrics.forEach(({ char, x, width }) => {
         if (char === " ") return;
@@ -216,6 +264,10 @@ export function BootLogoCanvas({
         const u1 = (x + width) / atlasW;
         const centerXFrac = (x + width / 2) / totalWidth;
         const halfWidthFrac = width / totalWidth / 2;
+        // Spread each letter's flash color evenly around the color wheel so
+        // the entrance reads as a burst of varied color across the word.
+        const hue = (visibleIndex / Math.max(visibleCount, 1)) * 320;
+        const color = hslToRgb(hue, 0.85, 0.6);
 
         const geometry = new Geometry(gl, {
           position: {
@@ -246,6 +298,8 @@ export function BootLogoCanvas({
             uGlobalU1: { value: centerXFrac + halfWidthFrac },
             uCenter: { value: [0, 0] },
             uHalfSize: { value: [0, 0] },
+            uLetterColor: { value: color },
+            uColorMix: { value: 0 },
           },
         });
 
@@ -260,6 +314,7 @@ export function BootLogoCanvas({
           globalU0: centerXFrac - halfWidthFrac,
           globalU1: centerXFrac + halfWidthFrac,
           startDelayMs: visibleIndex * staggerMs,
+          color,
         });
         visibleIndex += 1;
       });
@@ -269,7 +324,9 @@ export function BootLogoCanvas({
       const settleTimeMs = lastLetterDelay + letterDurationMs;
       const sweepStartMs = settleTimeMs + sweepGapMs;
       let settledFired = false;
+      let sweepStartFired = false;
       let sweepCompleteFired = false;
+      const letterStartFired = new Array(letters.length).fill(false);
 
       const startTime = performance.now();
 
@@ -277,7 +334,7 @@ export function BootLogoCanvas({
         if (destroyed) return;
         const elapsed = performance.now() - startTime;
 
-        letters.forEach(({ program, centerXFrac, halfWidthFrac, startDelayMs }) => {
+        letters.forEach(({ program, centerXFrac, halfWidthFrac, startDelayMs }, i) => {
           const rawT = (elapsed - startDelayMs) / letterDurationMs;
           const started = rawT > 0;
           const t = Math.min(Math.max(rawT, 0), 1);
@@ -295,7 +352,13 @@ export function BootLogoCanvas({
             box.halfHeight * scale,
           ];
           program.uniforms.uOpacity.value = started ? 1 : 0;
+          program.uniforms.uColorMix.value = 1 - t;
           program.uniforms.uTime.value = elapsed / 1000;
+
+          if (started && !letterStartFired[i]) {
+            letterStartFired[i] = true;
+            callbacksRef.current.onLetterStart?.(i, letters.length);
+          }
         });
 
         if (!settledFired && elapsed >= settleTimeMs) {
@@ -310,6 +373,11 @@ export function BootLogoCanvas({
         letters.forEach(({ program }) => {
           program.uniforms.uSweep.value = sweepT;
         });
+
+        if (!sweepStartFired && elapsed >= sweepStartMs) {
+          sweepStartFired = true;
+          callbacksRef.current.onSweepStart?.();
+        }
 
         if (!sweepCompleteFired && elapsed >= sweepStartMs + sweepDurationMs) {
           sweepCompleteFired = true;
