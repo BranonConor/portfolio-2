@@ -8,10 +8,13 @@ import { useBootChime } from "./useBootChime";
 
 const NAME = "BRANON EUSEBIO";
 
-const DROP_DURATION_MS = 700;
-const SWEEP_START_MS = 750;
-const SWEEP_DURATION_MS = 650;
-const PROMPT_DELAY_MS = SWEEP_START_MS + SWEEP_DURATION_MS + 400;
+// Each letter pops in oversized and bounces down to size, staggered across
+// the word (wave effect), then the rainbow shine sweeps across the settled
+// logo once every letter has landed.
+const STAGGER_MS = 70;
+const LETTER_DURATION_MS = 550;
+const SWEEP_GAP_MS = 180;
+const SWEEP_DURATION_MS = 700;
 
 type Phase = "booting" | "prompt" | "dismissed";
 
@@ -59,13 +62,6 @@ export function BootIntro() {
     };
   }, [playChime, reducedMotion]);
 
-  // Advance booting -> prompt once the drop + sweep have played out.
-  useEffect(() => {
-    if (reducedMotion || phase !== "booting") return;
-    const timer = window.setTimeout(() => setPhase("prompt"), PROMPT_DELAY_MS);
-    return () => window.clearTimeout(timer);
-  }, [phase, reducedMotion]);
-
   const dismiss = useCallback(() => {
     setPhase((current) => (current === "dismissed" ? current : "dismissed"));
   }, []);
@@ -86,9 +82,13 @@ export function BootIntro() {
     };
   }, [phase, dismiss]);
 
-  const handleImpact = useCallback(() => {
+  const handleLettersSettled = useCallback(() => {
     setFlash(true);
     window.setTimeout(() => setFlash(false), 160);
+  }, []);
+
+  const handleSweepComplete = useCallback(() => {
+    setPhase((current) => (current === "booting" ? "prompt" : current));
   }, []);
 
   return (
@@ -152,10 +152,12 @@ export function BootIntro() {
             <Box position="relative" width="100%" height="100%">
               <BootLogoCanvas
                 label={NAME}
-                dropDurationMs={DROP_DURATION_MS}
-                sweepStartMs={SWEEP_START_MS}
+                staggerMs={STAGGER_MS}
+                letterDurationMs={LETTER_DURATION_MS}
+                sweepGapMs={SWEEP_GAP_MS}
                 sweepDurationMs={SWEEP_DURATION_MS}
-                onImpact={handleImpact}
+                onLettersSettled={handleLettersSettled}
+                onSweepComplete={handleSweepComplete}
               />
             </Box>
           )}
