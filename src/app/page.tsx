@@ -15,6 +15,7 @@ import Link from "next/link";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PaintStroke } from "@/components/PaintStroke";
 import { PortraitCanvas } from "@/components/easter-egg";
+import { BootIntro } from "@/components/boot-intro";
 
 const SparkleIcon = () => (
   <svg
@@ -390,9 +391,12 @@ const Section = ({
 
 export default function Home() {
   return (
-    <PageWrapper>
-      <HomeContent />
-    </PageWrapper>
+    <>
+      <BootIntro />
+      <PageWrapper>
+        <HomeContent />
+      </PageWrapper>
+    </>
   );
 }
 
