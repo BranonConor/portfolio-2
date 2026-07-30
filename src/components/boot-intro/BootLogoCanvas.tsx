@@ -102,6 +102,22 @@ const START_SCALE = 5.5;
 const END_SCALE = 1;
 const START_Y_LIFT = 0.32;
 
+// After every letter lands, a second staggered "wave" of gentle in-place
+// bounces plays across the word (like the reference settling into view)
+// before the rainbow shine sweep begins.
+const BOUNCE_REPEATS = 2;
+const BOUNCE_CYCLE_MS = 260;
+const BOUNCE_AMPLITUDE = 0.16;
+const BOUNCE_GAP_MS = 80; // brief pause after landing before the bounce wave starts
+
+/** Smooth 0→peak→0 pulse for the in-place post-landing bounce wave. */
+function bounceScale(elapsedSinceStart: number) {
+  const totalDuration = BOUNCE_CYCLE_MS * BOUNCE_REPEATS;
+  if (elapsedSinceStart <= 0 || elapsedSinceStart >= totalDuration) return 1;
+  const cyclePos = (elapsedSinceStart % BOUNCE_CYCLE_MS) / BOUNCE_CYCLE_MS;
+  return 1 + BOUNCE_AMPLITUDE * Math.sin(cyclePos * Math.PI);
+}
+
 /** Converts an HSL color (degrees, 0..1, 0..1) to a linear RGB triple. */
 function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   const c = (1 - Math.abs(2 * l - 1)) * s;
@@ -125,8 +141,9 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
  * (all-caps) label is drawn to a low-resolution offscreen canvas and sampled
  * with nearest-neighbor filtering for a chunky, pixelated look. Letters pop
  * in oversized and bounce down to their resting scale/position in a staggered
- * wave across the word; once every letter has landed, a rainbow shine sweeps
- * across the whole logo.
+ * wave across the word; once every letter has landed, a second staggered
+ * wave of gentle in-place bounces ripples across the word, and only then
+ * does a rainbow shine sweep across the whole logo.
  */
 export function BootLogoCanvas({
   label,
@@ -236,13 +253,23 @@ export function BootLogoCanvas({
       const root = new Transform();
 
       // Overall on-screen box the whole word occupies; recomputed on resize.
+      // Sized large and close to the reference GBA wordmark, which fills
+      // most of the screen width.
       const box = { halfWidth: 0.3, halfHeight: 0.08 };
       const updateBox = () => {
         const { clientWidth, clientHeight } = container;
         const w = clientWidth || 1;
         const h = clientHeight || 1;
-        const desiredWidthPx = Math.min(w * 0.78, 780);
-        const desiredHeightPx = desiredWidthPx * (atlasH / atlasW);
+        let desiredWidthPx = Math.min(w * 0.9, 1400);
+        let desiredHeightPx = desiredWidthPx * (atlasH / atlasW);
+        // Guard against overflow on short/narrow viewports (e.g. mobile
+        // portrait), where width-based sizing alone could make the wordmark
+        // taller than the screen.
+        const maxHeightPx = h * 0.5;
+        if (desiredHeightPx > maxHeightPx) {
+          desiredHeightPx = maxHeightPx;
+          desiredWidthPx = desiredHeightPx * (atlasW / atlasH);
+        }
         box.halfWidth = desiredWidthPx / w / 2;
         box.halfHeight = desiredHeightPx / h / 2;
       };
@@ -322,7 +349,14 @@ export function BootLogoCanvas({
       const lastLetterDelay =
         letters.length > 0 ? letters[letters.length - 1].startDelayMs : 0;
       const settleTimeMs = lastLetterDelay + letterDurationMs;
-      const sweepStartMs = settleTimeMs + sweepGapMs;
+      // A second staggered wave of gentle in-place bounces plays across the
+      // word after landing, before the sweep begins.
+      const bounceWaveStartMs = settleTimeMs + BOUNCE_GAP_MS;
+      const lastLetterBounceStart =
+        bounceWaveStartMs + (letters.length > 0 ? (letters.length - 1) * staggerMs : 0);
+      const bounceWaveEndMs =
+        lastLetterBounceStart + BOUNCE_CYCLE_MS * BOUNCE_REPEATS;
+      const sweepStartMs = bounceWaveEndMs + sweepGapMs;
       let settledFired = false;
       let sweepStartFired = false;
       let sweepCompleteFired = false;
@@ -340,8 +374,15 @@ export function BootLogoCanvas({
           const t = Math.min(Math.max(rawT, 0), 1);
           const eased = easeOutBack(t);
 
-          const scale = END_SCALE + (START_SCALE - END_SCALE) * (1 - eased);
+          const entranceScale = END_SCALE + (START_SCALE - END_SCALE) * (1 - eased);
           const yLift = START_Y_LIFT * (1 - eased);
+
+          // Once this letter has landed, layer on its own staggered
+          // post-landing bounce pulse.
+          const letterBounceStart = bounceWaveStartMs + i * staggerMs;
+          const bounce =
+            t >= 1 ? bounceScale(elapsed - letterBounceStart) : 1;
+          const scale = entranceScale * bounce;
 
           program.uniforms.uCenter.value = [
             (centerXFrac - 0.5) * box.halfWidth * 2,

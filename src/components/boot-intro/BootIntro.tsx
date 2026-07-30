@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { BootLogoCanvas } from "./BootLogoCanvas";
@@ -18,20 +18,25 @@ const LETTER_DURATION_MS = 850;
 const SWEEP_GAP_MS = 220;
 const SWEEP_DURATION_MS = 900;
 
-type Phase = "booting" | "prompt" | "dismissed";
+type Phase = "ready" | "booting" | "prompt" | "dismissed";
 
 /**
  * Full-screen GBA-style boot intro. Plays on every visit to the home page:
  * logo drops in, a rainbow sweep flourishes across it, then a blinking
  * "PRESS ANY KEY TO START" prompt waits for any key/click/tap to dismiss and
  * reveal the page underneath.
+ *
+ * Browsers block audio until a real user gesture, so the animated/audible
+ * boot sequence itself is gated behind the very first key/click/tap — that
+ * same gesture unlocks the Web Audio context and kicks off the timeline in
+ * the same tick, keeping every sound in sync with what's on screen. Users
+ * with `prefers-reduced-motion` skip straight to the (silent, static) prompt.
  */
 export function BootIntro() {
-  const [phase, setPhase] = useState<Phase>("booting");
+  const [phase, setPhase] = useState<Phase>("ready");
   const [flash, setFlash] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const { unlock, playLetterTwinkle, playSparkle } = useBootChime();
-  const chimeArmedRef = useRef(false);
 
   useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -41,28 +46,29 @@ export function BootIntro() {
     }
   }, []);
 
-  // Unlock audio on the very first user gesture, whenever it happens (during
-  // the boot animation or later, once the prompt is up). Audio can only
-  // start from a real gesture per browser autoplay policy.
+  // Wait for the first user gesture to unlock audio and start the boot
+  // timeline together, in the same handler — starting them separately (e.g.
+  // playing sounds tied to an animation that's already running) means any
+  // audio scheduled before the gesture silently never plays, since the
+  // AudioContext stays suspended until a gesture resumes it.
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || phase !== "ready") return;
 
-    const armAudio = () => {
-      if (chimeArmedRef.current) return;
-      chimeArmedRef.current = true;
+    const begin = () => {
       unlock();
+      setPhase("booting");
     };
 
-    window.addEventListener("pointerdown", armAudio, { capture: true });
-    window.addEventListener("keydown", armAudio, { capture: true });
-    window.addEventListener("touchstart", armAudio, { capture: true });
+    window.addEventListener("pointerdown", begin, { capture: true });
+    window.addEventListener("keydown", begin, { capture: true });
+    window.addEventListener("touchstart", begin, { capture: true });
 
     return () => {
-      window.removeEventListener("pointerdown", armAudio, { capture: true });
-      window.removeEventListener("keydown", armAudio, { capture: true });
-      window.removeEventListener("touchstart", armAudio, { capture: true });
+      window.removeEventListener("pointerdown", begin, { capture: true });
+      window.removeEventListener("keydown", begin, { capture: true });
+      window.removeEventListener("touchstart", begin, { capture: true });
     };
-  }, [unlock, reducedMotion]);
+  }, [unlock, reducedMotion, phase]);
 
   const dismiss = useCallback(() => {
     setPhase((current) => (current === "dismissed" ? current : "dismissed"));
@@ -163,7 +169,7 @@ export function BootIntro() {
             >
               {NAME}
             </Heading>
-          ) : (
+          ) : phase !== "ready" ? (
             <Box position="relative" width="100%" height="100%">
               <BootLogoCanvas
                 label={NAME}
@@ -176,6 +182,40 @@ export function BootIntro() {
                 onSweepStart={handleSweepStart}
                 onSweepComplete={handleSweepComplete}
               />
+            </Box>
+          ) : null}
+
+          {phase === "ready" && (
+            <Box
+              as={motion.div}
+              position="absolute"
+              bottom={["14%", "16%", "18%"]}
+              left={0}
+              right={0}
+              textAlign="center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.4 } }}
+            >
+              <Text
+                as={motion.span}
+                className={pixelFont.className}
+                display="inline-block"
+                fontSize={["9px", "11px"]}
+                fontWeight={400}
+                letterSpacing="0.12em"
+                color="whiteAlpha.700"
+                animate={{
+                  opacity: [1, 1, 0, 0, 1],
+                  transition: {
+                    duration: 1.4,
+                    times: [0, 0.45, 0.5, 0.95, 1],
+                    repeat: Infinity,
+                    ease: "linear",
+                  },
+                }}
+              >
+                PRESS START
+              </Text>
             </Box>
           )}
 
