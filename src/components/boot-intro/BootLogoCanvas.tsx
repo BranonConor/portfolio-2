@@ -97,18 +97,77 @@ interface BootLogoCanvasProps {
 }
 
 // Letters rocket in dramatically oversized, flash their own color, then
-// bounce/settle down to resting scale — evoking the GBA boot wordmark.
-const START_SCALE = 5.5;
-const END_SCALE = 1;
-const START_Y_LIFT = 0.32;
+// bounce/settle down to resting scale — evoking the GBA boot wordmark. The
+// scale-down is intentionally slow/lingering (see `scaleProgress` below) so
+// letters stay big and overlapping while they travel, only reaching resting
+// size right as they're about to slide into their final spot.
+const START_SCALE = 8.5;
+// Resting size once settled — bumped up from the original 1:1 baseline so
+// the wordmark reads noticeably larger once landed, without touching the
+// flight path/timing at all (only where the shrink-down tail of the
+// entrance ends up).
+const END_SCALE = 1.6;
+// Scale reaches its resting value by this fraction of the entrance (right
+// as the final left-slide leg begins), then holds steady through the slide.
+const SCALE_WINDOW_T = 0.8;
+// >1 biases the scale-down to happen later/faster rather than a linear
+// shrink, so letters stay dramatically oversized (and overlapping their
+// neighbors) for longer before quickly resolving to resting size.
+const SCALE_BIAS = 1.6;
 
-// After every letter lands, a second staggered "wave" of gentle in-place
-// bounces plays across the word (like the reference settling into view)
-// before the rainbow shine sweep begins.
+function scaleProgress(t: number) {
+  const windowed = Math.min(Math.max(t / SCALE_WINDOW_T, 0), 1);
+  return easeOutBack(Math.pow(windowed, SCALE_BIAS));
+}
+
+// Each letter follows a hand-tuned "J-hook" flight path into place (see
+// design reference): it starts a bit right and below its resting spot,
+// rockets up while bulging slightly further right at the peak, arcs back
+// down past resting height to a point barely right of center, then slides
+// the last bit leftward into its exact final position. Kept fairly subtle
+// (small offsets) — the scale change carries most of the drama, this just
+// adds a bit of directional flair. Defined as three keyframes (start ->
+// peak -> dip) interpolated with smoothstep easing, all relative to the
+// letter's own resting position (0, 0).
+const PATH_START: [number, number] = [0.05, -0.2];
+const PATH_PEAK: [number, number] = [0.07, 0.28];
+const PATH_DIP: [number, number] = [0.025, 0.02];
+const PATH_END: [number, number] = [0, 0];
+// Fraction of the entrance spent in each leg of the path (must sum to 1).
+const PATH_PEAK_T = 0.45;
+const PATH_DIP_T = 0.8;
+
+function smoothstep(t: number) {
+  const clamped = Math.min(Math.max(t, 0), 1);
+  return clamped * clamped * (3 - 2 * clamped);
+}
+
+function lerp(a: number, b: number, u: number) {
+  return a + (b - a) * u;
+}
+
+/** Position offset (relative to resting spot) for the letter's flight path. */
+function flightOffset(t: number): [number, number] {
+  if (t <= PATH_PEAK_T) {
+    const u = smoothstep(t / PATH_PEAK_T);
+    return [lerp(PATH_START[0], PATH_PEAK[0], u), lerp(PATH_START[1], PATH_PEAK[1], u)];
+  }
+  if (t <= PATH_DIP_T) {
+    const u = smoothstep((t - PATH_PEAK_T) / (PATH_DIP_T - PATH_PEAK_T));
+    return [lerp(PATH_PEAK[0], PATH_DIP[0], u), lerp(PATH_PEAK[1], PATH_DIP[1], u)];
+  }
+  const u = smoothstep((t - PATH_DIP_T) / (1 - PATH_DIP_T));
+  return [lerp(PATH_DIP[0], PATH_END[0], u), lerp(PATH_DIP[1], PATH_END[1], u)];
+}
+
+// Immediately after a letter lands, it does a couple of quick in-place
+// bounces — this happens per-letter (not synchronized across the whole
+// word), so each letter cascades through "fly in -> bounce -> settle"
+// independently and the whole sequence stays snappy.
 const BOUNCE_REPEATS = 2;
-const BOUNCE_CYCLE_MS = 260;
+const BOUNCE_CYCLE_MS = 170;
 const BOUNCE_AMPLITUDE = 0.16;
-const BOUNCE_GAP_MS = 80; // brief pause after landing before the bounce wave starts
+const BOUNCE_GAP_MS = 30; // brief pause after landing before its own bounce starts
 
 /** Smooth 0→peak→0 pulse for the in-place post-landing bounce wave. */
 function bounceScale(elapsedSinceStart: number) {
@@ -139,11 +198,13 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 /**
  * WebGL (via `ogl`) rendering of the boot logo, GBA-style: each letter of the
  * (all-caps) label is drawn to a low-resolution offscreen canvas and sampled
- * with nearest-neighbor filtering for a chunky, pixelated look. Letters pop
- * in oversized and bounce down to their resting scale/position in a staggered
- * wave across the word; once every letter has landed, a second staggered
- * wave of gentle in-place bounces ripples across the word, and only then
- * does a rainbow shine sweep across the whole logo.
+ * with nearest-neighbor filtering for a chunky, pixelated look. Each letter
+ * spirals in oversized (right -> up -> left -> down -> center) while
+ * shrinking to its resting scale, then immediately does a couple of quick
+ * in-place bounces — the whole "fly in -> bounce -> settle" sequence
+ * cascades independently per letter (staggered only by start time) so it
+ * stays snappy. Once the last letter finishes settling, a rainbow shine
+ * sweeps across the whole logo.
  */
 export function BootLogoCanvas({
   label,
@@ -204,10 +265,19 @@ export function BootLogoCanvas({
       mctx.font = `${atlasFontSize}px ${fontFamily}`;
 
       let cursor = 0;
-      const rawMetrics = Array.from(upperLabel).map((char) => {
+      // Extra breathing room between glyphs (in the same units as font-atlas
+      // pixels) — only affects each letter's final resting *position*, not
+      // its size, speed, or path shape. Needed because the resting scale
+      // (END_SCALE, above) makes each letter visually bigger than its
+      // original tightly-kerned slot, which otherwise reads as overlapping
+      // once landed.
+      const LETTER_GAP = atlasFontSize * 0.58;
+      const chars = Array.from(upperLabel);
+      const rawMetrics = chars.map((char, i) => {
         const width = char === " " ? atlasFontSize * 0.55 : mctx.measureText(char).width;
         const entry = { char, x: cursor, width };
         cursor += width;
+        if (i < chars.length - 1) cursor += LETTER_GAP;
         return entry;
       });
       const totalWidth = cursor;
@@ -254,7 +324,10 @@ export function BootLogoCanvas({
 
       // Overall on-screen box the whole word occupies; recomputed on resize.
       // Sized large and close to the reference GBA wordmark, which fills
-      // most of the screen width.
+      // most of the screen width. This is the *layout* box each letter's
+      // slot is positioned within — the actual rendered size (bigger, per
+      // END_SCALE above) is applied per-letter at draw time, so growing the
+      // resting size doesn't fight this width/height fit-to-viewport logic.
       const box = { halfWidth: 0.3, halfHeight: 0.08 };
       const updateBox = () => {
         const { clientWidth, clientHeight } = container;
@@ -349,14 +422,14 @@ export function BootLogoCanvas({
       const lastLetterDelay =
         letters.length > 0 ? letters[letters.length - 1].startDelayMs : 0;
       const settleTimeMs = lastLetterDelay + letterDurationMs;
-      // A second staggered wave of gentle in-place bounces plays across the
-      // word after landing, before the sweep begins.
-      const bounceWaveStartMs = settleTimeMs + BOUNCE_GAP_MS;
-      const lastLetterBounceStart =
-        bounceWaveStartMs + (letters.length > 0 ? (letters.length - 1) * staggerMs : 0);
-      const bounceWaveEndMs =
-        lastLetterBounceStart + BOUNCE_CYCLE_MS * BOUNCE_REPEATS;
-      const sweepStartMs = bounceWaveEndMs + sweepGapMs;
+      // Each letter's own post-landing bounce starts right after *its own*
+      // entrance finishes (not the whole word's) — this keeps every letter
+      // cascading through "fly in -> bounce -> settle" independently instead
+      // of everyone waiting for the last letter before bouncing.
+      const bounceDurationMs = BOUNCE_CYCLE_MS * BOUNCE_REPEATS;
+      const lastLetterBounceEnd =
+        lastLetterDelay + letterDurationMs + BOUNCE_GAP_MS + bounceDurationMs;
+      const sweepStartMs = lastLetterBounceEnd + sweepGapMs;
       let settledFired = false;
       let sweepStartFired = false;
       let sweepCompleteFired = false;
@@ -372,28 +445,32 @@ export function BootLogoCanvas({
           const rawT = (elapsed - startDelayMs) / letterDurationMs;
           const started = rawT > 0;
           const t = Math.min(Math.max(rawT, 0), 1);
-          const eased = easeOutBack(t);
+          const scaleEased = scaleProgress(t);
 
-          const entranceScale = END_SCALE + (START_SCALE - END_SCALE) * (1 - eased);
-          const yLift = START_Y_LIFT * (1 - eased);
+          const entranceScale = END_SCALE + (START_SCALE - END_SCALE) * (1 - scaleEased);
 
-          // Once this letter has landed, layer on its own staggered
-          // post-landing bounce pulse.
-          const letterBounceStart = bounceWaveStartMs + i * staggerMs;
+          // Hand-tuned flight path (see PATH_* constants above), driven by
+          // the raw (un-overshot) progress so it always resolves cleanly to
+          // the letter's true resting position.
+          const [flightX, flightY] = flightOffset(t);
+
+          // Once this letter has landed, it immediately does its own couple
+          // of in-place bounces — independent of any other letter.
+          const letterBounceStart = startDelayMs + letterDurationMs + BOUNCE_GAP_MS;
           const bounce =
             t >= 1 ? bounceScale(elapsed - letterBounceStart) : 1;
           const scale = entranceScale * bounce;
 
           program.uniforms.uCenter.value = [
-            (centerXFrac - 0.5) * box.halfWidth * 2,
-            yLift,
+            (centerXFrac - 0.5) * box.halfWidth * 2 + flightX,
+            flightY,
           ];
           program.uniforms.uHalfSize.value = [
             halfWidthFrac * box.halfWidth * 2 * scale,
             box.halfHeight * scale,
           ];
           program.uniforms.uOpacity.value = started ? 1 : 0;
-          program.uniforms.uColorMix.value = 1 - t;
+          program.uniforms.uColorMix.value = 1 - scaleEased;
           program.uniforms.uTime.value = elapsed / 1000;
 
           if (started && !letterStartFired[i]) {

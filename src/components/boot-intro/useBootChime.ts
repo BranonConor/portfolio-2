@@ -22,9 +22,14 @@ interface Chain {
  *    detuned sine pairs run through a feedback-delay shimmer for an airy tail
  *  - a bright ascending "sparkle" for the rainbow shine sweep, layering a
  *    quick bell arpeggio with a filtered noise burst
- * Playback is gated behind a user gesture (browsers block un-requested
- * audio); call `unlock()` from inside a gesture handler before using the
- * other players.
+ * Playback requires a user gesture (browsers block un-requested audio):
+ * call `unlock()` on/after a gesture to resume the AudioContext. Because the
+ * boot animation itself doesn't wait for that gesture, `playLetterTwinkle`
+ * and `playSparkle` are simply no-ops until the context is actually running
+ * — any sound trigger firing before the first gesture is silently muted
+ * rather than scheduled against a frozen (suspended) clock, which would
+ * otherwise cause every sound to bunch up and play back garbled the moment
+ * the context resumes.
  */
 export function useBootChime() {
   const chainRef = useRef<Chain | null>(null);
@@ -76,7 +81,15 @@ export function useBootChime() {
   const playLetterTwinkle = useCallback(
     (index: number, total: number) => {
       const chain = getChain();
-      if (!chain) return;
+      // The AudioContext stays suspended until a real user gesture resumes
+      // it, and its currentTime is frozen the whole time it's suspended —
+      // scheduling sounds against a frozen clock means they'd all bunch up
+      // and play back garbled the instant it's later resumed. Since the
+      // animation itself no longer waits for a gesture, simply skip (mute)
+      // any sound trigger that fires before the context is actually running;
+      // once unlocked, subsequent triggers schedule cleanly against a live
+      // clock.
+      if (!chain || chain.ctx.state !== "running") return;
       const { ctx, master } = chain;
 
       const degree = Math.round((index / Math.max(total - 1, 1)) * (PENTATONIC.length - 1));
@@ -108,7 +121,7 @@ export function useBootChime() {
   /** Bright shimmering sparkle for the rainbow shine sweep. */
   const playSparkle = useCallback(() => {
     const chain = getChain();
-    if (!chain) return;
+    if (!chain || chain.ctx.state !== "running") return;
     const { ctx, master } = chain;
     const start = ctx.currentTime + 0.005;
 

@@ -4,37 +4,88 @@ import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Box, Heading, Text } from "@chakra-ui/react";
 import { BootLogoCanvas } from "./BootLogoCanvas";
+import { PowerOnScene } from "./PowerOnScene";
+import { CursorSparkles } from "./CursorSparkles";
 import { useBootChime } from "./useBootChime";
 import { pixelFont } from "./pixelFont";
 
 const NAME = "BRANON EUSEBIO";
+const ROLE = "DESIGN ENGINEER";
+const ROLE_CHARS = Array.from(ROLE);
 
-// Each letter rockets in oversized and bounces down to size, staggered
-// across the word (wave effect); once every letter has landed, the rainbow
-// shine sweeps across the settled logo. Slower/bigger than a first pass to
-// read more like the reference GBA boot sequence.
-const STAGGER_MS = 100;
-const LETTER_DURATION_MS = 850;
-const SWEEP_GAP_MS = 220;
-const SWEEP_DURATION_MS = 900;
+// The console screen's own background color (sampled from
+// console-shell.svg) — used once the boot logo takes over so the cut from
+// "zoomed into the screen" to "letters flying in on this background" is
+// seamless instead of jumping to a plain black void.
+const SCREEN_BG = "#1D2A0C";
 
-type Phase = "ready" | "booting" | "prompt" | "dismissed";
+// A warm, textured "paper" backdrop for the dormant power-on phase — a
+// tileable fractal-noise grain layered under a soft radial vignette, so the
+// console reads as sitting on a warm surface rather than floating in a flat
+// black void.
+const PAPER_NOISE_SVG = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`;
+const PAPER_NOISE_DATA_URI = `data:image/svg+xml,${encodeURIComponent(PAPER_NOISE_SVG)}`;
+const PAPER_BG_SX = {
+  backgroundColor: "#EEE6D3",
+  backgroundImage: `radial-gradient(ellipse 120% 90% at 50% 28%, rgba(255,251,241,0.95), rgba(233,222,198,0.55) 55%, rgba(196,180,148,0.42) 100%), url("${PAPER_NOISE_DATA_URI}")`,
+  backgroundBlendMode: "normal, overlay",
+  backgroundSize: "cover, 180px 180px",
+};
+
+// A hand-authored 8-bit/pixel-art arrow cursor (chunky white-fill,
+// black-outline pixels) used throughout the intro overlay in place of the
+// system pointer, to keep the retro-console feel consistent even for mouse
+// input. The hotspot (2, 2) lines up with the arrow's tip.
+const PIXEL_CURSOR = "url('/boot-intro/cursor.svg') 1 1, auto";
+
+
+// Each letter spirals in oversized (right -> up -> left -> down -> center)
+// and settles to size, then immediately does a couple of in-place bounces —
+// cascading independently per letter (only offset by a short stagger) so the
+// whole sequence stays snappy. Once every letter has cascaded through, the
+// rainbow shine sweeps across the settled logo.
+const STAGGER_MS = 55;
+const LETTER_DURATION_MS = 480;
+const SWEEP_GAP_MS = 120;
+const SWEEP_DURATION_MS = 650;
+
+// The subtitle "waves" in one character at a time, choreographed to
+// complete right alongside the rainbow sweep happening on the wordmark
+// above it (SWEEP_DURATION_MS) rather than fading in all at once.
+const roleContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: SWEEP_DURATION_MS / 1000 / ROLE_CHARS.length,
+    },
+  },
+};
+const roleCharVariants = {
+  hidden: { opacity: 0, y: -7 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.32, ease: "easeOut" },
+  },
+};
+
+type Phase = "power" | "booting" | "prompt" | "dismissed";
 
 /**
- * Full-screen GBA-style boot intro. Plays on every visit to the home page:
- * logo drops in, a rainbow sweep flourishes across it, then a blinking
- * "PRESS ANY KEY TO START" prompt waits for any key/click/tap to dismiss and
- * reveal the page underneath.
- *
- * Browsers block audio until a real user gesture, so the animated/audible
- * boot sequence itself is gated behind the very first key/click/tap — that
- * same gesture unlocks the Web Audio context and kicks off the timeline in
- * the same tick, keeping every sound in sync with what's on screen. Users
- * with `prefers-reduced-motion` skip straight to the (silent, static) prompt.
+ * Full-screen GBA-style boot intro. Plays on every visit to the home page.
+ * It opens on a dormant, low-poly console in a WebGL void — flipping its
+ * power switch (click/tap/Enter/Space) is the real user gesture that
+ * unlocks audio, guaranteeing every sound plays in sync with what follows:
+ * the console spins to face forward and the view zooms into its screen,
+ * handing off to the boot logo (fly-in letters + rainbow sweep), then a
+ * blinking "PRESS ANY KEY TO START" prompt waits for any key/click/tap to
+ * dismiss and reveal the page underneath. Users with
+ * `prefers-reduced-motion` skip straight to the (silent, static) prompt.
  */
 export function BootIntro() {
-  const [phase, setPhase] = useState<Phase>("ready");
+  const [phase, setPhase] = useState<Phase>("power");
   const [flash, setFlash] = useState(false);
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const { unlock, playLetterTwinkle, playSparkle } = useBootChime();
 
@@ -46,33 +97,23 @@ export function BootIntro() {
     }
   }, []);
 
-  // Wait for the first user gesture to unlock audio and start the boot
-  // timeline together, in the same handler — starting them separately (e.g.
-  // playing sounds tied to an animation that's already running) means any
-  // audio scheduled before the gesture silently never plays, since the
-  // AudioContext stays suspended until a gesture resumes it.
-  useEffect(() => {
-    if (reducedMotion || phase !== "ready") return;
-
-    const begin = () => {
-      unlock();
-      setPhase("booting");
-    };
-
-    window.addEventListener("pointerdown", begin, { capture: true });
-    window.addEventListener("keydown", begin, { capture: true });
-    window.addEventListener("touchstart", begin, { capture: true });
-
-    return () => {
-      window.removeEventListener("pointerdown", begin, { capture: true });
-      window.removeEventListener("keydown", begin, { capture: true });
-      window.removeEventListener("touchstart", begin, { capture: true });
-    };
-  }, [unlock, reducedMotion, phase]);
-
   const dismiss = useCallback(() => {
     setPhase((current) => (current === "dismissed" ? current : "dismissed"));
   }, []);
+
+  // Escape is a universal, always-available way to bail out of the intro
+  // from any phase — the visible "or skip the antics" link only appears on
+  // the dormant power screen, but keyboard users shouldn't be stuck once
+  // the boot sequence is underway.
+  useEffect(() => {
+    if (phase === "dismissed") return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") dismiss();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [phase, dismiss]);
 
   // Only listen for dismissal input once the prompt is showing.
   useEffect(() => {
@@ -90,6 +131,17 @@ export function BootIntro() {
     };
   }, [phase, dismiss]);
 
+  // Flipping the power switch is a real, synchronous user gesture — the
+  // one guaranteed moment we can resume the AudioContext so every sound
+  // from here on plays exactly on cue.
+  const handlePowerOn = useCallback(() => {
+    unlock();
+  }, [unlock]);
+
+  const handlePowerOnComplete = useCallback(() => {
+    setPhase((current) => (current === "power" ? "booting" : current));
+  }, []);
+
   const handleLetterStart = useCallback(
     (index: number, total: number) => {
       playLetterTwinkle(index, total);
@@ -104,11 +156,13 @@ export function BootIntro() {
 
   const handleSweepStart = useCallback(() => {
     playSparkle();
+    setShowSubtitle(true);
   }, [playSparkle]);
 
   const handleSweepComplete = useCallback(() => {
     setPhase((current) => (current === "booting" ? "prompt" : current));
   }, []);
+
 
   return (
     <AnimatePresence>
@@ -119,7 +173,8 @@ export function BootIntro() {
           position="fixed"
           inset={0}
           zIndex={9999}
-          bg="#000"
+          bg={phase === "power" ? undefined : SCREEN_BG}
+          sx={{ cursor: PIXEL_CURSOR, ...(phase === "power" ? PAPER_BG_SX : {}) }}
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -130,46 +185,37 @@ export function BootIntro() {
           aria-modal="true"
           aria-label="Site intro animation"
         >
-          <Box
-            as="button"
-            type="button"
-            onClick={dismiss}
-            position="absolute"
-            top={[3, 4]}
-            right={[3, 4]}
-            zIndex={2}
-            px={3}
-            py={2}
-            fontSize="13px"
-            fontWeight={600}
-            color="whiteAlpha.700"
-            bg="whiteAlpha.100"
-            borderRadius="8px"
-            border="1px solid"
-            borderColor="whiteAlpha.300"
-            _hover={{ color: "white", bg: "whiteAlpha.200" }}
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "brand.accent",
-              outlineOffset: "2px",
-            }}
-          >
-            Skip intro
-          </Box>
+          <CursorSparkles />
 
           {reducedMotion ? (
-            <Heading
-              as="h1"
-              className={pixelFont.className}
-              fontSize={["18px", "26px", "32px"]}
-              letterSpacing="0.08em"
-              lineHeight={1.6}
-              color="white"
-              textAlign="center"
-            >
-              {NAME}
-            </Heading>
-          ) : phase !== "ready" ? (
+            <Box textAlign="center">
+              <Heading
+                as="h1"
+                className={pixelFont.className}
+                fontSize={["18px", "26px", "32px"]}
+                letterSpacing="0.08em"
+                lineHeight={1.6}
+                color="white"
+                textAlign="center"
+              >
+                {NAME}
+              </Heading>
+              <Text
+                className={pixelFont.className}
+                mt={2}
+                fontSize={["9px", "11px"]}
+                letterSpacing="0.15em"
+                color="whiteAlpha.700"
+              >
+                {ROLE}
+              </Text>
+            </Box>
+          ) : phase === "power" ? (
+            <PowerOnScene
+              onPowerOn={handlePowerOn}
+              onPowerOnComplete={handlePowerOnComplete}
+            />
+          ) : (
             <Box position="relative" width="100%" height="100%">
               <BootLogoCanvas
                 label={NAME}
@@ -182,44 +228,42 @@ export function BootIntro() {
                 onSweepStart={handleSweepStart}
                 onSweepComplete={handleSweepComplete}
               />
-            </Box>
-          ) : null}
-
-          {phase === "ready" && (
-            <Box
-              as={motion.div}
-              position="absolute"
-              bottom={["14%", "16%", "18%"]}
-              left={0}
-              right={0}
-              textAlign="center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.4 } }}
-            >
-              <Text
-                as={motion.span}
-                className={pixelFont.className}
-                display="inline-block"
-                fontSize={["9px", "11px"]}
-                fontWeight={400}
-                letterSpacing="0.12em"
-                color="whiteAlpha.700"
-                animate={{
-                  opacity: [1, 1, 0, 0, 1],
-                  transition: {
-                    duration: 1.4,
-                    times: [0, 0.45, 0.5, 0.95, 1],
-                    repeat: Infinity,
-                    ease: "linear",
-                  },
-                }}
-              >
-                PRESS START
-              </Text>
+              {showSubtitle && (
+                <Box
+                  as={motion.div}
+                  position="absolute"
+                  top="58%"
+                  left={0}
+                  right={0}
+                  textAlign="center"
+                  pointerEvents="none"
+                  initial="hidden"
+                  animate="visible"
+                  variants={roleContainerVariants}
+                >
+                  <Text
+                    className={pixelFont.className}
+                    display="inline-block"
+                    fontSize={["9px", "11px", "12px"]}
+                    letterSpacing="0.2em"
+                    color="whiteAlpha.700"
+                  >
+                    {ROLE_CHARS.map((char, i) => (
+                      <motion.span
+                        key={i}
+                        variants={roleCharVariants}
+                        style={{ display: "inline-block" }}
+                      >
+                        {char === " " ? "\u00A0" : char}
+                      </motion.span>
+                    ))}
+                  </Text>
+                </Box>
+              )}
             </Box>
           )}
 
-          {!reducedMotion && (
+          {!reducedMotion && phase !== "power" && (
             <Box
               position="absolute"
               inset={0}
