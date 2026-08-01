@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Providers } from "./providers";
 import { SkipToContent } from "@/components/SkipToContent";
+import { SCREEN_BG } from "@/lib/consoleTheme";
 
 const GA_MEASUREMENT_ID = "G-C74KV5XNVN";
 
@@ -41,13 +42,24 @@ export default function RootLayout({
         margin: "0",
         overflowX: "hidden",
         scrollBehavior: "smooth",
-        background: "#09090b",
+        background: SCREEN_BG,
       }}
     >
       <head>
         <link
           rel="stylesheet"
           href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"
+        ></link>
+        {/* The boot intro's console illustration is the very first thing
+            visitors see on "/" — preloading it here (rather than letting the
+            <img> in PowerOnScene discover it after hydration) closes most of
+            the gap where the cartridge picker is visible before the console
+            art has rendered in. */}
+        <link
+          rel="preload"
+          as="image"
+          href="/boot-intro/console-shell.svg"
+          type="image/svg+xml"
         ></link>
       </head>
       <body style={{ margin: 0, padding: 0 }}>

@@ -22,12 +22,12 @@ const MetadataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
     >
       <Text
         as="span"
-        fontSize="12px"
+        fontSize="11px"
         py={1}
         px={3}
         bg="brand.bg"
         color="brand.textMuted"
-        borderRadius="8px"
+        borderRadius="10px"
         border="1px solid"
         borderColor="brand.border"
       >
@@ -35,12 +35,12 @@ const MetadataBar: React.FC<IMetadataBarProps> = ({ date, category }) => {
       </Text>
       <Text
         as="span"
-        fontSize="12px"
+        fontSize="11px"
         py={1}
         px={3}
         bg="brand.bg"
         color="brand.textMuted"
-        borderRadius="8px"
+        borderRadius="10px"
         border="1px solid"
         borderColor="brand.border"
       >

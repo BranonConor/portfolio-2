@@ -1,9 +1,11 @@
 "use client";
 
-import { Flex, Heading, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
+import { Flex, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { PageWrapper } from "@/components/PageWrapper";
-import { PaintStroke } from "@/components/PaintStroke";
+import { PageHeading } from "@/components/PageHeading";
+import { RetroCard } from "@/components/RetroCard";
+import { pixelFont } from "@/components/boot-intro/pixelFont";
 import Link from "next/link";
 
 export default function Blog() {
@@ -37,61 +39,9 @@ export default function Blog() {
         alignItems="flex-start"
         justifyContent="flex-start"
       >
-        <Box
-          border="1px solid"
-          borderColor="brand.border"
-          borderRadius="12px"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          overflow="hidden"
-          width="100%"
-        >
-          {/* Paint stroke header area */}
-          <Box
-            position="relative"
-            width="100%"
-            height={["80px", "100px", "120px"]}
-            overflow="hidden"
-            borderBottom="1px solid"
-            borderBottomColor="brand.border"
-          >
-            <PaintStroke
-              variant={3}
-              top="-30px"
-              left="-50px"
-              width={["200px", "260px", "320px"]}
-              opacity={0.35}
-            />
-            <PaintStroke
-              variant={5}
-              top="-20px"
-              right="-40px"
-              width={["180px", "220px", "280px"]}
-              opacity={0.25}
-            />
-            <PaintStroke
-              variant={2}
-              bottom="-50px"
-              left="40%"
-              width={["160px", "200px", "240px"]}
-              opacity={0.2}
-              rotate={10}
-            />
-          </Box>
-
-          <Box p={5} pb={3}>
-            <Heading
-              as="h1"
-              fontSize={["28px", "36px"]}
-              fontWeight="700"
-              letterSpacing="-0.03em"
-              mb={2}
-            >
-              Blog
-            </Heading>
-            <Text fontSize="15px" color="brand.textMuted">
-              Updates, thoughts, and more.
-            </Text>
+        <RetroCard>
+          <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
+            <PageHeading title="Blog" subtitle="Updates, thoughts, and more." />
           </Box>
 
           <Flex
@@ -99,9 +49,10 @@ export default function Blog() {
             width="100%"
             gap={0}
             px={5}
-            pb={3}
+            pt={4}
+            pb={4}
             sx={{
-              "& > *:first-child::after": { display: "none" },
+              "& > *:first-of-type::after": { display: "none" },
               "& > *:hover + *::after": { transform: "scaleX(0)" },
             }}
           >
@@ -114,60 +65,71 @@ export default function Blog() {
                 display="flex"
                 justifyContent="space-between"
                 alignItems="flex-start"
-                paddingY={2.5}
+                gap={2}
                 position="relative"
+                paddingY={3}
+                paddingX={3}
+                borderRadius="10px"
+                border="2px solid transparent"
                 _after={{
                   content: '""',
                   position: "absolute",
                   top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "1px",
+                  left: 2,
+                  right: 2,
+                  height: "2px",
                   bg: "brand.border",
-                  transition: "0.18s ease all",
+                  transition: "0.15s ease all",
                   transformOrigin: "center",
                 }}
                 _hover={{
                   textDecoration: "none",
-                  bg: "brand.surfaceHover",
-                  marginX: -3,
-                  paddingX: 3,
-                  borderRadius: "10px",
+                  bg: "#61dafb14",
+                  borderColor: "#61dafb55",
+                  transform: "translateX(3px)",
                   zIndex: 1,
                   _after: { transform: "scaleX(0)" },
-                  "& > span:first-of-type": { color: "brand.text" },
                 }}
-                transition="0.12s ease all"
+                transition="0.14s ease all"
               >
-                <Box flex={1} minWidth={0}>
-                  <Flex alignItems="center" gap={3}>
-                    <Text
-                      as="span"
-                      textStyle="listTitle"
-                      transition="0.12s ease all"
-                    >
-                      {post.title}
-                    </Text>
-                    <Text
-                      fontSize="11px"
-                      color="brand.textMuted"
-                      bg="brand.surface"
-                      paddingX={2}
-                      paddingY={0.5}
-                      borderRadius="6px"
-                      display={["none", "block"]}
-                    >
-                      {post.category}
-                    </Text>
-                  </Flex>
+                <Flex flex={1} minWidth={0} gap={2}>
                   <Text
-                    textStyle="listMeta"
-                    mt={0.5}
-                    display={{ base: "block", md: "none" }}
+                    as="span"
+                    className={pixelFont.className}
+                    fontSize="7px"
+                    color="#61dafb"
+                    aria-hidden="true"
+                    flexShrink={0}
+                    mt="3px"
                   >
-                    {post.date}
+                    {"\u25B8"}
                   </Text>
-                </Box>
+                  <Box flex={1} minWidth={0}>
+                    <Flex alignItems="center" gap={3}>
+                      <Text as="span" textStyle="listTitle">
+                        {post.title}
+                      </Text>
+                      <Text
+                        fontSize="11px"
+                        color="brand.textMuted"
+                        bg="brand.surface"
+                        paddingX={2}
+                        paddingY={0.5}
+                        borderRadius="4px"
+                        display={["none", "block"]}
+                      >
+                        {post.category}
+                      </Text>
+                    </Flex>
+                    <Text
+                      textStyle="listMeta"
+                      mt={0.5}
+                      display={{ base: "block", md: "none" }}
+                    >
+                      {post.date}
+                    </Text>
+                  </Box>
+                </Flex>
                 <Flex
                   alignItems="center"
                   gap={2}
@@ -196,7 +158,7 @@ export default function Blog() {
               </ChakraLink>
             ))}
           </Flex>
-        </Box>
+        </RetroCard>
       </Flex>
     </PageWrapper>
   );

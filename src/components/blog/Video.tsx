@@ -11,7 +11,7 @@ const Video: React.FC<IVideoProps> = ({ url }) => {
     <Box
       width="100%"
       overflow="hidden"
-      borderRadius={12}
+      borderRadius="10px"
       border="1px solid"
       borderColor="brand.border"
       my={8}

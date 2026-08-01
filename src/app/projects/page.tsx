@@ -1,8 +1,13 @@
 "use client";
 
-import { Flex, Text, Heading, Box, Link as ChakraLink } from "@chakra-ui/react";
+import { Flex, Text, Box, Image, Link as ChakraLink } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { PageWrapper } from "@/components/PageWrapper";
-import { PaintStroke } from "@/components/PaintStroke";
+import { PageHeading } from "@/components/PageHeading";
+import { RetroCard } from "@/components/RetroCard";
+import { RetroFilterPill } from "@/components/RetroFilterPill";
+import { SectionHeading } from "@/components/SectionHeading";
+import { pixelFont } from "@/components/boot-intro/pixelFont";
 import Link from "next/link";
 import {
   brandingProjects,
@@ -11,6 +16,7 @@ import {
   otherProjects,
   productProjects,
   sideProjects,
+  showcaseItems,
 } from "./consts";
 import { useState } from "react";
 
@@ -96,93 +102,21 @@ export default function Projects() {
         alignItems="flex-start"
         justifyContent="flex-start"
       >
-        <Box
-          border="1px solid"
-          borderColor="brand.border"
-          borderRadius="12px"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          overflow="hidden"
-          width="100%"
-        >
-          {/* Paint stroke header area */}
-          <Box
-            position="relative"
-            width="100%"
-            height={["80px", "100px", "120px"]}
-            overflow="hidden"
-            borderBottom="1px solid"
-            borderBottomColor="brand.border"
-          >
-            <PaintStroke
-              variant={1}
-              top="-40px"
-              left="-50px"
-              width={["200px", "260px", "320px"]}
-              opacity={0.35}
-            />
-            <PaintStroke
-              variant={6}
-              top="-20px"
-              right="-40px"
-              width={["180px", "220px", "280px"]}
-              opacity={0.25}
-            />
-            <PaintStroke
-              variant={3}
-              bottom="-50px"
-              left="35%"
-              width={["160px", "200px", "240px"]}
-              opacity={0.2}
-              rotate={-10}
-            />
-          </Box>
-
-          <Box p={5} pb={3}>
-            <Heading
-              as="h1"
-              fontSize={["28px", "36px"]}
-              fontWeight="700"
-              letterSpacing="-0.03em"
-              mb={2}
-            >
-              Projects
-            </Heading>
-            <Text fontSize="15px" color="brand.textMuted">
-              Cool things I&apos;ve worked on.
-            </Text>
+        <RetroCard>
+          <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
+            <PageHeading title="Projects" subtitle="Cool things I've worked on." />
           </Box>
 
           {/* Filters */}
-          <Flex flexWrap="wrap" alignItems="center" mb={4} gap={1.5} px={5}>
+          <Flex flexWrap="wrap" alignItems="center" gap={2} px={5} pt={4} pb={4}>
             {categories.map((cat) => (
-              <Text
+              <RetroFilterPill
                 key={cat.key}
-                as="button"
-                fontSize="12px"
-                fontWeight={currentFilter === cat.key ? "500" : "400"}
-                paddingY={1.5}
-                paddingX={3}
-                color={
-                  currentFilter === cat.key ? "#da70d6" : "brand.textMuted"
-                }
-                bg={currentFilter === cat.key ? "#da70d615" : "transparent"}
-                border="1px solid"
-                borderColor={
-                  currentFilter === cat.key ? "#da70d640" : "brand.border"
-                }
-                borderRadius="8px"
+                label={cat.label}
+                color="#da70d6"
+                active={currentFilter === cat.key}
                 onClick={() => setCurrentFilter(cat.key)}
-                transition="0.12s ease all"
-                _hover={{
-                  borderColor: "#da70d640",
-                  color: "#da70d6",
-                  bg: "#da70d615",
-                }}
-                cursor="pointer"
-              >
-                {cat.label}
-              </Text>
+              />
             ))}
           </Flex>
 
@@ -194,7 +128,7 @@ export default function Projects() {
             px={5}
             pb={3}
             sx={{
-              "& > *:first-child::after": { display: "none" },
+              "& > *:first-of-type::after": { display: "none" },
               "& > *:hover + *::after": { transform: "scaleX(0)" },
             }}
           >
@@ -207,32 +141,44 @@ export default function Projects() {
                 flexDirection={["column", "row"]}
                 justifyContent="space-between"
                 alignItems={["flex-start", "center"]}
-                paddingY={4}
+                gap={2}
                 position="relative"
+                paddingY={3}
+                paddingX={3}
+                borderRadius="10px"
+                border="2px solid transparent"
                 _after={{
                   content: '""',
                   position: "absolute",
                   top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "1px",
+                  left: 2,
+                  right: 2,
+                  height: "2px",
                   bg: "brand.border",
-                  transition: "0.18s ease all",
+                  transition: "0.15s ease all",
                   transformOrigin: "center",
                 }}
                 _hover={{
                   textDecoration: "none",
-                  bg: "brand.surfaceHover",
-                  marginX: -3,
-                  paddingX: 3,
-                  borderRadius: "10px",
+                  bg: "#da70d614",
+                  borderColor: "#da70d655",
+                  transform: "translateX(3px)",
                   zIndex: 1,
                   _after: { transform: "scaleX(0)" },
                 }}
-                transition="0.12s ease all"
+                transition="0.14s ease all"
               >
                 <Flex alignItems="center" gap={3} flexWrap="wrap">
-                  <Text fontSize="14px" fontWeight="500" color="brand.text">
+                  <Text
+                    as="span"
+                    className={pixelFont.className}
+                    fontSize="7px"
+                    color="#da70d6"
+                    aria-hidden="true"
+                  >
+                    {"\u25B8"}
+                  </Text>
+                  <Text textStyle="listTitle">
                     {project.title}
                   </Text>
                   {(Array.isArray(project.category)
@@ -246,7 +192,7 @@ export default function Projects() {
                       bg="brand.surface"
                       paddingX={2}
                       paddingY={0.5}
-                      borderRadius="6px"
+                      borderRadius="4px"
                       display={["none", "block"]}
                     >
                       {cat}
@@ -267,7 +213,7 @@ export default function Projects() {
                       border="1px solid rgba(251, 191, 36, 0.3)"
                       paddingX={1.5}
                       paddingY={0.5}
-                      borderRadius="6px"
+                      borderRadius="4px"
                       display={["none", "block"]}
                     >
                       IN PROG
@@ -286,7 +232,106 @@ export default function Projects() {
               </ChakraLink>
             ))}
           </Flex>
-        </Box>
+        </RetroCard>
+
+        <RetroCard p={5} mt={4}>
+          <SectionHeading title="Showcase" color="#da70d6" />
+          <Flex
+            flexDirection="column"
+            gap={0}
+            sx={{
+              "& > *:first-of-type::after": { display: "none" },
+              "& > *:hover + *::after": { transform: "scaleX(0)" },
+            }}
+          >
+            {showcaseItems.map((item) => (
+              <ChakraLink
+                key={item.title}
+                href={item.link}
+                isExternal
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={3}
+                position="relative"
+                paddingY={2.5}
+                paddingX={3}
+                borderRadius="10px"
+                border="2px solid transparent"
+                _after={{
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 2,
+                  right: 2,
+                  height: "2px",
+                  bg: "brand.border",
+                  transition: "0.15s ease all",
+                  transformOrigin: "center",
+                }}
+                _hover={{
+                  textDecoration: "none",
+                  bg: "#da70d614",
+                  borderColor: "#da70d655",
+                  transform: "translateX(3px)",
+                  zIndex: 1,
+                  _after: { transform: "scaleX(0)" },
+                }}
+                transition="0.14s ease all"
+              >
+                <Flex alignItems="center" gap={2.5} flex={1} minWidth={0}>
+                  <Box
+                    width="32px"
+                    height="32px"
+                    minWidth="32px"
+                    borderRadius="6px"
+                    border="2px solid"
+                    borderColor="brand.border"
+                    bg={item.title === "Thesis" ? "#2b2b2b" : "brand.surface"}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    overflow="hidden"
+                  >
+                    <Image
+                      src={item.icon}
+                      alt={item.title}
+                      width="18px"
+                      height="18px"
+                      objectFit="contain"
+                      borderRadius="3px"
+                    />
+                  </Box>
+                  <Box minWidth={0}>
+                    <Flex alignItems="center" gap={2}>
+                      <Text textStyle="listTitle">{item.title}</Text>
+                      {item.tag && (
+                        <Box
+                          as="span"
+                          fontSize="10px"
+                          fontWeight="600"
+                          letterSpacing="0.02em"
+                          color="#22c55e"
+                          bg="#22c55e15"
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                          whiteSpace="nowrap"
+                        >
+                          {item.tag}
+                        </Box>
+                      )}
+                    </Flex>
+                    <Text textStyle="listMeta" mt={0.5}>
+                      {item.description}
+                    </Text>
+                  </Box>
+                </Flex>
+                <ExternalLinkIcon boxSize={3} color="brand.textMuted" flexShrink={0} />
+              </ChakraLink>
+            ))}
+          </Flex>
+        </RetroCard>
       </Flex>
     </PageWrapper>
   );

@@ -199,9 +199,9 @@ export const MobileNav = () => {
               width="40px"
               height="40px"
               bg={isActive ? `${item.color}18` : "transparent"}
-              border="1px solid"
-              borderColor={isActive ? `${item.color}40` : "transparent"}
-              borderRadius="10px"
+              border="2px solid"
+              borderColor={isActive ? `${item.color}55` : "transparent"}
+              borderRadius="8px"
               transition="0.15s ease all"
             >
               <item.Icon color={iconColor} />

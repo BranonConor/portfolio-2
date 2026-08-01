@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 // A major pentatonic scale, spanning a couple of octaves, gives every note a
 // consonant/"heavenly" quality no matter which degree a given letter lands
@@ -31,9 +31,13 @@ interface Chain {
  * otherwise cause every sound to bunch up and play back garbled the moment
  * the context resumes.
  */
+const BASE_MASTER_GAIN = 0.9;
+
 export function useBootChime() {
   const chainRef = useRef<Chain | null>(null);
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
+  const mutedRef = useRef(false);
+  const [muted, setMuted] = useState(false);
 
   const getChain = useCallback((): Chain | null => {
     if (chainRef.current) return chainRef.current;
@@ -46,7 +50,7 @@ export function useBootChime() {
 
     const ctx = new AudioContextClass();
     const master = ctx.createGain();
-    master.gain.value = 0.9;
+    master.gain.value = mutedRef.current ? 0 : BASE_MASTER_GAIN;
 
     // A cheap "airy" feedback-delay shimmer shared by all sounds, so notes
     // trail off softly instead of cutting out abruptly.
@@ -75,6 +79,44 @@ export function useBootChime() {
     if (chain?.ctx.state === "suspended") {
       chain.ctx.resume().catch(() => {});
     }
+  }, [getChain]);
+
+  const toggleMute = useCallback(() => {
+    mutedRef.current = !mutedRef.current;
+    setMuted(mutedRef.current);
+    if (chainRef.current) {
+      chainRef.current.master.gain.value = mutedRef.current
+        ? 0
+        : BASE_MASTER_GAIN;
+    }
+  }, []);
+
+  /**
+   * A quick, gentle navigation "beep" for moving between cartridges — a
+   * single short dry sine tone. Deliberately bypasses the shared shimmer/
+   * delay chain (routed straight to `ctx.destination`) since that reverb
+   * tail reads as muddy/echoey for a rapid, repeated UI sound like this.
+   */
+  const playMoveBlip = useCallback(() => {
+    const chain = getChain();
+    if (!chain || chain.ctx.state !== "running" || mutedRef.current) return;
+    const { ctx } = chain;
+    const start = ctx.currentTime + 0.002;
+    const duration = 0.05;
+
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, start);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(0.07, start + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + duration + 0.02);
   }, [getChain]);
 
   /** Soft ascending twinkle for the letter at `index` of `total` landing. */
@@ -168,5 +210,5 @@ export function useBootChime() {
     noise.stop(start + 0.4);
   }, [getChain]);
 
-  return { unlock, playLetterTwinkle, playSparkle };
+  return { unlock, playLetterTwinkle, playSparkle, playMoveBlip, muted, toggleMute };
 }

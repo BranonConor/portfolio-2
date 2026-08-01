@@ -1,6 +1,7 @@
-import { Box, Flex, Heading, Text, Link as ChakraLink } from "@chakra-ui/react";
+import { Box, Flex, Text, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState } from "react";
+import { RetroFilterPill } from "@/components/RetroFilterPill";
 
 export const Music = () => {
   const items = [
@@ -33,15 +34,6 @@ export const Music = () => {
 
   return (
     <Box width="100%">
-      <Heading
-        as="h3"
-        fontSize="18px"
-        fontWeight="600"
-        letterSpacing="-0.02em"
-        mb={2}
-      >
-        Music Production
-      </Heading>
       <Text fontSize="13px" color="brand.textMuted" mb={4} lineHeight="1.6">
         I produce music & beats under my producer name @PancitPapi. Great for
         focus time and locking in on a task. Here are my albums on Spotify:
@@ -50,7 +42,7 @@ export const Music = () => {
         flexDirection="column"
         gap={0}
         sx={{
-          "& > *:first-child::after": { display: "none" },
+          "& > *:first-of-type::after": { display: "none" },
           "& > *:hover + *::after": { transform: "scaleX(0)" },
         }}
       >
@@ -62,30 +54,32 @@ export const Music = () => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            paddingY={2.5}
             position="relative"
+            paddingY={2.5}
+            paddingX={3}
+            borderRadius="10px"
+            border="2px solid transparent"
             _after={{
               content: '""',
               position: "absolute",
               top: 0,
-              left: 0,
-              right: 0,
-              height: "1px",
+              left: 2,
+              right: 2,
+              height: "2px",
               bg: "brand.border",
-              transition: "0.18s ease all",
+              transition: "0.15s ease all",
               transformOrigin: "center",
             }}
             _hover={{
               textDecoration: "none",
-              bg: "brand.surfaceHover",
-              marginX: -3,
-              paddingX: 3,
-              borderRadius: "10px",
+              bg: "#f0503214",
+              borderColor: "#f0503255",
+              transform: "translateX(3px)",
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
-              "& > span:first-of-type": { color: "brand.text" },
+              "& > div:first-of-type > span:first-of-type": { color: "brand.text" },
             }}
-            transition="0.12s ease all"
+            transition="0.14s ease all"
           >
             <Flex alignItems="center" gap={2}>
               <Text as="span" textStyle="listTitle" transition="0.12s ease all">
@@ -137,55 +131,23 @@ export const SpotifyEmbed = () => {
   const [activeAlbum, setActiveAlbum] = useState(albums[0]);
 
   return (
-    <Box
-      border="1px solid"
-      borderColor="brand.border"
-      borderRadius="12px"
-      bg="rgba(20, 20, 22, 0.6)"
-      backdropFilter="blur(16px)"
-      overflow="hidden"
-      p={3}
-      width="100%"
-    >
+    <Box p={3} width="100%">
       <Flex gap={1.5} mb={3} flexWrap="wrap">
         {albums.map((album) => (
-          <Box
+          <RetroFilterPill
             key={album.title}
-            as="button"
+            label={album.title}
+            color="#f05032"
+            active={activeAlbum.title === album.title}
             onClick={() => setActiveAlbum(album)}
-            fontSize="11px"
-            fontWeight="500"
-            px={2.5}
-            py={1}
-            borderRadius="6px"
-            border="1px solid"
-            borderColor={
-              activeAlbum.title === album.title ? "#f0503240" : "brand.border"
-            }
-            bg={activeAlbum.title === album.title ? "#f0503218" : "transparent"}
-            color={
-              activeAlbum.title === album.title ? "#f05032" : "brand.textMuted"
-            }
-            cursor="pointer"
-            transition="0.15s ease all"
-            _hover={{
-              bg:
-                activeAlbum.title === album.title
-                  ? "#f0503218"
-                  : "brand.surfaceHover",
-              color:
-                activeAlbum.title === album.title ? "#f05032" : "brand.text",
-            }}
-          >
-            {album.title}
-          </Box>
+          />
         ))}
       </Flex>
       <Box
         position="relative"
         height={["352px", "352px", "484px"]}
         overflow="hidden"
-        borderRadius="12px"
+        borderRadius="10px"
       >
         {albums.map((album) => (
           <Box

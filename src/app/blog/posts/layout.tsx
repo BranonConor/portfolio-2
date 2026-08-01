@@ -67,7 +67,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
               fontWeight: "bold",
             },
             "pre[class*='language-']": {
-              borderRadius: "16px",
+              borderRadius: "10px",
             },
           }}
         >
@@ -92,12 +92,10 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             )}
           </AnimatePresence>
           <Box
-            bg="rgba(20, 20, 22, 0.6)"
-            backdropFilter="blur(16px)"
-            style={{ WebkitBackdropFilter: "blur(16px)" }}
-            border="1px solid"
+            bg="brand.surface"
+            border="2px solid"
             borderColor="brand.border"
-            borderRadius="12px"
+            borderRadius="10px"
             overflow="hidden"
             width="100%"
             pb={[6, 8, 10]}

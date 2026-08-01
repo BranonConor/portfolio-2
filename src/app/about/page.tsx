@@ -1,11 +1,30 @@
 "use client";
 
-import { Flex, Button, Heading, Text, Box } from "@chakra-ui/react";
+import {
+  Flex,
+  Button,
+  Text,
+  Box,
+  Image,
+  Link as ChakraLink,
+} from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { PageWrapper } from "@/components/PageWrapper";
-import { PaintStroke } from "@/components/PaintStroke";
+import { PageHeading } from "@/components/PageHeading";
+import { RetroCard } from "@/components/RetroCard";
+import { SectionHeading } from "@/components/SectionHeading";
 import Link from "next/link";
-import { Photography, PhotoGrid } from "@/components/sections/Photography";
+import { Photography, PhotoCarousel } from "@/components/sections/Photography";
 import { Music, SpotifyEmbed } from "@/components/sections/Music";
+import {
+  experience,
+  otherExperience,
+  education,
+  honors,
+  publications,
+} from "./consts";
+
+const ABOUT_ACCENT = "#f05032";
 
 const SparkleIcon = () => (
   <svg
@@ -52,6 +71,55 @@ const PencilIcon = () => (
   </svg>
 );
 
+const RoleRow = ({
+  role,
+}: {
+  role: {
+    company: string;
+    role: string;
+    period: string;
+    logo: string;
+    logoSize?: string;
+    current?: boolean;
+  };
+}) => (
+  <Flex gap={3} alignItems="flex-start">
+    <Box
+      width="32px"
+      height="32px"
+      minWidth="32px"
+      borderRadius="6px"
+      border="2px solid"
+      borderColor="brand.border"
+      bg="brand.surface"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      overflow="hidden"
+    >
+      <Image
+        src={role.logo}
+        alt={role.company}
+        width={role.logoSize || "18px"}
+        height={role.logoSize || "18px"}
+        objectFit="contain"
+        borderRadius="3px"
+      />
+    </Box>
+    <Box>
+      <Flex alignItems="center" gap={2} mb={0.5}>
+        <Text textStyle="listTitle">
+          {role.role} @ {role.company}
+        </Text>
+        {role.current && (
+          <Box width="6px" height="6px" borderRadius="full" bg="#22c55e" flexShrink={0} />
+        )}
+      </Flex>
+      <Text textStyle="listMeta">{role.period}</Text>
+    </Box>
+  </Flex>
+);
+
 export default function About() {
   return (
     <PageWrapper>
@@ -60,63 +128,14 @@ export default function About() {
         alignItems="flex-start"
         justifyContent="flex-start"
         flexDirection="column"
+        gap={4}
       >
-        <Box
-          border="1px solid"
-          borderColor="brand.border"
-          borderRadius="12px"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          overflow="hidden"
-          mb={4}
-          width="100%"
-        >
-          {/* Paint stroke header area */}
-          <Box
-            position="relative"
-            width="100%"
-            height={["80px", "100px", "120px"]}
-            overflow="hidden"
-            borderBottom="1px solid"
-            borderBottomColor="brand.border"
-          >
-            <PaintStroke
-              variant={2}
-              top="-40px"
-              left="-60px"
-              width={["200px", "260px", "320px"]}
-              opacity={0.35}
-            />
-            <PaintStroke
-              variant={4}
-              top="-20px"
-              right="-40px"
-              width={["180px", "220px", "280px"]}
-              opacity={0.25}
-            />
-            <PaintStroke
-              variant={1}
-              bottom="-50px"
-              left="30%"
-              width={["160px", "200px", "240px"]}
-              opacity={0.2}
-              rotate={-15}
-            />
-          </Box>
-
+        <RetroCard>
           <Box p={5}>
-            <Heading
-              as="h1"
-              fontSize={["28px", "36px"]}
-              fontWeight="700"
-              letterSpacing="-0.03em"
-              mb={2}
-            >
-              About Me
-            </Heading>
+            <PageHeading title="About Me" mb={2} />
             <Text
               as="p"
-              fontSize="14px"
+              fontSize="13px"
               color="brand.textMuted"
               mb={4}
               lineHeight="1.7"
@@ -129,9 +148,9 @@ export default function About() {
             </Text>
             <Text
               as="p"
-              fontSize="14px"
+              fontSize="13px"
               color="brand.textMuted"
-              mb={8}
+              mb={5}
               lineHeight="1.7"
             >
               Outside of my main roles, I build fullstack web apps, create Udemy
@@ -160,39 +179,13 @@ export default function About() {
               </Button>
             </Flex>
           </Box>
-        </Box>
-
-        <Box
-          border="1px solid"
-          borderColor="brand.border"
-          borderRadius="12px"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          overflow="hidden"
-          width="100%"
-          p={5}
-        >
-          <Heading
-            as="h2"
-            fontSize={["20px", "24px"]}
-            fontWeight="600"
-            letterSpacing="-0.02em"
-            mb={2}
-          >
-            More than just a tech worker
-          </Heading>
-          <Text fontSize="14px" color="brand.textMuted">
-            Life&apos;s too short to do anything but what you love. Here are
-            some of my other passions:
-          </Text>
-        </Box>
+        </RetroCard>
 
         <Flex
           gap={4}
           width="100%"
-          mt={4}
           flexDirection={["column", "column", "row"]}
-          alignItems={["flex-start", "flex-start", "stretch"]}
+          alignItems="flex-start"
         >
           <Flex
             flexDirection="column"
@@ -201,34 +194,196 @@ export default function About() {
             width={["100%", "100%", "50%"]}
             order={[2, 2, 1]}
           >
-            <Box
-              border="1px solid"
-              borderColor="brand.border"
-              borderRadius="12px"
-              bg="rgba(20, 20, 22, 0.6)"
-              backdropFilter="blur(16px)"
-              p={5}
-            >
-              <Photography />
-            </Box>
-            <PhotoGrid />
-          </Flex>
-          <Box flex={1} width={["100%", "100%", "50%"]} order={[1, 1, 2]}>
-            <Box
-              border="1px solid"
-              borderColor="brand.border"
-              borderRadius="12px"
-              bg="rgba(20, 20, 22, 0.6)"
-              backdropFilter="blur(16px)"
-              p={5}
-              mb={4}
-            >
+            <RetroCard p={5}>
+              <SectionHeading title="Experience" color={ABOUT_ACCENT} />
+              <Flex flexDirection="column" gap={4}>
+                {experience.map((role) => (
+                  <RoleRow key={role.company} role={role} />
+                ))}
+              </Flex>
+              <Box mt={5} pt={4} borderTop="2px solid" borderTopColor="brand.border">
+                <Text
+                  fontSize="10px"
+                  fontWeight="600"
+                  textTransform="uppercase"
+                  letterSpacing="0.08em"
+                  color="brand.textMuted"
+                  mb={3}
+                >
+                  Other
+                </Text>
+                <Flex flexDirection="column" gap={4}>
+                  {otherExperience.map((role) => (
+                    <RoleRow key={role.company} role={role} />
+                  ))}
+                </Flex>
+              </Box>
+            </RetroCard>
+
+            <RetroCard p={5}>
+              <SectionHeading title="Education" color={ABOUT_ACCENT} />
+              <Flex flexDirection="column" gap={0}>
+                {education.map((item, i) => (
+                  <Flex
+                    key={item.program}
+                    gap={3}
+                    alignItems="flex-start"
+                    paddingY={2.5}
+                    borderTop={i === 0 ? "none" : "2px solid"}
+                    borderTopColor="brand.border"
+                  >
+                    <Box
+                      width="32px"
+                      height="32px"
+                      minWidth="32px"
+                      borderRadius="6px"
+                      border="2px solid"
+                      borderColor="brand.border"
+                      bg="brand.surface"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      overflow="hidden"
+                    >
+                      <Image
+                        src={item.logo}
+                        alt={item.institution}
+                        width="18px"
+                        height="18px"
+                        objectFit="contain"
+                        borderRadius="3px"
+                      />
+                    </Box>
+                    <Box>
+                      <Text textStyle="listTitle">
+                        {item.program} @ {item.institution}
+                      </Text>
+                      <Text textStyle="listMeta" mt={0.5}>
+                        {item.note}
+                      </Text>
+                    </Box>
+                  </Flex>
+                ))}
+              </Flex>
+            </RetroCard>
+
+            <RetroCard p={5}>
+              <SectionHeading title="Honors & Accomplishments" color={ABOUT_ACCENT} />
+              <Flex flexDirection="column" gap={0}>
+                {honors.map((item, i) => (
+                  <Box
+                    key={item.title}
+                    paddingY={2.5}
+                    borderTop={i === 0 ? "none" : "2px solid"}
+                    borderTopColor="brand.border"
+                  >
+                    <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
+                      <Text textStyle="listTitle">{item.title}</Text>
+                      <Text textStyle="listMeta" flexShrink={0} whiteSpace="nowrap">
+                        {item.org} · {item.date}
+                      </Text>
+                    </Flex>
+                  </Box>
+                ))}
+              </Flex>
+            </RetroCard>
+
+            <RetroCard p={5}>
+              <SectionHeading title="Music Production" color={ABOUT_ACCENT} />
               <Music />
-            </Box>
-            <Box position={["static", "static", "sticky"]} top="86px">
+            </RetroCard>
+            <RetroCard>
               <SpotifyEmbed />
-            </Box>
-          </Box>
+            </RetroCard>
+          </Flex>
+
+          <Flex
+            flexDirection="column"
+            gap={4}
+            flex={1}
+            width={["100%", "100%", "50%"]}
+            order={[1, 1, 2]}
+          >
+            <RetroCard p={5}>
+              <SectionHeading title="Publications" color={ABOUT_ACCENT} />
+              <Flex
+                flexDirection="column"
+                gap={0}
+                sx={{
+                  "& > *:first-of-type::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                {publications.map((item) => (
+                  <ChakraLink
+                    key={item.title}
+                    href={item.link}
+                    isExternal
+                    display="block"
+                    position="relative"
+                    paddingY={2.5}
+                    paddingX={3}
+                    borderRadius="10px"
+                    border="2px solid transparent"
+                    _after={{
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 2,
+                      right: 2,
+                      height: "2px",
+                      bg: "brand.border",
+                      transition: "0.15s ease all",
+                      transformOrigin: "center",
+                    }}
+                    _hover={{
+                      textDecoration: "none",
+                      bg: `${ABOUT_ACCENT}14`,
+                      borderColor: `${ABOUT_ACCENT}55`,
+                      transform: "translateX(3px)",
+                      zIndex: 1,
+                      _after: { transform: "scaleX(0)" },
+                    }}
+                    transition="0.14s ease all"
+                  >
+                    <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
+                      <Box flex={1} minWidth={0}>
+                        <Flex alignItems="center" gap={2} mb={0.5} flexWrap="wrap">
+                          <Text textStyle="listTitle">{item.title}</Text>
+                          <Box
+                            as="span"
+                            fontSize="10px"
+                            fontWeight="600"
+                            letterSpacing="0.02em"
+                            color={item.tag === "Tech" ? "#61dafb" : "#22c55e"}
+                            bg={item.tag === "Tech" ? "#61dafb15" : "#22c55e15"}
+                            px={2}
+                            py={0.5}
+                            borderRadius="4px"
+                            whiteSpace="nowrap"
+                          >
+                            {item.tag}
+                          </Box>
+                        </Flex>
+                        <Text textStyle="listMeta">
+                          {item.publisher} · {item.date}
+                        </Text>
+                      </Box>
+                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" mt={0.5} flexShrink={0} />
+                    </Flex>
+                  </ChakraLink>
+                ))}
+              </Flex>
+            </RetroCard>
+
+            <RetroCard p={5}>
+              <SectionHeading title="Photography & Digital Art" color={ABOUT_ACCENT} />
+              <Photography />
+              <Box mt={4}>
+                <PhotoCarousel />
+              </Box>
+            </RetroCard>
+          </Flex>
         </Flex>
       </Flex>
     </PageWrapper>

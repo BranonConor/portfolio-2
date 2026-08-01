@@ -50,11 +50,14 @@ const FRAGMENT = /* glsl */ `
       6.28318 * (diag * 1.6 + uTime * 0.1) + vec3(0.0, 2.094, 4.188)
     );
 
-    vec3 white = vec3(0.96, 0.96, 0.98);
+    // Settled/resting letter color — a dark warm ink tone (matches
+    // brand.text in theme.ts) rather than white, since the boot logo now
+    // plays over the light paper backdrop instead of a dark screen.
+    vec3 ink = vec3(0.2, 0.1725, 0.1098);
     // Each letter flashes its own assigned color as it flies in, settling
-    // back to white as it lands; the shared rainbow sweep washes over the
+    // back to ink as it lands; the shared rainbow sweep washes over the
     // top of that afterwards.
-    vec3 base = mix(white, uLetterColor, uColorMix);
+    vec3 base = mix(ink, uLetterColor, uColorMix);
     vec3 color = mix(base, rainbow, band * 0.92);
 
     gl_FragColor = vec4(color, mask * uOpacity);
