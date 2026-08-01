@@ -181,210 +181,229 @@ export default function About() {
           </Box>
         </RetroCard>
 
-        <Flex
+        <Box
+          display="grid"
+          gridTemplateColumns={["1fr", "1fr", "1fr 1fr"]}
           gap={4}
           width="100%"
-          flexDirection={["column", "column", "row"]}
-          alignItems="flex-start"
+          alignItems="start"
         >
-          <Flex
-            flexDirection="column"
-            gap={4}
-            flex={1}
-            width={["100%", "100%", "50%"]}
-            order={[2, 2, 1]}
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "1"]}
+            gridRow={["auto", "auto", "1"]}
+            order={[1, 1, "unset"]}
           >
-            <RetroCard p={5}>
-              <SectionHeading title="Experience" color={ABOUT_ACCENT} />
+            <SectionHeading title="Experience" color={ABOUT_ACCENT} />
+            <Flex flexDirection="column" gap={4}>
+              {experience.map((role) => (
+                <RoleRow key={role.company} role={role} />
+              ))}
+            </Flex>
+            <Box mt={5} pt={4} borderTop="2px solid" borderTopColor="brand.border">
+              <Text
+                fontSize="10px"
+                fontWeight="600"
+                textTransform="uppercase"
+                letterSpacing="0.08em"
+                color="brand.textMuted"
+                mb={3}
+              >
+                Other
+              </Text>
               <Flex flexDirection="column" gap={4}>
-                {experience.map((role) => (
+                {otherExperience.map((role) => (
                   <RoleRow key={role.company} role={role} />
                 ))}
               </Flex>
-              <Box mt={5} pt={4} borderTop="2px solid" borderTopColor="brand.border">
-                <Text
-                  fontSize="10px"
-                  fontWeight="600"
-                  textTransform="uppercase"
-                  letterSpacing="0.08em"
-                  color="brand.textMuted"
-                  mb={3}
-                >
-                  Other
-                </Text>
-                <Flex flexDirection="column" gap={4}>
-                  {otherExperience.map((role) => (
-                    <RoleRow key={role.company} role={role} />
-                  ))}
-                </Flex>
-              </Box>
-            </RetroCard>
+            </Box>
+          </RetroCard>
 
-            <RetroCard p={5}>
-              <SectionHeading title="Education" color={ABOUT_ACCENT} />
-              <Flex flexDirection="column" gap={0}>
-                {education.map((item, i) => (
-                  <Flex
-                    key={item.program}
-                    gap={3}
-                    alignItems="flex-start"
-                    paddingY={2.5}
-                    borderTop={i === 0 ? "none" : "2px solid"}
-                    borderTopColor="brand.border"
-                  >
-                    <Box
-                      width="32px"
-                      height="32px"
-                      minWidth="32px"
-                      borderRadius="6px"
-                      border="2px solid"
-                      borderColor="brand.border"
-                      bg="brand.surface"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      overflow="hidden"
-                    >
-                      <Image
-                        src={item.logo}
-                        alt={item.institution}
-                        width="18px"
-                        height="18px"
-                        objectFit="contain"
-                        borderRadius="3px"
-                      />
-                    </Box>
-                    <Box>
-                      <Text textStyle="listTitle">
-                        {item.program} @ {item.institution}
-                      </Text>
-                      <Text textStyle="listMeta" mt={0.5}>
-                        {item.note}
-                      </Text>
-                    </Box>
-                  </Flex>
-                ))}
-              </Flex>
-            </RetroCard>
-
-            <RetroCard p={5}>
-              <SectionHeading title="Honors & Accomplishments" color={ABOUT_ACCENT} />
-              <Flex flexDirection="column" gap={0}>
-                {honors.map((item, i) => (
-                  <Box
-                    key={item.title}
-                    paddingY={2.5}
-                    borderTop={i === 0 ? "none" : "2px solid"}
-                    borderTopColor="brand.border"
-                  >
-                    <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
-                      <Text textStyle="listTitle">{item.title}</Text>
-                      <Text textStyle="listMeta" flexShrink={0} whiteSpace="nowrap">
-                        {item.org} · {item.date}
-                      </Text>
-                    </Flex>
-                  </Box>
-                ))}
-              </Flex>
-            </RetroCard>
-
-            <RetroCard p={5}>
-              <SectionHeading title="Music Production" color={ABOUT_ACCENT} />
-              <Music />
-            </RetroCard>
-            <RetroCard>
-              <SpotifyEmbed />
-            </RetroCard>
-          </Flex>
-
-          <Flex
-            flexDirection="column"
-            gap={4}
-            flex={1}
-            width={["100%", "100%", "50%"]}
-            order={[1, 1, 2]}
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "1"]}
+            gridRow={["auto", "auto", "2"]}
+            order={[2, 2, "unset"]}
           >
-            <RetroCard p={5}>
-              <SectionHeading title="Publications" color={ABOUT_ACCENT} />
-              <Flex
-                flexDirection="column"
-                gap={0}
-                sx={{
-                  "& > *:first-of-type::after": { display: "none" },
-                  "& > *:hover + *::after": { transform: "scaleX(0)" },
-                }}
-              >
-                {publications.map((item) => (
-                  <ChakraLink
-                    key={item.title}
-                    href={item.link}
-                    isExternal
-                    display="block"
-                    position="relative"
-                    paddingY={2.5}
-                    paddingX={3}
-                    borderRadius="10px"
-                    border="2px solid transparent"
-                    _after={{
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 2,
-                      right: 2,
-                      height: "2px",
-                      bg: "brand.border",
-                      transition: "0.15s ease all",
-                      transformOrigin: "center",
-                    }}
-                    _hover={{
-                      textDecoration: "none",
-                      bg: `${ABOUT_ACCENT}14`,
-                      borderColor: `${ABOUT_ACCENT}55`,
-                      transform: "translateX(3px)",
-                      zIndex: 1,
-                      _after: { transform: "scaleX(0)" },
-                    }}
-                    transition="0.14s ease all"
+            <SectionHeading title="Education" color={ABOUT_ACCENT} />
+            <Flex flexDirection="column" gap={0}>
+              {education.map((item, i) => (
+                <Flex
+                  key={item.program}
+                  gap={3}
+                  alignItems="flex-start"
+                  paddingY={2.5}
+                  borderTop={i === 0 ? "none" : "2px solid"}
+                  borderTopColor="brand.border"
+                >
+                  <Box
+                    width="32px"
+                    height="32px"
+                    minWidth="32px"
+                    borderRadius="6px"
+                    border="2px solid"
+                    borderColor="brand.border"
+                    bg="brand.surface"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    overflow="hidden"
                   >
-                    <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
-                      <Box flex={1} minWidth={0}>
-                        <Flex alignItems="center" gap={2} mb={0.5} flexWrap="wrap">
-                          <Text textStyle="listTitle">{item.title}</Text>
-                          <Box
-                            as="span"
-                            fontSize="10px"
-                            fontWeight="600"
-                            letterSpacing="0.02em"
-                            color={item.tag === "Tech" ? "#61dafb" : "#22c55e"}
-                            bg={item.tag === "Tech" ? "#61dafb15" : "#22c55e15"}
-                            px={2}
-                            py={0.5}
-                            borderRadius="4px"
-                            whiteSpace="nowrap"
-                          >
-                            {item.tag}
-                          </Box>
-                        </Flex>
-                        <Text textStyle="listMeta">
-                          {item.publisher} · {item.date}
-                        </Text>
-                      </Box>
-                      <ExternalLinkIcon boxSize={3} color="brand.textMuted" mt={0.5} flexShrink={0} />
-                    </Flex>
-                  </ChakraLink>
-                ))}
-              </Flex>
-            </RetroCard>
+                    <Image
+                      src={item.logo}
+                      alt={item.institution}
+                      width="18px"
+                      height="18px"
+                      objectFit="contain"
+                      borderRadius="3px"
+                    />
+                  </Box>
+                  <Box>
+                    <Text textStyle="listTitle">
+                      {item.program} @ {item.institution}
+                    </Text>
+                    <Text textStyle="listMeta" mt={0.5}>
+                      {item.note}
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+            </Flex>
+          </RetroCard>
 
-            <RetroCard p={5}>
-              <SectionHeading title="Photography & Digital Art" color={ABOUT_ACCENT} />
-              <Photography />
-              <Box mt={4}>
-                <PhotoCarousel />
-              </Box>
-            </RetroCard>
-          </Flex>
-        </Flex>
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "1"]}
+            gridRow={["auto", "auto", "3"]}
+            order={[3, 3, "unset"]}
+          >
+            <SectionHeading title="Honors & Accomplishments" color={ABOUT_ACCENT} />
+            <Flex flexDirection="column" gap={0}>
+              {honors.map((item, i) => (
+                <Box
+                  key={item.title}
+                  paddingY={2.5}
+                  borderTop={i === 0 ? "none" : "2px solid"}
+                  borderTopColor="brand.border"
+                >
+                  <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
+                    <Text textStyle="listTitle">{item.title}</Text>
+                    <Text textStyle="listMeta" flexShrink={0} whiteSpace="nowrap">
+                      {item.org} · {item.date}
+                    </Text>
+                  </Flex>
+                </Box>
+              ))}
+            </Flex>
+          </RetroCard>
+
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "2"]}
+            gridRow={["auto", "auto", "1"]}
+            order={[4, 4, "unset"]}
+          >
+            <SectionHeading title="Publications" color={ABOUT_ACCENT} />
+            <Flex
+              flexDirection="column"
+              gap={0}
+              sx={{
+                "& > *:first-of-type::after": { display: "none" },
+                "& > *:hover + *::after": { transform: "scaleX(0)" },
+              }}
+            >
+              {publications.map((item) => (
+                <ChakraLink
+                  key={item.title}
+                  href={item.link}
+                  isExternal
+                  display="block"
+                  position="relative"
+                  paddingY={2.5}
+                  paddingX={3}
+                  borderRadius="10px"
+                  border="2px solid transparent"
+                  _after={{
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 2,
+                    right: 2,
+                    height: "2px",
+                    bg: "brand.border",
+                    transition: "0.15s ease all",
+                    transformOrigin: "center",
+                  }}
+                  _hover={{
+                    textDecoration: "none",
+                    bg: `${ABOUT_ACCENT}14`,
+                    borderColor: `${ABOUT_ACCENT}55`,
+                    transform: "translateX(3px)",
+                    zIndex: 1,
+                    _after: { transform: "scaleX(0)" },
+                  }}
+                  transition="0.14s ease all"
+                >
+                  <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
+                    <Box flex={1} minWidth={0}>
+                      <Flex alignItems="center" gap={2} mb={0.5} flexWrap="wrap">
+                        <Text textStyle="listTitle">{item.title}</Text>
+                        <Box
+                          as="span"
+                          fontSize="10px"
+                          fontWeight="600"
+                          letterSpacing="0.02em"
+                          color={item.tag === "Tech" ? "#61dafb" : "#22c55e"}
+                          bg={item.tag === "Tech" ? "#61dafb15" : "#22c55e15"}
+                          px={2}
+                          py={0.5}
+                          borderRadius="4px"
+                          whiteSpace="nowrap"
+                        >
+                          {item.tag}
+                        </Box>
+                      </Flex>
+                      <Text textStyle="listMeta">
+                        {item.publisher} · {item.date}
+                      </Text>
+                    </Box>
+                    <ExternalLinkIcon boxSize={3} color="brand.textMuted" mt={0.5} flexShrink={0} />
+                  </Flex>
+                </ChakraLink>
+              ))}
+            </Flex>
+          </RetroCard>
+
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "1"]}
+            gridRow={["auto", "auto", "4"]}
+            order={[5, 5, "unset"]}
+          >
+            <SectionHeading title="Music Production" color={ABOUT_ACCENT} />
+            <Music />
+          </RetroCard>
+          <RetroCard
+            gridColumn={["1", "1", "1"]}
+            gridRow={["auto", "auto", "5"]}
+            order={[6, 6, "unset"]}
+          >
+            <SpotifyEmbed />
+          </RetroCard>
+
+          <RetroCard
+            p={5}
+            gridColumn={["1", "1", "2"]}
+            gridRow={["auto", "auto", "2"]}
+            order={[7, 7, "unset"]}
+          >
+            <SectionHeading title="Photography & Digital Art" color={ABOUT_ACCENT} />
+            <Photography />
+            <Box mt={4}>
+              <PhotoCarousel />
+            </Box>
+          </RetroCard>
+        </Box>
       </Flex>
     </PageWrapper>
   );

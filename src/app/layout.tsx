@@ -6,13 +6,21 @@ import { SCREEN_BG } from "@/lib/consoleTheme";
 
 const GA_MEASUREMENT_ID = "G-C74KV5XNVN";
 
+const DEFAULT_OG_IMAGE =
+  "/api/og?title=Branon%20Eusebio&subtitle=Design%20Engineer%20building%20%40%20GitHub";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://branon.dev"),
   title: "Branon Eusebio",
   description: "Design Engineer building @ GitHub",
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: "Branon Eusebio",
@@ -20,11 +28,15 @@ export const metadata: Metadata = {
     url: "https://branon.dev",
     siteName: "Branon Eusebio",
     type: "website",
+    images: [
+      { url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: "Branon Eusebio" },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Branon Eusebio",
     description: "Design Engineer building @ GitHub",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
