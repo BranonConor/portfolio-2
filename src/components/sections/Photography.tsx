@@ -66,15 +66,7 @@ export const Photography = () => {
         for collaborations and shoots.
       </Text>
 
-      <Text
-        className={pixelFont.className}
-        fontSize="9px"
-        fontWeight="400"
-        textTransform="uppercase"
-        letterSpacing="0.06em"
-        color="brand.textMuted"
-        mb={2}
-      >
+      <Text textStyle="listTitle" color="brand.textMuted" mb={2}>
         Awards & honors
       </Text>
       <Flex
@@ -140,15 +132,7 @@ export const Photography = () => {
         ))}
       </Flex>
 
-      <Text
-        className={pixelFont.className}
-        fontSize="9px"
-        fontWeight="400"
-        textTransform="uppercase"
-        letterSpacing="0.06em"
-        color="brand.textMuted"
-        mb={2}
-      >
+      <Text textStyle="listTitle" color="brand.textMuted" mb={2}>
         Collabs & Contracts
       </Text>
       <Flex
@@ -207,15 +191,7 @@ export const Photography = () => {
         ))}
       </Flex>
 
-      <Text
-        className={pixelFont.className}
-        fontSize="9px"
-        fontWeight="400"
-        textTransform="uppercase"
-        letterSpacing="0.06em"
-        color="brand.textMuted"
-        mb={2}
-      >
+      <Text textStyle="listTitle" color="brand.textMuted" mb={2}>
         Instagram
       </Text>
       <Flex
