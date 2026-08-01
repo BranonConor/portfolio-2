@@ -1,12 +1,14 @@
+import { useRef, useState } from "react";
 import {
   Flex,
-  Heading,
   Text,
   Image,
   Box,
   Link as ChakraLink,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { useBootChime } from "@/components/boot-intro/useBootChime";
 
 export const Photography = () => {
   const awards = [
@@ -58,22 +60,21 @@ export const Photography = () => {
 
   return (
     <Box width="100%">
-      <Heading
-        as="h3"
-        fontSize="18px"
-        fontWeight="600"
-        letterSpacing="-0.02em"
-        mb={2}
-      >
-        Photography & Digital Art
-      </Heading>
       <Text fontSize="13px" color="brand.textMuted" mb={4} lineHeight="1.6">
         I&apos;ve had a super fun mini-career in photography, winning many
         awards and scoring contracts with some cool lifestyle product companies
         for collaborations and shoots.
       </Text>
 
-      <Text fontSize="13px" fontWeight="600" color="brand.text" mb={1}>
+      <Text
+        className={pixelFont.className}
+        fontSize="9px"
+        fontWeight="400"
+        textTransform="uppercase"
+        letterSpacing="0.06em"
+        color="brand.textMuted"
+        mb={2}
+      >
         Awards & honors
       </Text>
       <Flex
@@ -81,7 +82,7 @@ export const Photography = () => {
         gap={0}
         mb={5}
         sx={{
-          "& > *:first-child::after": { display: "none" },
+          "& > *:first-of-type::after": { display: "none" },
           "& > *:hover + *::after": { transform: "scaleX(0)" },
         }}
       >
@@ -91,29 +92,31 @@ export const Photography = () => {
             href={item.link}
             isExternal
             display="block"
-            paddingY={2.5}
             position="relative"
+            paddingY={2.5}
+            paddingX={3}
+            borderRadius="10px"
+            border="2px solid transparent"
             _after={{
               content: '""',
               position: "absolute",
               top: 0,
-              left: 0,
-              right: 0,
-              height: "1px",
+              left: 2,
+              right: 2,
+              height: "2px",
               bg: "brand.border",
-              transition: "0.18s ease all",
+              transition: "0.15s ease all",
               transformOrigin: "center",
             }}
             _hover={{
               textDecoration: "none",
-              bg: "brand.surfaceHover",
-              marginX: -3,
-              paddingX: 3,
-              borderRadius: "10px",
+              bg: "#f0503214",
+              borderColor: "#f0503255",
+              transform: "translateX(3px)",
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
             }}
-            transition="0.12s ease all"
+            transition="0.14s ease all"
           >
             <Flex
               justifyContent="space-between"
@@ -137,7 +140,15 @@ export const Photography = () => {
         ))}
       </Flex>
 
-      <Text fontSize="13px" fontWeight="600" color="brand.text" mb={1}>
+      <Text
+        className={pixelFont.className}
+        fontSize="9px"
+        fontWeight="400"
+        textTransform="uppercase"
+        letterSpacing="0.06em"
+        color="brand.textMuted"
+        mb={2}
+      >
         Collabs & Contracts
       </Text>
       <Flex
@@ -145,7 +156,7 @@ export const Photography = () => {
         gap={0}
         mb={5}
         sx={{
-          "& > *:first-child::after": { display: "none" },
+          "& > *:first-of-type::after": { display: "none" },
           "& > *:hover + *::after": { transform: "scaleX(0)" },
         }}
       >
@@ -157,30 +168,32 @@ export const Photography = () => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            paddingY={2.5}
             position="relative"
+            paddingY={2.5}
+            paddingX={3}
+            borderRadius="10px"
+            border="2px solid transparent"
             _after={{
               content: '""',
               position: "absolute",
               top: 0,
-              left: 0,
-              right: 0,
-              height: "1px",
+              left: 2,
+              right: 2,
+              height: "2px",
               bg: "brand.border",
-              transition: "0.18s ease all",
+              transition: "0.15s ease all",
               transformOrigin: "center",
             }}
             _hover={{
               textDecoration: "none",
-              bg: "brand.surfaceHover",
-              marginX: -3,
-              paddingX: 3,
-              borderRadius: "10px",
+              bg: "#f0503214",
+              borderColor: "#f0503255",
+              transform: "translateX(3px)",
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
               "& > span:first-of-type": { color: "brand.text" },
             }}
-            transition="0.12s ease all"
+            transition="0.14s ease all"
           >
             <Text as="span" textStyle="listTitle" transition="0.12s ease all">
               {item.title}
@@ -194,14 +207,22 @@ export const Photography = () => {
         ))}
       </Flex>
 
-      <Text fontSize="13px" fontWeight="600" color="brand.text" mb={1}>
+      <Text
+        className={pixelFont.className}
+        fontSize="9px"
+        fontWeight="400"
+        textTransform="uppercase"
+        letterSpacing="0.06em"
+        color="brand.textMuted"
+        mb={2}
+      >
         Instagram
       </Text>
       <Flex
         flexDirection="column"
         gap={0}
         sx={{
-          "& > *:first-child::after": { display: "none" },
+          "& > *:first-of-type::after": { display: "none" },
           "& > *:hover + *::after": { transform: "scaleX(0)" },
         }}
       >
@@ -211,30 +232,32 @@ export const Photography = () => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          paddingY={2.5}
           position="relative"
+          paddingY={2.5}
+          paddingX={3}
+          borderRadius="10px"
+          border="2px solid transparent"
           _after={{
             content: '""',
             position: "absolute",
             top: 0,
-            left: 0,
-            right: 0,
-            height: "1px",
+            left: 2,
+            right: 2,
+            height: "2px",
             bg: "brand.border",
-            transition: "0.18s ease all",
+            transition: "0.15s ease all",
             transformOrigin: "center",
           }}
           _hover={{
             textDecoration: "none",
-            bg: "brand.surfaceHover",
-            marginX: -3,
-            paddingX: 3,
-            borderRadius: "10px",
+            bg: "#f0503214",
+            borderColor: "#f0503255",
+            transform: "translateX(3px)",
             zIndex: 1,
             _after: { transform: "scaleX(0)" },
             "& > span:first-of-type": { color: "brand.text" },
           }}
-          transition="0.12s ease all"
+          transition="0.14s ease all"
         >
           <Text as="span" textStyle="listTitle" transition="0.12s ease all">
             @photosbyanasian
@@ -250,54 +273,146 @@ export const Photography = () => {
   );
 };
 
-export const PhotoGrid = () => {
-  const photos: { location: string; image: string }[] = [
-    { location: "Mammoth, CA", image: "/photography/bug.png" },
-    { location: "Santa Barbara, CA", image: "/photography/harbor.png" },
-    { location: "El Nido, PHI", image: "/photography/elnido.png" },
-    { location: "Mammoth, CA", image: "/photography/mammoth.png" },
-    { location: "Oceano Dunes, CA", image: "/photography/matt.png" },
-    { location: "Pismo Beach, CA", image: "/photography/pismo.png" },
-    { location: "Montecito, CA", image: "/photography/rach.png" },
-    { location: "San Diego, CA", image: "/photography/sd.png" },
-    { location: "Lake Tahoe, CA", image: "/photography/tahoe.png" },
-    { location: "Carpinteria, CA", image: "/photography/jellybowl.png" },
-  ];
+const PHOTOS: { location: string; image: string }[] = [
+  { location: "Mammoth, CA", image: "/photography/bug.png" },
+  { location: "Santa Barbara, CA", image: "/photography/harbor.png" },
+  { location: "El Nido, PHI", image: "/photography/elnido.png" },
+  { location: "Mammoth, CA", image: "/photography/mammoth.png" },
+  { location: "Oceano Dunes, CA", image: "/photography/matt.png" },
+  { location: "Pismo Beach, CA", image: "/photography/pismo.png" },
+  { location: "Montecito, CA", image: "/photography/rach.png" },
+  { location: "San Diego, CA", image: "/photography/sd.png" },
+  { location: "Lake Tahoe, CA", image: "/photography/tahoe.png" },
+  { location: "Carpinteria, CA", image: "/photography/jellybowl.png" },
+];
+
+const CarouselArrow = ({
+  direction,
+  onClick,
+}: {
+  direction: "prev" | "next";
+  onClick: () => void;
+}) => (
+  <Box
+    as="button"
+    type="button"
+    onClick={onClick}
+    aria-label={direction === "prev" ? "Previous photo" : "Next photo"}
+    className={pixelFont.className}
+    fontSize="10px"
+    color="brand.text"
+    bg="brand.surface"
+    border="2px solid"
+    borderColor="brand.border"
+    borderRadius="6px"
+    width="28px"
+    height="28px"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+    cursor="pointer"
+    flexShrink={0}
+    transition="0.12s ease all"
+    _hover={{ borderColor: "brand.borderHover", bg: "brand.surfaceHover" }}
+  >
+    {direction === "prev" ? "\u25C2" : "\u25B8"}
+  </Box>
+);
+
+/**
+ * A "photo cartridge" carousel — one bordered card at a time (like a game
+ * cartridge slotting in), with chunky pixel-arrow nav either side and a
+ * dot-strip below, instead of the old full vertical stack of images. Keeps
+ * the same photo set but reads as a deliberate on-theme gallery rather than
+ * a generic image feed.
+ */
+export const PhotoCarousel = () => {
+  const [index, setIndex] = useState(0);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const { unlock, playMoveBlip } = useBootChime();
+
+  const goTo = (next: number) => {
+    const clamped = (next + PHOTOS.length) % PHOTOS.length;
+    setIndex(clamped);
+    unlock();
+    playMoveBlip();
+  };
+
+  const photo = PHOTOS[index];
 
   return (
-    <Flex width="100%" gap={3} flexDirection="column">
-      {photos.map((photo) => (
-        <Box
+    <Box width="100%">
+      <Box
+        ref={trackRef}
+        width="100%"
+        overflow="hidden"
+        borderRadius="10px"
+        position="relative"
+        border="2px solid"
+        borderColor="brand.border"
+        bg="brand.surface"
+      >
+        <Image
           key={photo.image}
-          overflow="hidden"
-          borderRadius="10px"
-          position="relative"
-          border="1px solid"
-          borderColor="brand.border"
+          draggable="false"
+          src={photo.image}
+          width="100%"
+          height={["380px", "460px", "540px"]}
+          objectFit="cover"
+        />
+        <Text
+          as="span"
+          className={pixelFont.className}
+          fontSize="8px"
+          bg="rgba(51, 44, 28, 0.72)"
+          backdropFilter="blur(6px)"
+          position="absolute"
+          bottom={2}
+          left={2}
+          color="#fff"
+          paddingX={2}
+          paddingY={1.5}
+          borderRadius="4px"
         >
-          <Image
-            draggable="false"
-            src={photo.image}
-            minWidth="100%"
-            objectFit="cover"
-          />
-          <Text
-            bg="rgba(9, 9, 11, 0.7)"
-            backdropFilter="blur(8px)"
-            position="absolute"
-            bottom={2}
-            left={2}
-            color="brand.text"
-            fontWeight={500}
-            paddingX={2}
-            paddingY={1}
-            borderRadius="8px"
-            fontSize="11px"
-          >
-            {photo.location}
-          </Text>
-        </Box>
-      ))}
-    </Flex>
+          {photo.location}
+        </Text>
+        <Text
+          as="span"
+          fontSize="10px"
+          color="#fff"
+          bg="rgba(51, 44, 28, 0.72)"
+          backdropFilter="blur(6px)"
+          position="absolute"
+          bottom={2}
+          right={2}
+          paddingX={2}
+          paddingY={1}
+          borderRadius="4px"
+        >
+          {index + 1}/{PHOTOS.length}
+        </Text>
+      </Box>
+      <Flex alignItems="center" justifyContent="center" gap={3} mt={3}>
+        <CarouselArrow direction="prev" onClick={() => goTo(index - 1)} />
+        <Flex justifyContent="center" gap={1.5} flexWrap="wrap">
+          {PHOTOS.map((p, i) => (
+            <Box
+              key={p.image}
+              as="button"
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={`Go to photo ${i + 1}: ${p.location}`}
+              width={i === index ? "16px" : "6px"}
+              height="6px"
+              borderRadius="3px"
+              bg={i === index ? "#f05032" : "brand.border"}
+              cursor="pointer"
+              transition="0.15s ease all"
+            />
+          ))}
+        </Flex>
+        <CarouselArrow direction="next" onClick={() => goTo(index + 1)} />
+      </Flex>
+    </Box>
   );
 };

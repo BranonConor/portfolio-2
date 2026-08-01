@@ -13,7 +13,7 @@ const ContentImage: React.FC<IContentImageProps> = ({ image, caption }) => {
       <Box
         width="100%"
         position="relative"
-        borderRadius={16}
+        borderRadius="10px"
         mt={8}
         mb={caption ? 2 : 4}
         overflow="hidden"

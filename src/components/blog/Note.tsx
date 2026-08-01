@@ -8,7 +8,7 @@ const Note: React.FC<BoxProps> = ({ children, ...otherProps }) => {
       paddingY={4}
       px={4}
       mx={[4, 5, 6]}
-      bg="rgba(255, 255, 255, 0.03)"
+      bg="rgba(230, 230, 190, 0.03)"
       borderRadius="10"
       border="1px solid"
       borderColor="brand.border"

@@ -9,6 +9,8 @@ import {
 import type { MDXComponents } from "mdx/types";
 import Image, { ImageProps } from "next/image";
 import { FancyHeading } from "./components/FancyHeading";
+import { pixelFont } from "./components/boot-intro/pixelFont";
+import { proseFont } from "./components/proseFont";
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -18,21 +20,30 @@ import { FancyHeading } from "./components/FancyHeading";
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     h1: ({ children }) => (
-      <Heading as="h2" size="xl" mt={8} color="brand.text" px={[4, 5, 6]}>
+      <Heading
+        as="h2"
+        className={pixelFont.className}
+        fontSize={["15px", "18px"]}
+        fontWeight="400"
+        letterSpacing="0.02em"
+        lineHeight="1.5"
+        mt={8}
+        color="brand.text"
+        px={[4, 5, 6]}
+      >
         {children}
       </Heading>
     ),
     h2: ({ children }) => (
       <FancyHeading
         as="h3"
-        size="md"
+        fontSize={["13px", "15px"]}
         pl={2}
         borderLeft="2px solid"
         borderLeftColor="brand.border"
         mt={8}
         mx={[4, 5, 6]}
         color="brand.text"
-        fontWeight={600}
       >
         {children}
       </FancyHeading>
@@ -40,7 +51,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h3: ({ children }) => (
       <Heading
         as="h4"
-        size="md"
+        className={pixelFont.className}
+        fontSize={["12px", "13px"]}
+        fontWeight="400"
+        letterSpacing="0.02em"
+        lineHeight="1.5"
         borderLeft="2px solid"
         borderLeftColor="brand.border"
         pl={2}
@@ -54,8 +69,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h4: ({ children }) => (
       <Heading
         as="h5"
-        size="sm"
-        fontWeight="bold"
+        className={pixelFont.className}
+        fontSize={["10.5px", "11px"]}
+        fontWeight="400"
+        letterSpacing="0.02em"
+        lineHeight="1.5"
         mt={6}
         color="brand.text"
         px={[4, 5, 6]}
@@ -66,10 +84,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     p: ({ children }) => (
       <Text
         as="p"
-        size="s"
+        className={proseFont.className}
+        fontSize="15px"
         mt={4}
         color="brand.textMuted"
-        lineHeight="1.8"
+        lineHeight="1.6"
         px={[4, 5, 6]}
       >
         {children}
@@ -77,10 +96,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     ul: ({ children }) => (
       <UnorderedList
+        className={proseFont.className}
+        fontSize="15px"
         mt={4}
-        size="md"
         color="brand.textMuted"
-        lineHeight="1.8"
+        lineHeight="1.6"
         px={[4, 5, 6]}
       >
         {children}
@@ -88,10 +108,11 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     ol: ({ children }) => (
       <OrderedList
+        className={proseFont.className}
+        fontSize="15px"
         mt={4}
-        size="md"
         color="brand.textMuted"
-        lineHeight="1.8"
+        lineHeight="1.6"
         px={[4, 5, 6]}
       >
         {children}
@@ -99,13 +120,14 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     a: ({ children, href }) => (
       <Link
+        className={proseFont.className}
         color="brand.accent"
         textDecoration="underline"
         fontWeight={600}
+        fontSize="15px"
         href={href}
         target="blank"
         rel="noreferrer noopener"
-        size="md"
         _hover={{
           opacity: 0.8,
         }}
@@ -133,11 +155,14 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     blockquote: ({ children }) => (
       <Box
         as="blockquote"
+        className={proseFont.className}
+        fontSize="15px"
         borderLeft="3px solid"
         borderLeftColor="brand.accent"
         pl={4}
         mx={[4, 5, 6]}
         my={4}
+        lineHeight="1.6"
         fontStyle="italic"
         color="brand.textMuted"
       >
@@ -145,7 +170,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Box>
     ),
     strong: ({ children }) => (
-      <Text as="strong" fontWeight="700" color="brand.text">
+      <Text
+        as="strong"
+        className={proseFont.className}
+        fontSize="15px"
+        fontWeight="700"
+        color="brand.text"
+      >
         {children}
       </Text>
     ),
@@ -174,12 +205,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         <Box
           as="pre"
           overflow="auto"
-          borderRadius={16}
+          borderRadius="10px"
           border="1px solid"
           borderColor="brand.border"
           p={5}
-          fontSize="14px"
-          lineHeight="1.7"
+          fontSize="13px"
+          lineHeight="1.6"
           {...props}
         >
           {children}

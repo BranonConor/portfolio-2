@@ -14,7 +14,7 @@ export const SkipToContent = () => (
     zIndex={1000}
     px={4}
     py={2}
-    borderRadius="8px"
+    borderRadius="10px"
     bg="brand.accent"
     color="brand.bg"
     fontWeight={600}

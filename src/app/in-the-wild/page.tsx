@@ -1,8 +1,11 @@
 "use client";
 
-import { Flex, Text, Heading, Box, Link as ChakraLink } from "@chakra-ui/react";
+import { Flex, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
-import { PaintStroke } from "@/components/PaintStroke";
+import { PageHeading } from "@/components/PageHeading";
+import { RetroCard } from "@/components/RetroCard";
+import { RetroFilterPill } from "@/components/RetroFilterPill";
+import { pixelFont } from "@/components/boot-intro/pixelFont";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -44,91 +47,24 @@ export default function InTheWild() {
         alignItems="flex-start"
         justifyContent="flex-start"
       >
-        <Box
-          border="1px solid"
-          borderColor="brand.border"
-          borderRadius="12px"
-          bg="rgba(20, 20, 22, 0.6)"
-          backdropFilter="blur(16px)"
-          overflow="hidden"
-          width="100%"
-        >
-          {/* Paint stroke header area */}
-          <Box
-            position="relative"
-            width="100%"
-            height={["80px", "100px", "120px"]}
-            overflow="hidden"
-            borderBottom="1px solid"
-            borderBottomColor="brand.border"
-          >
-            <PaintStroke
-              variant={3}
-              top="-30px"
-              left="-50px"
-              width={["200px", "260px", "320px"]}
-              opacity={0.35}
+        <RetroCard>
+          <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
+            <PageHeading
+              title="In the Wild"
+              subtitle="Things I've helped ship, living out in the world ⚡️"
             />
-            <PaintStroke
-              variant={1}
-              top="-20px"
-              right="-40px"
-              width={["180px", "220px", "280px"]}
-              opacity={0.25}
-            />
-            <PaintStroke
-              variant={6}
-              bottom="-50px"
-              left="30%"
-              width={["160px", "200px", "240px"]}
-              opacity={0.2}
-              rotate={15}
-            />
-          </Box>
-
-          <Box p={5} pb={3}>
-            <Heading
-              as="h1"
-              fontSize={["28px", "36px"]}
-              fontWeight="700"
-              letterSpacing="-0.03em"
-              mb={2}
-            >
-              In the Wild
-            </Heading>
-            <Text fontSize="15px" color="brand.textMuted">
-              Things I&apos;ve helped ship, living out in the world ⚡️
-            </Text>
           </Box>
 
           {/* Filters */}
-          <Flex flexWrap="wrap" alignItems="center" mb={4} gap={1.5} px={5}>
+          <Flex flexWrap="wrap" alignItems="center" gap={2} px={5} pt={4} pb={4}>
             {categories.map((cat) => (
-              <Text
+              <RetroFilterPill
                 key={cat.key}
-                as="button"
-                fontSize="12px"
-                fontWeight={currentFilter === cat.key ? "500" : "400"}
-                paddingY={1.5}
-                paddingX={3}
-                color={currentFilter === cat.key ? ACCENT : "brand.textMuted"}
-                bg={currentFilter === cat.key ? `${ACCENT}15` : "transparent"}
-                border="1px solid"
-                borderColor={
-                  currentFilter === cat.key ? `${ACCENT}40` : "brand.border"
-                }
-                borderRadius="8px"
+                label={cat.label}
+                color={ACCENT}
+                active={currentFilter === cat.key}
                 onClick={() => setCurrentFilter(cat.key)}
-                transition="0.12s ease all"
-                _hover={{
-                  borderColor: `${ACCENT}40`,
-                  color: ACCENT,
-                  bg: `${ACCENT}15`,
-                }}
-                cursor="pointer"
-              >
-                {cat.label}
-              </Text>
+              />
             ))}
           </Flex>
 
@@ -140,7 +76,7 @@ export default function InTheWild() {
             px={5}
             pb={3}
             sx={{
-              "& > *:first-child::after": { display: "none" },
+              "& > *:first-of-type::after": { display: "none" },
               "& > *:hover + *::after": { transform: "scaleX(0)" },
             }}
           >
@@ -162,40 +98,56 @@ export default function InTheWild() {
                   flexDirection="row"
                   justifyContent="space-between"
                   alignItems="flex-start"
-                  paddingY={4}
+                  gap={2}
                   position="relative"
+                  paddingY={3}
+                  paddingX={3}
+                  borderRadius="10px"
+                  border="2px solid transparent"
                   _after={{
                     content: '""',
                     position: "absolute",
                     top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
+                    left: 2,
+                    right: 2,
+                    height: "2px",
                     bg: "brand.border",
-                    transition: "0.18s ease all",
+                    transition: "0.15s ease all",
                     transformOrigin: "center",
                   }}
                   _hover={{
                     textDecoration: "none",
-                    bg: "brand.surfaceHover",
-                    marginX: -3,
-                    paddingX: 3,
-                    borderRadius: "10px",
+                    bg: `${ACCENT}14`,
+                    borderColor: `${ACCENT}55`,
+                    transform: "translateX(3px)",
                     zIndex: 1,
                     _after: { transform: "scaleX(0)" },
                   }}
-                  transition="0.12s ease all"
+                  transition="0.14s ease all"
                 >
-                  <Box flex={1} minWidth={0} pr={4}>
-                    <Text textStyle="listTitle">{item.title}</Text>
+                  <Flex flex={1} minWidth={0} pr={4} gap={2}>
                     <Text
-                      textStyle="listMeta"
-                      mt={0.5}
-                      display={["block", "block", "none"]}
+                      as="span"
+                      className={pixelFont.className}
+                      fontSize="7px"
+                      color={ACCENT}
+                      aria-hidden="true"
+                      flexShrink={0}
+                      mt="3px"
                     >
-                      {item.source} · {item.date}
+                      {"\u25B8"}
                     </Text>
-                  </Box>
+                    <Box>
+                      <Text textStyle="listTitle">{item.title}</Text>
+                      <Text
+                        textStyle="listMeta"
+                        mt={0.5}
+                        display={["block", "block", "none"]}
+                      >
+                        {item.source} · {item.date}
+                      </Text>
+                    </Box>
+                  </Flex>
                   <Flex
                     flexShrink={0}
                     alignItems="center"
@@ -225,7 +177,7 @@ export default function InTheWild() {
               );
             })}
           </Flex>
-        </Box>
+        </RetroCard>
       </Flex>
     </PageWrapper>
   );

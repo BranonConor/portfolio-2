@@ -104,3 +104,42 @@ export const productProjects = [
     date: "March 2025",
   },
 ];
+
+// Small side-project/course "showcase" — migrated here from the old
+// src/app/page.tsx home page (no longer reachable) since it's projects-
+// focused (open-source repos, apps, courses) rather than About-page content.
+export const showcaseItems = [
+  {
+    title: "INCLUSION.md",
+    description: "Context for inclusive AI design",
+    link: "https://github.com/BranonConor/inclusion.md",
+    icon: "/icons/code-dark.svg",
+    tag: "Live",
+  },
+  {
+    title: "Thesis",
+    description: "AI-assisted knowledge network",
+    link: "https://thesis.social",
+    icon: "/thesis.png",
+    tag: "Live",
+  },
+  {
+    title: "ListRocket",
+    description: "Collaborative event planning app",
+    link: "https://listrocket.app",
+    icon: "/listrocket.svg",
+    tag: "Live",
+  },
+  {
+    title: "HTML/CSS Bootcamp",
+    description: "Udemy course w/ Colt Steele",
+    link: "https://www.udemy.com/course/html-and-css-bootcamp",
+    icon: "/udemy.png",
+  },
+  {
+    title: "Typescript Course",
+    description: "Udemy course w/ Colt Steele",
+    link: "https://www.udemy.com/course/learn-typescript",
+    icon: "/udemy.png",
+  },
+];

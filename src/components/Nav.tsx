@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { JSX } from "react";
+import { pixelFont } from "./boot-intro/pixelFont";
 
 type IconProps = { color: string };
 
@@ -236,11 +237,11 @@ export const Nav = () => {
               fontWeight={isActive ? "500" : "400"}
               color={isActive ? item.color : "brand.textMuted"}
               bg={isActive ? `${item.color}18` : "transparent"}
-              border="1px solid"
-              borderColor={isActive ? `${item.color}40` : "transparent"}
+              border="2px solid"
+              borderColor={isActive ? `${item.color}55` : "transparent"}
               paddingX={3}
               paddingY={1.5}
-              borderRadius="10px"
+              borderRadius="8px"
               transition="0.15s ease all"
               sx={{
                 "&:hover svg path, &:hover svg circle": {
@@ -257,6 +258,17 @@ export const Nav = () => {
               }}
             >
               <item.Icon color={iconColor} />
+              {isActive && (
+                <Text
+                  as="span"
+                  className={pixelFont.className}
+                  fontSize="8px"
+                  color={item.color}
+                  aria-hidden="true"
+                >
+                  {"\u25B6"}
+                </Text>
+              )}
               {item.label}
             </Text>
           </Box>
