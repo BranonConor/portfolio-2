@@ -739,7 +739,6 @@ export function BootIntro() {
                     display="flex"
                     alignItems="flex-end"
                     zIndex={0}
-                    pointerEvents="none"
                     style={{ transform: "translateX(-50%)" }}
                   >
                     {CARTRIDGES.map((item, index) => {
@@ -748,12 +747,19 @@ export function BootIntro() {
                       return (
                         <Box
                           key={item.href}
-                          as={motion.div}
+                          as={motion.button}
+                          type="button"
+                          aria-label={`Preview ${item.label}`}
+                          onClick={() => selectCartridge(index)}
                           zIndex={index}
                           flexShrink={0}
+                          cursor="pointer"
                           style={{
                             marginLeft: index === 0 ? 0 : `${mobileCartOverlapPx}px`,
                             transformOrigin: "bottom center",
+                            background: "none",
+                            border: "none",
+                            padding: 0,
                           }}
                           animate={{
                             y: isSelected ? mobileCartSelectedY : mobileCartRestY,
@@ -774,6 +780,7 @@ export function BootIntro() {
                               width: `${mobileCartWidth}px`,
                               height: `${mobileCartHeight}px`,
                               maxWidth: "none",
+                              pointerEvents: "none",
                             }}
                           />
                         </Box>
@@ -946,17 +953,7 @@ export function BootIntro() {
                           aria-selected={isSelected}
                           onMouseEnter={() => selectCartridge(index)}
                           onFocus={() => selectCartridge(index)}
-                          onClick={() => {
-                            // On mobile there's no real hover state, so the first tap
-                            // on a cartridge just makes it the active/selected one
-                            // (mirroring desktop hover) — only a tap on the cartridge
-                            // that's already active launches it.
-                            if (isMobileDrawer && !isSelected) {
-                              selectCartridge(index);
-                              return;
-                            }
-                            loadCartridge(index);
-                          }}
+                          onClick={() => loadCartridge(index)}
                           width="100%"
                           display="flex"
                           alignItems="center"
