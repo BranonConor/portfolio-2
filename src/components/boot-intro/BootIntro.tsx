@@ -946,7 +946,17 @@ export function BootIntro() {
                           aria-selected={isSelected}
                           onMouseEnter={() => selectCartridge(index)}
                           onFocus={() => selectCartridge(index)}
-                          onClick={() => loadCartridge(index)}
+                          onClick={() => {
+                            // On mobile there's no real hover state, so the first tap
+                            // on a cartridge just makes it the active/selected one
+                            // (mirroring desktop hover) — only a tap on the cartridge
+                            // that's already active launches it.
+                            if (isMobileDrawer && !isSelected) {
+                              selectCartridge(index);
+                              return;
+                            }
+                            loadCartridge(index);
+                          }}
                           width="100%"
                           display="flex"
                           alignItems="center"
