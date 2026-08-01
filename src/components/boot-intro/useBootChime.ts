@@ -15,6 +15,11 @@ interface Chain {
   master: GainNode;
 }
 
+// A ~0.1s silent WAV, used purely to flip Mobile Safari's audio session
+// category from "ambient" to "playback" — see the note in `unlock()` below.
+const SILENT_WAV_DATA_URI =
+  "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+
 /**
  * Synthesizes an original GBA-style boot audio set with the Web Audio API —
  * no sampled or copyrighted audio. Two original sounds are produced:
@@ -38,6 +43,7 @@ export function useBootChime() {
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
   const mutedRef = useRef(false);
   const [muted, setMuted] = useState(false);
+  const sessionUnlockElRef = useRef<HTMLAudioElement | null>(null);
 
   const getChain = useCallback((): Chain | null => {
     if (chainRef.current) return chainRef.current;
@@ -79,6 +85,23 @@ export function useBootChime() {
     if (chain?.ctx.state === "suspended") {
       chain.ctx.resume().catch(() => {});
     }
+
+    // Mobile Safari plays Web Audio API oscillators through the "ambient"
+    // audio session category, which is silenced by the hardware ringer/
+    // silent switch regardless of in-page volume — unlike an HTML
+    // <audio>/<video> element's "playback" category, which ignores that
+    // switch. Playing (even a silent) audio element here, synchronously
+    // within the same user gesture, flips the whole page's session over to
+    // "playback" so the synthesized chimes are audible with the ringer
+    // switched to silent, matching how every other web audio player avoids
+    // this same well-known iOS quirk.
+    if (!sessionUnlockElRef.current) {
+      const el = new Audio(SILENT_WAV_DATA_URI);
+      el.setAttribute("playsinline", "true");
+      el.volume = 0.01;
+      sessionUnlockElRef.current = el;
+    }
+    sessionUnlockElRef.current.play().catch(() => {});
   }, [getChain]);
 
   const toggleMute = useCallback(() => {
