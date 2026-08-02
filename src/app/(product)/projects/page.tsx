@@ -137,6 +137,7 @@ export default function Projects() {
                 key={project.title}
                 as={Link}
                 href={project.link}
+                role="group"
                 display="flex"
                 flexDirection={["column", "row"]}
                 justifyContent="space-between"
@@ -172,11 +173,13 @@ export default function Projects() {
                   <Text
                     as="span"
                     className={pixelFont.className}
-                    fontSize="7px"
-                    color="#da70d6"
+                    fontSize="11px"
+                    color="transparent"
+                    _groupHover={{ color: "#da70d6" }}
                     aria-hidden="true"
+                    transition="color 0.14s ease"
                   >
-                    {"\u25B8"}
+                    {"\u25B6"}
                   </Text>
                   <Text textStyle="listTitle">
                     {project.title}

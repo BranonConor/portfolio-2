@@ -73,6 +73,7 @@ export default function Engagements() {
                 key={engagement.title}
                 as={Link}
                 href={engagement.link}
+                role="group"
                 display="flex"
                 flexDirection={["column", "row"]}
                 justifyContent="space-between"
@@ -108,11 +109,13 @@ export default function Engagements() {
                   <Text
                     as="span"
                     className={pixelFont.className}
-                    fontSize="7px"
-                    color="#22c55e"
+                    fontSize="11px"
+                    color="transparent"
+                    _groupHover={{ color: "#22c55e" }}
                     aria-hidden="true"
+                    transition="color 0.14s ease"
                   >
-                    {"\u25B8"}
+                    {"\u25B6"}
                   </Text>
                   <Text textStyle="listTitle">
                     {engagement.title}

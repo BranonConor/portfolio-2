@@ -332,6 +332,7 @@ export default function About() {
                     key={item.title}
                     href={item.link}
                     isExternal
+                    role="group"
                     display="block"
                     position="relative"
                     paddingY={2.5}
@@ -364,13 +365,15 @@ export default function About() {
                         <Text
                           as="span"
                           className={pixelFont.className}
-                          fontSize="7px"
-                          color={ABOUT_ACCENT}
+                          fontSize="11px"
+                          color="transparent"
+                          _groupHover={{ color: ABOUT_ACCENT }}
                           aria-hidden="true"
                           flexShrink={0}
-                          mt="3px"
+                          mt="1px"
+                          transition="color 0.14s ease"
                         >
-                          {"\u25B8"}
+                          {"\u25B6"}
                         </Text>
                         <Box flex={1} minWidth={0}>
                           <Flex alignItems="center" gap={2} mb={0.5} flexWrap="wrap">

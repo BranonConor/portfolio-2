@@ -62,6 +62,7 @@ export default function Blog() {
                 {...(post.external
                   ? { href: post.link, isExternal: true }
                   : { as: Link, href: post.link })}
+                role="group"
                 display="flex"
                 justifyContent="space-between"
                 alignItems="flex-start"
@@ -96,13 +97,15 @@ export default function Blog() {
                   <Text
                     as="span"
                     className={pixelFont.className}
-                    fontSize="7px"
-                    color="#61dafb"
+                    fontSize="11px"
+                    color="transparent"
+                    _groupHover={{ color: "#61dafb" }}
                     aria-hidden="true"
                     flexShrink={0}
-                    mt="3px"
+                    mt="1px"
+                    transition="color 0.14s ease"
                   >
-                    {"\u25B8"}
+                    {"\u25B6"}
                   </Text>
                   <Box flex={1} minWidth={0}>
                     <Flex alignItems="center" gap={3}>

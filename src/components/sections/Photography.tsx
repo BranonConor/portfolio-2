@@ -83,6 +83,7 @@ export const Photography = () => {
             key={item.title}
             href={item.link}
             isExternal
+            role="group"
             display="block"
             position="relative"
             paddingY={2.5}
@@ -119,13 +120,15 @@ export const Photography = () => {
                 <Text
                   as="span"
                   className={pixelFont.className}
-                  fontSize="7px"
-                  color="#f05032"
+                  fontSize="11px"
+                  color="transparent"
+                  _groupHover={{ color: "#f05032" }}
                   aria-hidden="true"
                   flexShrink={0}
-                  mt="3px"
+                  mt="1px"
+                  transition="color 0.14s ease"
                 >
-                  {"\u25B8"}
+                  {"\u25B6"}
                 </Text>
                 <Box flex={1} minWidth={0}>
                   <Text textStyle="listTitle">{item.title}</Text>
@@ -162,6 +165,7 @@ export const Photography = () => {
             key={item.title}
             href={item.link}
             isExternal
+            role="group"
             display="flex"
             justifyContent="space-between"
             alignItems="center"
@@ -195,12 +199,14 @@ export const Photography = () => {
               <Text
                 as="span"
                 className={pixelFont.className}
-                fontSize="7px"
-                color="#f05032"
+                fontSize="11px"
+                color="transparent"
+                _groupHover={{ color: "#f05032" }}
                 aria-hidden="true"
                 flexShrink={0}
+                transition="color 0.14s ease"
               >
-                {"\u25B8"}
+                {"\u25B6"}
               </Text>
               <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
@@ -229,6 +235,7 @@ export const Photography = () => {
         <ChakraLink
           href="https://www.instagram.com/photosbyanasian/"
           isExternal
+          role="group"
           display="flex"
           justifyContent="space-between"
           alignItems="center"
@@ -262,12 +269,14 @@ export const Photography = () => {
             <Text
               as="span"
               className={pixelFont.className}
-              fontSize="7px"
-              color="#f05032"
+              fontSize="11px"
+              color="transparent"
+              _groupHover={{ color: "#f05032" }}
               aria-hidden="true"
               flexShrink={0}
+              transition="color 0.14s ease"
             >
-              {"\u25B8"}
+              {"\u25B6"}
             </Text>
             <Text as="span" textStyle="listTitle" transition="0.12s ease all">
               @photosbyanasian

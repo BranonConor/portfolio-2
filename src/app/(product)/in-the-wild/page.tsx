@@ -94,6 +94,7 @@ export default function InTheWild() {
                 <ChakraLink
                   key={item.title}
                   {...linkProps}
+                  role="group"
                   display="flex"
                   flexDirection="row"
                   justifyContent="space-between"
@@ -129,13 +130,15 @@ export default function InTheWild() {
                     <Text
                       as="span"
                       className={pixelFont.className}
-                      fontSize="7px"
-                      color={ACCENT}
+                      fontSize="11px"
+                      color="transparent"
+                      _groupHover={{ color: ACCENT }}
                       aria-hidden="true"
                       flexShrink={0}
-                      mt="3px"
+                      mt="1px"
+                      transition="color 0.14s ease"
                     >
-                      {"\u25B8"}
+                      {"\u25B6"}
                     </Text>
                     <Box>
                       <Text textStyle="listTitle">{item.title}</Text>
