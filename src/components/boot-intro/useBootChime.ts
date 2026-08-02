@@ -1,6 +1,38 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// Every call to useBootChime() (boot intro, the persistent mute button in
+// the product layout, the photo carousel's click sound, etc.) creates its
+// own independent AudioContext — but the *mute preference* needs to be one
+// shared, persisted toggle so muting from any one of them silences all the
+// others too, instead of each screen tracking its own separate on/off
+// state. This module-level store (plus localStorage) is that single
+// source of truth; every hook instance subscribes to it on mount and
+// re-applies it to its own gain node whenever it changes anywhere.
+const MUTE_STORAGE_KEY = "gba-sound-muted";
+const muteListeners = new Set<(muted: boolean) => void>();
+let sharedMuted = false;
+
+function readStoredMute(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(MUTE_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function setSharedMuted(next: boolean) {
+  sharedMuted = next;
+  try {
+    window.localStorage.setItem(MUTE_STORAGE_KEY, next ? "1" : "0");
+  } catch {
+    // Ignore (private browsing / storage disabled) — the in-memory value
+    // still keeps every currently-mounted instance in sync for this visit.
+  }
+  muteListeners.forEach((listener) => listener(next));
+}
 
 // A major pentatonic scale, spanning a couple of octaves, gives every note a
 // consonant/"heavenly" quality no matter which degree a given letter lands
@@ -41,9 +73,34 @@ const BASE_MASTER_GAIN = 0.9;
 export function useBootChime() {
   const chainRef = useRef<Chain | null>(null);
   const noiseBufferRef = useRef<AudioBuffer | null>(null);
-  const mutedRef = useRef(false);
-  const [muted, setMuted] = useState(false);
+  const mutedRef = useRef(sharedMuted);
+  const [muted, setMuted] = useState(sharedMuted);
   const sessionUnlockElRef = useRef<HTMLAudioElement | null>(null);
+
+  // Pick up the persisted preference on mount (sharedMuted is only known
+  // once we're on the client), and stay in sync with every other mounted
+  // instance's toggles for as long as this one stays mounted.
+  useEffect(() => {
+    const stored = readStoredMute();
+    sharedMuted = stored;
+    mutedRef.current = stored;
+    setMuted(stored);
+    if (chainRef.current) {
+      chainRef.current.master.gain.value = stored ? 0 : BASE_MASTER_GAIN;
+    }
+
+    const listener = (next: boolean) => {
+      mutedRef.current = next;
+      setMuted(next);
+      if (chainRef.current) {
+        chainRef.current.master.gain.value = next ? 0 : BASE_MASTER_GAIN;
+      }
+    };
+    muteListeners.add(listener);
+    return () => {
+      muteListeners.delete(listener);
+    };
+  }, []);
 
   const getChain = useCallback((): Chain | null => {
     if (chainRef.current) return chainRef.current;
@@ -105,13 +162,11 @@ export function useBootChime() {
   }, [getChain]);
 
   const toggleMute = useCallback(() => {
-    mutedRef.current = !mutedRef.current;
-    setMuted(mutedRef.current);
-    if (chainRef.current) {
-      chainRef.current.master.gain.value = mutedRef.current
-        ? 0
-        : BASE_MASTER_GAIN;
-    }
+    // Writes through the shared store (which also updates this instance
+    // via its own subscription above) rather than mutating local state
+    // directly, so every other mounted useBootChime() instance mutes/
+    // unmutes in lockstep with this one.
+    setSharedMuted(!mutedRef.current);
   }, []);
 
   /**

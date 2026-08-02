@@ -8,6 +8,8 @@ import { REVERSE_BOOT_STORAGE_KEY, PIXEL_CURSOR, PAPER_BG_SX } from "@/lib/conso
 import { CARTRIDGES } from "@/lib/cartridges";
 import { CartridgeNav } from "@/components/CartridgeNav";
 import { CursorSparkles } from "@/components/boot-intro/CursorSparkles";
+import { useBootChime } from "@/components/boot-intro/useBootChime";
+import { SoundMuteIcon } from "@/components/boot-intro/SoundMuteIcon";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import { proseFont } from "@/components/proseFont";
 
@@ -35,6 +37,7 @@ export default function ProductLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const [poweringOff, setPoweringOff] = useState(false);
+  const { muted, toggleMute } = useBootChime();
 
   // Themes the ESC/power button with the current route's cartridge accent
   // color (same lookup pattern used by PageHeading/filter chips), so it
@@ -175,6 +178,37 @@ export default function ProductLayout({ children }: { children: React.ReactNode 
             />
           </Box>
           ESC
+        </Box>
+
+        {/* Persistent sound toggle — same speaker glyph and mute-state
+            store as the boot cartridge-picker's mute button, so muting
+            here (or there) mutes every sound on every route, and this
+            button always reflects the current state. Square icon-button
+            sizing matches ESC's 30px band exactly. */}
+        <Box
+          as="button"
+          type="button"
+          onClick={toggleMute}
+          aria-pressed={muted}
+          aria-label={muted ? "Unmute sound effects" : "Mute sound effects"}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          width="30px"
+          height="30px"
+          flexShrink={0}
+          color="brand.text"
+          bg={`${accentColor}26`}
+          backdropFilter="blur(10px) saturate(160%)"
+          sx={{ WebkitBackdropFilter: "blur(10px) saturate(160%)" }}
+          border="2px solid"
+          borderColor={`${accentColor}55`}
+          borderRadius="10px"
+          cursor="pointer"
+          _hover={{ borderColor: accentColor, bg: `${accentColor}28` }}
+          transition="0.15s ease all"
+        >
+          <SoundMuteIcon muted={muted} size={12} />
         </Box>
       </Flex>
 

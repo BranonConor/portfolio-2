@@ -15,6 +15,7 @@ import { BootLogoCanvas } from "./BootLogoCanvas";
 import { PowerOnScene, type PowerOnSceneHandle } from "./PowerOnScene";
 import { CursorSparkles } from "./CursorSparkles";
 import { useBootChime } from "./useBootChime";
+import { SoundMuteIcon } from "./SoundMuteIcon";
 import { pixelFont } from "./pixelFont";
 import { proseFont } from "../proseFont";
 import { SCREEN_BG, REVERSE_BOOT_STORAGE_KEY, PIXEL_CURSOR, PAPER_BG_SX } from "@/lib/consoleTheme";
@@ -478,29 +479,7 @@ export function BootIntro() {
   const mobileCartOverlapPx = isTinyMobile ? -27 : -58;
   const MOBILE_CART_BASE_TILTS = [-8, 5, -4, 7, -6];
 
-  const muteIcon = (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.4}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polygon points="3,9 8,9 13,4 13,20 8,15 3,15" fill="currentColor" stroke="none" />
-      {muted ? (
-        <path d="M16 9l6 6M22 9l-6 6" />
-      ) : (
-        <>
-          <path d="M16.5 8a5 5 0 0 1 0 8" />
-          <path d="M19.5 5a9 9 0 0 1 0 14" />
-        </>
-      )}
-    </svg>
-  );
+  const muteIcon = <SoundMuteIcon muted={muted} />;
 
   // Paper shows for the idle main menu, and again once the boot logo's
   // screen has "flicked on" (bootFlickLit) — except during the reverse
