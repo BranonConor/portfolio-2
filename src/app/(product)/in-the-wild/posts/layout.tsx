@@ -79,6 +79,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#fbbf24"
               />
             )}
             {!isEndOfPage && (
@@ -88,6 +89,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#fbbf24"
               />
             )}
           </AnimatePresence>

@@ -45,7 +45,7 @@ export const CARTRIDGES: Cartridge[] = [
     label: "ABOUT",
     href: "/about",
     color: "#f05032",
-    blurb: "The person behind it",
+    blurb: "Who I am",
     art: "red.svg",
   },
 ];

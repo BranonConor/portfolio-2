@@ -115,12 +115,25 @@ export const Photography = () => {
               alignItems="flex-start"
               gap={3}
             >
-              <Box flex={1} minWidth={0}>
-                <Text textStyle="listTitle">{item.title}</Text>
-                <Text textStyle="listMeta" mt={0.5}>
-                  {item.date}
+              <Flex flex={1} minWidth={0} gap={2}>
+                <Text
+                  as="span"
+                  className={pixelFont.className}
+                  fontSize="7px"
+                  color="#f05032"
+                  aria-hidden="true"
+                  flexShrink={0}
+                  mt="3px"
+                >
+                  {"\u25B8"}
                 </Text>
-              </Box>
+                <Box flex={1} minWidth={0}>
+                  <Text textStyle="listTitle">{item.title}</Text>
+                  <Text textStyle="listMeta" mt={0.5}>
+                    {item.date}
+                  </Text>
+                </Box>
+              </Flex>
               <ExternalLinkIcon
                 boxSize={3}
                 color="brand.textMuted"
@@ -175,13 +188,24 @@ export const Photography = () => {
               transform: "translateX(3px)",
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
-              "& > span:first-of-type": { color: "brand.text" },
             }}
             transition="0.14s ease all"
           >
-            <Text as="span" textStyle="listTitle" transition="0.12s ease all">
-              {item.title}
-            </Text>
+            <Flex alignItems="center" gap={2}>
+              <Text
+                as="span"
+                className={pixelFont.className}
+                fontSize="7px"
+                color="#f05032"
+                aria-hidden="true"
+                flexShrink={0}
+              >
+                {"\u25B8"}
+              </Text>
+              <Text as="span" textStyle="listTitle" transition="0.12s ease all">
+                {item.title}
+              </Text>
+            </Flex>
             <ExternalLinkIcon
               boxSize={3}
               color="brand.textMuted"
@@ -231,13 +255,24 @@ export const Photography = () => {
             transform: "translateX(3px)",
             zIndex: 1,
             _after: { transform: "scaleX(0)" },
-            "& > span:first-of-type": { color: "brand.text" },
           }}
           transition="0.14s ease all"
         >
-          <Text as="span" textStyle="listTitle" transition="0.12s ease all">
-            @photosbyanasian
-          </Text>
+          <Flex alignItems="center" gap={2}>
+            <Text
+              as="span"
+              className={pixelFont.className}
+              fontSize="7px"
+              color="#f05032"
+              aria-hidden="true"
+              flexShrink={0}
+            >
+              {"\u25B8"}
+            </Text>
+            <Text as="span" textStyle="listTitle" transition="0.12s ease all">
+              @photosbyanasian
+            </Text>
+          </Flex>
           <ExternalLinkIcon
             boxSize={3}
             color="brand.textMuted"

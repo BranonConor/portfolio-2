@@ -4,13 +4,15 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import ScrollButton from "@/components/blog/ScrollButton";
 import { AnimatePresence } from "framer-motion";
+import ScrollButton from "@/components/blog/ScrollButton";
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
+  const codeBg = "#da70d615";
+  const codeColor = "#da70d6";
 
   const handleScroll = () => {
     if (typeof global?.window !== "undefined") {
@@ -49,7 +51,15 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PageWrapper pb={10} id="blog-page">
+    <PageWrapper
+      pb={10}
+      sx={{
+        ".remark-highlight": {
+          width: "100%",
+          my: "16px",
+        },
+      }}
+    >
       <Flex justifyContent="center" width="100%">
         <Flex
           flexDirection="column"
@@ -59,8 +69,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           justifyContent="flex-start"
           sx={{
             "code:not(pre > code)": {
-              color: "#61dafb",
-              bg: "#61dafb15",
+              color: codeColor,
+              bg: codeBg,
               padding: "1px 4px",
               borderRadius: "6px",
               fontSize: "14px",
@@ -79,6 +89,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor={codeColor}
               />
             )}
             {!isEndOfPage && (
@@ -88,6 +99,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor={codeColor}
               />
             )}
           </AnimatePresence>
@@ -103,8 +115,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primaryBlue" as={Link} href="/blog">
-              👈🏽 Back to blog
+            <Button mt={8} variant="primaryPink" as={Link} href="/projects">
+              👈🏽 Back to Projects
             </Button>
           </Flex>
         </Flex>

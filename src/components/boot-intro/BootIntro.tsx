@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import { BootLogoCanvas } from "./BootLogoCanvas";
 import { PowerOnScene, type PowerOnSceneHandle } from "./PowerOnScene";
 import { CursorSparkles } from "./CursorSparkles";
@@ -309,7 +309,7 @@ export function BootIntro() {
   }, []);
 
   const cartridge = activating !== null ? CARTRIDGES[activating] : null;
-  const role = cartridge ? `${BASE_ROLE} | ${cartridge.label}` : BASE_ROLE;
+  const role = cartridge ? `${BASE_ROLE} * ${cartridge.label}` : BASE_ROLE;
   const roleChars = useMemo(() => Array.from(role), [role]);
 
   const roleContainerVariants = useMemo(
@@ -900,20 +900,20 @@ export function BootIntro() {
                       onClick={toggleMute}
                       aria-pressed={muted}
                       aria-label={muted ? "Unmute sound effects" : "Mute sound effects"}
-                      width="22px"
-                      height="22px"
+                      width="28px"
+                      height="28px"
                       flexShrink={0}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      borderRadius="full"
-                      border="1px solid rgba(75,90,46,0.3)"
+                      borderRadius="6px"
+                      border="2px solid rgba(75,90,46,0.3)"
                       bg="rgba(255,255,255,0.5)"
                       color="#4B5A2E"
                       cursor="pointer"
-                      transition="background-color 0.15s ease"
+                      transition="0.12s ease all"
                       sx={{
-                        "&:hover": { bg: "rgba(255,255,255,0.85)" },
+                        "&:hover": { borderColor: "#4B5A2E", bg: "rgba(255,255,255,0.85)" },
                         "&:focus-visible": {
                           outline: "2px solid #4B5A2E",
                           outlineOffset: "2px",
@@ -1021,54 +1021,64 @@ export function BootIntro() {
                     );
                   })}
                 </Box>
-                {!reducedMotion && !isFullWidthMobile && (
-                  <Text
-                    className={pixelFont.className}
-                    fontSize="9px"
-                    letterSpacing="0.08em"
-                    color="#5C6B44"
-                    mt={4}
-                  >
-                    ↑↓ SELECT · ENTER LOAD
-                  </Text>
-                )}
-
-                {/* Tiny sound-effects toggle, tucked in the picker's corner
-                    so it stays out of the way of the actual cartridge list.
-                    Below 550px it moves inline with the title instead (see
-                    above), since there's no spare corner in the full-width
-                    layout. */}
                 {!isFullWidthMobile && (
-                  <Box
-                    as="button"
-                    type="button"
-                    onClick={toggleMute}
-                    aria-pressed={muted}
-                    aria-label={muted ? "Unmute sound effects" : "Mute sound effects"}
-                    position="absolute"
-                    bottom="10px"
-                    right="10px"
-                    width="22px"
-                    height="22px"
-                    display="flex"
+                  <Flex
+                    // Puts the SELECT/ENTER hint and the mute toggle on
+                    // the same row, vertically centered together, instead
+                    // of the old absolute-positioned button drifting out
+                    // of alignment with the text beside it.
+                    mt={4}
                     alignItems="center"
-                    justifyContent="center"
-                    borderRadius="full"
-                    border="1px solid rgba(75,90,46,0.3)"
-                    bg="rgba(255,255,255,0.5)"
-                    color="#4B5A2E"
-                    cursor="pointer"
-                    transition="background-color 0.15s ease"
-                    sx={{
-                      "&:hover": { bg: "rgba(255,255,255,0.85)" },
-                      "&:focus-visible": {
-                        outline: "2px solid #4B5A2E",
-                        outlineOffset: "2px",
-                      },
-                    }}
+                    justifyContent="space-between"
+                    minHeight="28px"
                   >
-                    {muteIcon}
-                  </Box>
+                    {!reducedMotion ? (
+                      <Text
+                        className={pixelFont.className}
+                        fontSize="9px"
+                        letterSpacing="0.08em"
+                        color="#5C6B44"
+                      >
+                        ↑↓ SELECT · ENTER TO LOAD
+                      </Text>
+                    ) : (
+                      <Box />
+                    )}
+
+                    {/* Sound-effects toggle — sized/shaped to match the
+                        icon buttons used elsewhere on the site (28px
+                        square, 2px border, 6px radius — see the photo
+                        carousel's prev/next arrows), just in this
+                        screen's own green palette. */}
+                    <Box
+                      as="button"
+                      type="button"
+                      onClick={toggleMute}
+                      aria-pressed={muted}
+                      aria-label={muted ? "Unmute sound effects" : "Mute sound effects"}
+                      width="28px"
+                      height="28px"
+                      flexShrink={0}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      borderRadius="6px"
+                      border="2px solid rgba(75,90,46,0.3)"
+                      bg="rgba(255,255,255,0.5)"
+                      color="#4B5A2E"
+                      cursor="pointer"
+                      transition="0.12s ease all"
+                      sx={{
+                        "&:hover": { borderColor: "#4B5A2E", bg: "rgba(255,255,255,0.85)" },
+                        "&:focus-visible": {
+                          outline: "2px solid #4B5A2E",
+                          outlineOffset: "2px",
+                        },
+                      }}
+                    >
+                      {muteIcon}
+                    </Box>
+                  </Flex>
                 )}
                 </Box>
               </Box>

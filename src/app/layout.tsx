@@ -53,6 +53,11 @@ export default function RootLayout({
         padding: "0",
         margin: "0",
         overflowX: "hidden",
+        // Reserves a constant gutter for the vertical scrollbar (rather
+        // than only showing it on pages tall enough to scroll) so
+        // navigating between a long page and a short one doesn't shift
+        // the whole layout horizontally as the scrollbar appears/disappears.
+        scrollbarGutter: "stable",
         scrollBehavior: "smooth",
         background: SCREEN_BG,
       }}

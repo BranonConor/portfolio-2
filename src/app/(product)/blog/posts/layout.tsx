@@ -4,8 +4,8 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence } from "framer-motion";
 import ScrollButton from "@/components/blog/ScrollButton";
+import { AnimatePresence } from "framer-motion";
 
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -49,7 +49,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PageWrapper pb={10}>
+    <PageWrapper pb={10} id="blog-page">
       <Flex justifyContent="center" width="100%">
         <Flex
           flexDirection="column"
@@ -59,8 +59,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           justifyContent="flex-start"
           sx={{
             "code:not(pre > code)": {
-              color: "#22c55e",
-              bg: "#22c55e15",
+              color: "#61dafb",
+              bg: "#61dafb15",
               padding: "1px 4px",
               borderRadius: "6px",
               fontSize: "14px",
@@ -79,6 +79,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#61dafb"
               />
             )}
             {!isEndOfPage && (
@@ -88,6 +89,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#61dafb"
               />
             )}
           </AnimatePresence>
@@ -103,8 +105,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primaryGreen" as={Link} href="/engagements">
-              👈🏽 Back to Engagements
+            <Button mt={8} variant="primaryBlue" as={Link} href="/blog">
+              👈🏽 Back to blog
             </Button>
           </Flex>
         </Flex>

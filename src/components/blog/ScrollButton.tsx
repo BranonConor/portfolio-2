@@ -1,7 +1,7 @@
 "use client";
 
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -10,6 +10,9 @@ interface ScrollButtonProps {
   scrollDirection: "up" | "down";
   bottomPosition: number;
   scrollPosition: number;
+  /** Post-page accent color, so this matches the ESC button's per-section
+   * tinted border/background instead of a generic neutral circle. */
+  accentColor: string;
 }
 
 const ScrollButton: React.FC<ScrollButtonProps> = ({
@@ -17,27 +20,34 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
   bottomPosition,
   scrollPosition,
   isEndOfPage,
+  accentColor,
 }) => {
-  const upIcon = <TriangleUpIcon />;
-  const downIcon = <TriangleDownIcon />;
+  const upIcon = <TriangleUpIcon boxSize="10px" />;
+  const downIcon = <TriangleDownIcon boxSize="10px" />;
 
   const bothVisible = scrollPosition > 128 && !isEndOfPage;
-  const yPosition = scrollDirection === "down" && bothVisible ? "80px" : "16px";
+  // Mirrors the ESC button's top=4 (16px) offset for whichever arrow is
+  // occupying that top slot, with the other arrow sitting a fixed 12px
+  // gap below it (30px tall + 12px gap = 42px) when both are visible.
+  const yPosition = scrollDirection === "down" && bothVisible ? "58px" : "16px";
 
   return (
     <Flex
       as={motion.button}
+      type="button"
       position="fixed"
       right={4}
       top={yPosition}
-      transition="0.25s ease top"
-      borderRadius="100%"
-      bg="brand.surface"
-      border="1px solid"
-      borderColor="brand.border"
-      aria-label="scroll to top"
-      width={12}
-      height={12}
+      zIndex={101}
+      transition="0.25s ease top, 0.15s ease border-color, 0.15s ease background-color"
+      borderRadius="10px"
+      bg={`${accentColor}26`}
+      border="2px solid"
+      borderColor={`${accentColor}55`}
+      color="brand.text"
+      aria-label={scrollDirection === "up" ? "Scroll to top" : "Scroll to bottom"}
+      width="30px"
+      height="30px"
       alignItems="center"
       justifyContent="center"
       onClick={() => {
@@ -48,25 +58,25 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
         }
       }}
       boxSizing="border-box"
+      _hover={{ borderColor: accentColor, bg: `${accentColor}28` }}
       whileHover={{
-        scale: 1.1,
+        scale: 1.06,
         transition: { duration: 0.1 },
       }}
       whileTap={{
-        scale: 1.2,
+        scale: 0.95,
         transition: { duration: 0.1 },
       }}
-      initial={{ scale: 2, zIndex: 10 }}
+      initial={{ scale: 1.4, opacity: 0 }}
       animate={{
         scale: 1,
-        zIndex: 9,
-        transition: { duration: 0.4, type: "spring" },
+        opacity: 1,
+        transition: { duration: 0.3, type: "spring" },
       }}
       exit={{
-        scale: 2,
+        scale: 1.4,
         opacity: 0,
-        zIndex: 10,
-        transition: { duration: 1, type: "spring" },
+        transition: { duration: 0.3, type: "spring" },
       }}
     >
       {scrollDirection === "up" ? upIcon : downIcon}

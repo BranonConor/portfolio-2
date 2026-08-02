@@ -11,8 +11,6 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isEndOfPage, setIsEndOfPage] = useState(false);
   const [bottomPosition, setBottomPosition] = useState(0);
-  const codeBg = "#da70d615";
-  const codeColor = "#da70d6";
 
   const handleScroll = () => {
     if (typeof global?.window !== "undefined") {
@@ -51,15 +49,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PageWrapper
-      pb={10}
-      sx={{
-        ".remark-highlight": {
-          width: "100%",
-          my: "16px",
-        },
-      }}
-    >
+    <PageWrapper pb={10}>
       <Flex justifyContent="center" width="100%">
         <Flex
           flexDirection="column"
@@ -69,8 +59,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
           justifyContent="flex-start"
           sx={{
             "code:not(pre > code)": {
-              color: codeColor,
-              bg: codeBg,
+              color: "#22c55e",
+              bg: "#22c55e15",
               padding: "1px 4px",
               borderRadius: "6px",
               fontSize: "14px",
@@ -89,6 +79,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#22c55e"
               />
             )}
             {!isEndOfPage && (
@@ -98,6 +89,7 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
                 bottomPosition={bottomPosition}
                 scrollPosition={scrollPosition}
                 isEndOfPage={isEndOfPage}
+                accentColor="#22c55e"
               />
             )}
           </AnimatePresence>
@@ -113,8 +105,8 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primaryPink" as={Link} href="/projects">
-              👈🏽 Back to Projects
+            <Button mt={8} variant="primaryGreen" as={Link} href="/engagements">
+              👈🏽 Back to Engagements
             </Button>
           </Flex>
         </Flex>

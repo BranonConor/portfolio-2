@@ -2,6 +2,7 @@ import { Box, Flex, Text, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
+import { pixelFont } from "@/components/boot-intro/pixelFont";
 
 export const Music = () => {
   const items = [
@@ -77,11 +78,20 @@ export const Music = () => {
               transform: "translateX(3px)",
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
-              "& > div:first-of-type > span:first-of-type": { color: "brand.text" },
             }}
             transition="0.14s ease all"
           >
             <Flex alignItems="center" gap={2}>
+              <Text
+                as="span"
+                className={pixelFont.className}
+                fontSize="7px"
+                color="#f05032"
+                aria-hidden="true"
+                flexShrink={0}
+              >
+                {"\u25B8"}
+              </Text>
               <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
               </Text>
