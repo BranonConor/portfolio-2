@@ -137,10 +137,14 @@ export function useBootChime() {
     return chain;
   }, []);
 
-  const unlock = useCallback(() => {
+  const unlock = useCallback(async () => {
     const chain = getChain();
     if (chain?.ctx.state === "suspended") {
-      chain.ctx.resume().catch(() => {});
+      try {
+        await chain.ctx.resume();
+      } catch {
+        return false;
+      }
     }
 
     // Mobile Safari plays Web Audio API oscillators through the "ambient"
@@ -159,6 +163,7 @@ export function useBootChime() {
       sessionUnlockElRef.current = el;
     }
     sessionUnlockElRef.current.play().catch(() => {});
+    return chain?.ctx.state === "running";
   }, [getChain]);
 
   const toggleMute = useCallback(() => {
@@ -175,9 +180,17 @@ export function useBootChime() {
    * delay chain (routed straight to `ctx.destination`) since that reverb
    * tail reads as muddy/echoey for a rapid, repeated UI sound like this.
    */
-  const playMoveBlip = useCallback(() => {
+  const playMoveBlip = useCallback(async () => {
     const chain = getChain();
-    if (!chain || chain.ctx.state !== "running" || mutedRef.current) return;
+    if (!chain || mutedRef.current) return;
+    if (chain.ctx.state !== "running") {
+      try {
+        await chain.ctx.resume();
+      } catch {
+        return;
+      }
+    }
+    if (chain.ctx.state !== "running") return;
     const { ctx } = chain;
     const start = ctx.currentTime + 0.002;
     const duration = 0.05;

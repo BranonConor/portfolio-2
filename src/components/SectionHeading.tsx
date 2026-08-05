@@ -13,9 +13,8 @@ interface SectionHeadingProps extends Omit<FlexProps, "title"> {
  * Small pixel-font section label used for the sub-sections stacked inside a
  * page (Experience, Education, Publications, Photography, Music, Showcase,
  * etc) — one step down from PageHeading's full route title, but the same
- * pixel typeface + a colored "▸" bullet (matching the one used in front of
- * each project list row) so every heading on the site reads as part of the
- * same system instead of mixing in the old 18px/600 sans-serif headings.
+ * pixel typeface so every heading on the site reads as part of the same
+ * system instead of mixing in the old 18px/600 sans-serif headings.
  */
 export const SectionHeading: React.FC<SectionHeadingProps> = ({
   title,
@@ -24,16 +23,7 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
   ...props
 }) => (
   <Flex alignItems="center" justifyContent="space-between" mb={3} {...props}>
-    <Flex alignItems="center" gap={2}>
-      <Text
-        as="span"
-        className={pixelFont.className}
-        fontSize="8px"
-        color={color}
-        aria-hidden="true"
-      >
-        {"\u25B8"}
-      </Text>
+    <Flex alignItems="center">
       <Heading
         as="h2"
         className={pixelFont.className}

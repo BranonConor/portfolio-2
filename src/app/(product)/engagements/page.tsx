@@ -1,15 +1,13 @@
 "use client";
 
-import { Flex, Text, Box, Link as ChakraLink } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
-import Link from "next/link";
+import { TopLevelListItem } from "@/components/TopLevelListItem";
 import { useState } from "react";
 import { mentoring, publicSpeaking } from "./consts";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 const categories = [
   { key: "all", label: "All" },
@@ -69,79 +67,13 @@ export default function Engagements() {
             }}
           >
             {filteredEngagements.map((engagement) => (
-              <ChakraLink
+              <TopLevelListItem
                 key={engagement.title}
-                as={Link}
                 href={engagement.link}
-                role="group"
-                display="flex"
-                flexDirection={["column", "row"]}
-                justifyContent="space-between"
-                alignItems={["flex-start", "center"]}
-                gap={2}
-                position="relative"
-                paddingY={3}
-                paddingX={3}
-                borderRadius="10px"
-                border="2px solid transparent"
-                _after={{
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 2,
-                  right: 2,
-                  height: "2px",
-                  bg: "brand.border",
-                  transition: "0.15s ease all",
-                  transformOrigin: "center",
-                }}
-                _hover={{
-                  textDecoration: "none",
-                  bg: "#22c55e14",
-                  borderColor: "#22c55e55",
-                  transform: "translateX(3px)",
-                  zIndex: 1,
-                  _after: { transform: "scaleX(0)" },
-                }}
-                transition="0.14s ease all"
-              >
-                <Flex alignItems="center" gap={3}>
-                  <Text
-                    as="span"
-                    className={pixelFont.className}
-                    fontSize="11px"
-                    color="transparent"
-                    _groupHover={{ color: "#22c55e" }}
-                    aria-hidden="true"
-                    transition="color 0.14s ease"
-                  >
-                    {"\u25B6"}
-                  </Text>
-                  <Text textStyle="listTitle">
-                    {engagement.title}
-                  </Text>
-                  <Text
-                    fontSize="11px"
-                    color="brand.textMuted"
-                    bg="brand.surface"
-                    paddingX={2}
-                    paddingY={0.5}
-                    borderRadius="4px"
-                    display={["none", "block"]}
-                  >
-                    {engagement.category}
-                  </Text>
-                </Flex>
-                <Text
-                  fontSize="12px"
-                  color="brand.textMuted"
-                  opacity={0.6}
-                  flexShrink={0}
-                  mt={[1, 0]}
-                >
-                  {engagement.date}
-                </Text>
-              </ChakraLink>
+                title={engagement.title}
+                accent="#22c55e"
+                meta={`${engagement.category} · ${engagement.date}`}
+              />
             ))}
           </Flex>
         </RetroCard>

@@ -7,7 +7,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
 import { SectionHeading } from "@/components/SectionHeading";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { TopLevelListItem } from "@/components/TopLevelListItem";
 import Link from "next/link";
 import {
   brandingProjects,
@@ -133,106 +133,30 @@ export default function Projects() {
             }}
           >
             {filteredProjects.map((project) => (
-              <ChakraLink
+              <TopLevelListItem
                 key={project.title}
-                as={Link}
                 href={project.link}
-                role="group"
-                display="flex"
-                flexDirection={["column", "row"]}
-                justifyContent="space-between"
-                alignItems={["flex-start", "center"]}
-                gap={2}
-                position="relative"
-                paddingY={3}
-                paddingX={3}
-                borderRadius="10px"
-                border="2px solid transparent"
-                _after={{
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: 2,
-                  right: 2,
-                  height: "2px",
-                  bg: "brand.border",
-                  transition: "0.15s ease all",
-                  transformOrigin: "center",
-                }}
-                _hover={{
-                  textDecoration: "none",
-                  bg: "#da70d614",
-                  borderColor: "#da70d655",
-                  transform: "translateX(3px)",
-                  zIndex: 1,
-                  _after: { transform: "scaleX(0)" },
-                }}
-                transition="0.14s ease all"
-              >
-                <Flex alignItems="center" gap={3} flexWrap="wrap">
-                  <Text
-                    as="span"
-                    className={pixelFont.className}
-                    fontSize="11px"
-                    color="transparent"
-                    _groupHover={{ color: "#da70d6" }}
-                    aria-hidden="true"
-                    transition="color 0.14s ease"
-                  >
-                    {"\u25B6"}
-                  </Text>
-                  <Text textStyle="listTitle">
-                    {project.title}
-                  </Text>
-                  {(Array.isArray(project.category)
-                    ? project.category
-                    : [project.category]
-                  ).map((cat) => (
-                    <Text
-                      key={cat}
-                      fontSize="11px"
-                      color="brand.textMuted"
-                      bg="brand.surface"
-                      paddingX={2}
-                      paddingY={0.5}
-                      borderRadius="4px"
-                      display={["none", "block"]}
-                    >
-                      {cat}
-                    </Text>
-                  ))}
-                  {(project as any).hasPassword && (
-                    <Text fontSize="11px" opacity={0.5}>
-                      🔒
-                    </Text>
-                  )}
-                  {(project as any).inProgress && (
-                    <Text
-                      fontSize="10px"
-                      fontWeight="600"
-                      letterSpacing="0.06em"
-                      color="#fbbf24"
-                      bg="rgba(251, 191, 36, 0.12)"
-                      border="1px solid rgba(251, 191, 36, 0.3)"
-                      paddingX={1.5}
-                      paddingY={0.5}
-                      borderRadius="4px"
-                      display={["none", "block"]}
-                    >
-                      IN PROG
-                    </Text>
-                  )}
-                </Flex>
-                <Text
-                  fontSize="12px"
-                  color="brand.textMuted"
-                  opacity={0.6}
-                  flexShrink={0}
-                  mt={[1, 0]}
-                >
-                  {project.date}
-                </Text>
-              </ChakraLink>
+                title={project.title}
+                accent="#da70d6"
+                meta={`${(Array.isArray(project.category)
+                  ? project.category
+                  : [project.category]
+                ).join(", ")} · ${project.date}`}
+                badges={
+                  <>
+                    {(project as { hasPassword?: boolean }).hasPassword && (
+                      <Text fontSize="11px" opacity={0.5}>
+                        🔒
+                      </Text>
+                    )}
+                    {(project as { inProgress?: boolean }).inProgress && (
+                      <Text fontSize="10px" color="#b7791f">
+                        IN PROG
+                      </Text>
+                    )}
+                  </>
+                }
+              />
             ))}
           </Flex>
         </RetroCard>

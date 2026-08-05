@@ -56,8 +56,9 @@ export function CartridgeNav() {
   const playHoverBlip = (index: number) => {
     if (lastPlayedRef.current === index) return;
     lastPlayedRef.current = index;
-    unlock();
-    playMoveBlip();
+    void unlock().then((running) => {
+      if (running) void playMoveBlip();
+    });
   };
 
   return (

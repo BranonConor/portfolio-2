@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Flex,
   Text,
@@ -348,22 +348,19 @@ const CarouselArrow = ({
  */
 export const PhotoCarousel = () => {
   const [index, setIndex] = useState(0);
-  const trackRef = useRef<HTMLDivElement>(null);
   const { unlock, playMoveBlip } = useBootChime();
 
   const goTo = (next: number) => {
     const clamped = (next + PHOTOS.length) % PHOTOS.length;
     setIndex(clamped);
-    unlock();
-    playMoveBlip();
+    void unlock().then((running) => {
+      if (running) void playMoveBlip();
+    });
   };
-
-  const photo = PHOTOS[index];
 
   return (
     <Box width="100%">
       <Box
-        ref={trackRef}
         width="100%"
         overflow="hidden"
         borderRadius="10px"
@@ -372,14 +369,27 @@ export const PhotoCarousel = () => {
         borderColor="brand.border"
         bg="brand.surface"
       >
-        <Image
-          key={photo.image}
-          draggable="false"
-          src={photo.image}
-          width="100%"
-          height={["380px", "460px", "540px"]}
-          objectFit="cover"
-        />
+        <Flex
+          width={`${PHOTOS.length * 100}%`}
+          transform={`translateX(-${(index * 100) / PHOTOS.length}%)`}
+          transition="transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)"
+        >
+          {PHOTOS.map((photo, photoIndex) => (
+            <Image
+              key={photo.image}
+              draggable="false"
+              src={photo.image}
+              alt={`${photo.location} photograph`}
+              loading="eager"
+              decoding="async"
+              width={`${100 / PHOTOS.length}%`}
+              flexShrink={0}
+              height={["380px", "460px", "540px"]}
+              objectFit="cover"
+              aria-hidden={photoIndex !== index}
+            />
+          ))}
+        </Flex>
         <Text
           as="span"
           className={pixelFont.className}
@@ -394,7 +404,7 @@ export const PhotoCarousel = () => {
           paddingY={1.5}
           borderRadius="4px"
         >
-          {photo.location}
+          {PHOTOS[index].location}
         </Text>
         <Text
           as="span"

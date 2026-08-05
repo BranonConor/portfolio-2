@@ -15,6 +15,7 @@ import { RetroCard } from "@/components/RetroCard";
 import { SectionHeading } from "@/components/SectionHeading";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { Photography, PhotoCarousel } from "@/components/sections/Photography";
 import { Music, SpotifyEmbed } from "@/components/sections/Music";
 import {
@@ -26,6 +27,52 @@ import {
 } from "./consts";
 
 const ABOUT_ACCENT = "#f05032";
+
+const GithubEvaporation = () => {
+  const reduceMotion = useReducedMotion();
+  const particles = [
+    { left: "8%", delay: 0, size: 8, drift: -4 },
+    { left: "30%", delay: 0.75, size: 10, drift: 5 },
+    { left: "53%", delay: 1.45, size: 7, drift: -2 },
+    { left: "76%", delay: 2.1, size: 9, drift: 4 },
+  ];
+
+  return (
+    <Box as="span" position="relative" display="inline-block" color="brand.text">
+      GitHub
+      {!reduceMotion &&
+        particles.map((particle) => (
+          <motion.img
+            key={`${particle.left}-${particle.delay}`}
+            src="/logos/github.svg"
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: particle.left,
+              top: "-2px",
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              pointerEvents: "none",
+            }}
+            animate={{
+              y: [0, -10, -22],
+              x: [0, particle.drift / 2, particle.drift],
+              opacity: [0, 0.72, 0],
+              scale: [0.65, 1, 0.8],
+            }}
+            transition={{
+              duration: 2.8,
+              delay: particle.delay,
+              repeat: Infinity,
+              repeatDelay: 0.9,
+              ease: "easeOut",
+            }}
+          />
+        ))}
+    </Box>
+  );
+};
 
 const SparkleIcon = () => (
   <svg
@@ -141,6 +188,8 @@ export default function About() {
               mb={4}
               lineHeight="1.7"
             >
+              Design engineer currently @ <GithubEvaporation />.
+              <br />
               From neuroscience to building technology, my passion for the human
               experience is the driving force in my life. As a design engineer,
               I work at the forefront of AI-driven development of tech products,
@@ -376,8 +425,11 @@ export default function About() {
                           {"\u25B6"}
                         </Text>
                         <Box flex={1} minWidth={0}>
-                          <Flex alignItems="center" gap={2} mb={0.5} flexWrap="wrap">
+                          <Box mb={0.5}>
                             <Text textStyle="listTitle">{item.title}</Text>
+                            <Text textStyle="listMeta">
+                              {item.publisher} · {item.date}
+                            </Text>
                             <Box
                               as="span"
                               fontSize="10px"
@@ -389,13 +441,12 @@ export default function About() {
                               py={0.5}
                               borderRadius="4px"
                               whiteSpace="nowrap"
+                              display="inline-block"
+                              mt={1}
                             >
                               {item.tag}
                             </Box>
-                          </Flex>
-                          <Text textStyle="listMeta">
-                            {item.publisher} · {item.date}
-                          </Text>
+                          </Box>
                         </Box>
                       </Flex>
                       <ExternalLinkIcon boxSize={3} color="brand.textMuted" mt={0.5} flexShrink={0} />

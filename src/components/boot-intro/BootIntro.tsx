@@ -337,15 +337,15 @@ export function BootIntro() {
   // nav) unlocks audio (harmless if already unlocked/still locked) and plays
   // a short navigation blip — but only when the index actually changes, so
   // re-hovering the same already-selected item doesn't retrigger the sound.
-  // `unlock()`/`playMoveBlip()` are called directly here (not nested inside
-  // the `setSelected` updater) so they stay unambiguously synchronous within
-  // whatever real user gesture triggered this, which Safari's autoplay
-  // heuristics can be picky about.
+  // Resume the context first, then play. `AudioContext.resume()` resolves
+  // asynchronously, so firing the blip immediately after it drops the first
+  // hover sound while the context is still suspended.
   const selectCartridge = useCallback(
     (index: number) => {
       if (selected !== index) {
-        unlock();
-        playMoveBlip();
+        void unlock().then((running) => {
+          if (running) void playMoveBlip();
+        });
       }
       setSelected(index);
     },
