@@ -31,10 +31,10 @@ const ABOUT_ACCENT = "#f05032";
 const GithubEvaporation = () => {
   const reduceMotion = useReducedMotion();
   const particles = [
-    { left: "8%", delay: 0, size: 8, drift: -4 },
-    { left: "30%", delay: 0.75, size: 10, drift: 5 },
-    { left: "53%", delay: 1.45, size: 7, drift: -2 },
-    { left: "76%", delay: 2.1, size: 9, drift: 4 },
+    { left: "5%", delay: 0, size: 9, drift: -5 },
+    { left: "28%", delay: 0.75, size: 12, drift: 6 },
+    { left: "54%", delay: 1.45, size: 8, drift: -3 },
+    { left: "76%", delay: 2.1, size: 11, drift: 5 },
   ];
 
   return (
@@ -42,18 +42,22 @@ const GithubEvaporation = () => {
       GitHub
       {!reduceMotion &&
         particles.map((particle) => (
-          <motion.img
+          <motion.span
             key={`${particle.left}-${particle.delay}`}
-            src="/logos/github.svg"
-            alt=""
             aria-hidden="true"
             style={{
               position: "absolute",
               left: particle.left,
-              top: "-2px",
+              top: "-6px",
               width: `${particle.size}px`,
               height: `${particle.size}px`,
               pointerEvents: "none",
+              borderRadius: "50%",
+              background: "#F7F2E4",
+              boxSizing: "border-box",
+              border: "1px solid rgba(51, 44, 28, 0.2)",
+              boxShadow: "0 2px 5px rgba(51, 44, 28, 0.16)",
+              overflow: "hidden",
             }}
             animate={{
               y: [0, -10, -22],
@@ -68,7 +72,19 @@ const GithubEvaporation = () => {
               repeatDelay: 0.9,
               ease: "easeOut",
             }}
-          />
+          >
+            <img
+              src="/github.png"
+              alt=""
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "block",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+          </motion.span>
         ))}
     </Box>
   );
