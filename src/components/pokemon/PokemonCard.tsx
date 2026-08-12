@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import { Box, Text, Flex, Image } from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Renderer, Program, Mesh, Geometry } from "ogl";
 import { HOLO_VERTEX, HOLO_FRAGMENT } from "./holoShader";
@@ -191,17 +191,23 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
           position="relative"
           width="100%"
           overflow="hidden"
+          // Fixed aspect ratio (standard Pokemon card is ~2.5:3.5)
+          sx={{ aspectRatio: "5 / 7" }}
+          bg="#1a1a2e"
         >
-          {/* The card art — plain <img>, no CORS issues */}
-          <Image
+          {/* The card art — native img to avoid Chakra onLoad issues */}
+          <img
             src={card.image}
             alt={card.name}
-            width="100%"
-            height="auto"
-            display="block"
             onLoad={() => setImageLoaded(true)}
-            opacity={imageLoaded ? 1 : 0}
-            transition="opacity 0.4s ease"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+              opacity: imageLoaded ? 1 : 0,
+              transition: "opacity 0.4s ease",
+            }}
           />
           {!imageLoaded && (
             <Flex
@@ -213,7 +219,6 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
               fontSize="10px"
               color="brand.textMuted"
               letterSpacing="0.08em"
-              minHeight="200px"
             >
               LOADING...
             </Flex>

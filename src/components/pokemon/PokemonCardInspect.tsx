@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Text, Flex, Image } from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Renderer, Program, Mesh, Geometry } from "ogl";
@@ -175,7 +175,6 @@ export const PokemonCardInspect: React.FC<{
           >
           <Box
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
-            onMouseMove={handleMouseMove}
             display="flex"
             flexDirection={["column", "column", "row"]}
             alignItems="center"
@@ -184,9 +183,10 @@ export const PokemonCardInspect: React.FC<{
             padding={[4, 6]}
             cursor="default"
           >
-            {/* Large card with holo overlay */}
+            {/* Large card with holo overlay — mouse tracked here */}
             <Box
               ref={containerRef}
+              onMouseMove={handleMouseMove}
               position="relative"
               width={["260px", "320px", "360px"]}
               flexShrink={0}
@@ -195,16 +195,21 @@ export const PokemonCardInspect: React.FC<{
               border="2px solid"
               borderColor="rgba(255,255,255,0.12)"
               boxShadow="0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(100,100,255,0.08)"
+              sx={{ aspectRatio: "5 / 7" }}
+              bg="#1a1a2e"
             >
-              <Image
+              <img
                 src={card.image}
                 alt={card.name}
-                width="100%"
-                height="auto"
-                display="block"
                 onLoad={() => setImageLoaded(true)}
-                opacity={imageLoaded ? 1 : 0}
-                transition="opacity 0.4s ease"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  opacity: imageLoaded ? 1 : 0,
+                  transition: "opacity 0.4s ease",
+                }}
               />
               {/* Transparent holo overlay */}
               <canvas
