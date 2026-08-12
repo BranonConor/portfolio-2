@@ -1,22 +1,24 @@
 "use client";
 
-import { Box, Text, Flex } from "@chakra-ui/react";
+import { Box, Text, Flex, Image } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Renderer, Program, Mesh, Texture, Geometry } from "ogl";
+import { Renderer, Program, Mesh, Geometry } from "ogl";
 import { HOLO_VERTEX, HOLO_FRAGMENT } from "./holoShader";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import type { PokemonCard as PokemonCardType } from "@/lib/pokemonCards";
 
 /**
  * Full-screen inspect overlay — shows a larger, interactive holographic
- * render of a single card with its details.
+ * render of a single card with its details. Uses the same <img> +
+ * transparent canvas overlay approach as PokemonCard.
  */
 export const PokemonCardInspect: React.FC<{
   card: PokemonCardType | null;
   onClose: () => void;
 }> = ({ card, onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -34,74 +36,90 @@ export const PokemonCardInspect: React.FC<{
     return () => window.removeEventListener("keydown", handler, true);
   }, [card, onClose]);
 
-  // Init large WebGL canvas
+  // Init WebGL overlay for the inspect view
   useEffect(() => {
     if (!card) return;
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
     setImageLoaded(false);
 
-    const renderer = new Renderer({
-      canvas,
-      alpha: true,
-      premultipliedAlpha: false,
-      antialias: true,
-      width: 480,
-      height: 672,
-      dpr: Math.min(window.devicePixelRatio, 2),
-    });
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0);
+    // Wait a tick for layout to settle
+    const initTimer = window.setTimeout(() => {
+      const rect = container.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio, 2);
+      const w = Math.max(Math.round(rect.width), 1);
+      const h = Math.max(Math.round(rect.height), 1);
 
-    const texture = new Texture(gl, {
-      generateMipmaps: false,
-      minFilter: gl.LINEAR,
-      magFilter: gl.LINEAR,
-    });
+      const renderer = new Renderer({
+        canvas,
+        alpha: true,
+        premultipliedAlpha: false,
+        antialias: true,
+        width: w,
+        height: h,
+        dpr,
+      });
+      const gl = renderer.gl;
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      texture.image = img;
-      setImageLoaded(true);
-    };
-    img.src = card.image;
+      const geometry = new Geometry(gl, {
+        position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
+        uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
+      });
 
-    const geometry = new Geometry(gl, {
-      position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
-      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-    });
+      const program = new Program(gl, {
+        vertex: HOLO_VERTEX,
+        fragment: HOLO_FRAGMENT,
+        uniforms: {
+          uTime: { value: 0 },
+          uMouse: { value: [0, 0] },
+          uHover: { value: 1 },
+        },
+        transparent: true,
+      });
 
-    const program = new Program(gl, {
-      vertex: HOLO_VERTEX,
-      fragment: HOLO_FRAGMENT,
-      uniforms: {
-        tCard: { value: texture },
-        uTime: { value: 0 },
-        uMouse: { value: [0, 0] },
-        uHover: { value: 1 },
-        uActive: { value: 1 },
-      },
-      transparent: true,
-    });
+      const mesh = new Mesh(gl, { geometry, program });
+      const startTime = performance.now();
 
-    const mesh = new Mesh(gl, { geometry, program });
-    const startTime = performance.now();
+      const render = () => {
+        const elapsed = (performance.now() - startTime) / 1000;
+        program.uniforms.uTime.value = elapsed;
+        program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
+        renderer.render({ scene: mesh });
+        rafRef.current = requestAnimationFrame(render);
+      };
 
-    const render = () => {
-      const elapsed = (performance.now() - startTime) / 1000;
-      program.uniforms.uTime.value = elapsed;
-      program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
-      renderer.render({ scene: mesh });
       rafRef.current = requestAnimationFrame(render);
-    };
 
-    rafRef.current = requestAnimationFrame(render);
+      // Keep canvas sized to container
+      const ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width: ew, height: eh } = entry.contentRect;
+          if (ew > 0 && eh > 0) {
+            renderer.setSize(Math.round(ew), Math.round(eh));
+          }
+        }
+      });
+      ro.observe(container);
+
+      // Store cleanup refs
+      (canvas as any).__cleanup = () => {
+        cancelAnimationFrame(rafRef.current);
+        ro.disconnect();
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+      };
+    }, 50);
 
     return () => {
+      window.clearTimeout(initTimer);
       cancelAnimationFrame(rafRef.current);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      if ((canvasRef.current as any)?.__cleanup) {
+        (canvasRef.current as any).__cleanup();
+      }
     };
   }, [card]);
 
@@ -166,8 +184,9 @@ export const PokemonCardInspect: React.FC<{
             padding={[4, 6]}
             cursor="default"
           >
-            {/* Large card canvas */}
+            {/* Large card with holo overlay */}
             <Box
+              ref={containerRef}
               position="relative"
               width={["260px", "320px", "360px"]}
               flexShrink={0}
@@ -177,26 +196,29 @@ export const PokemonCardInspect: React.FC<{
               borderColor="rgba(255,255,255,0.12)"
               boxShadow="0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(100,100,255,0.08)"
             >
-              <Box
-                position="relative"
+              <Image
+                src={card.image}
+                alt={card.name}
                 width="100%"
-                paddingTop="140%"
-                bg="#1a1a2e"
-              >
-                <canvas
-                  ref={canvasRef}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "block",
-                    opacity: imageLoaded ? 1 : 0,
-                    transition: "opacity 0.4s ease",
-                  }}
-                />
-              </Box>
+                height="auto"
+                display="block"
+                onLoad={() => setImageLoaded(true)}
+                opacity={imageLoaded ? 1 : 0}
+                transition="opacity 0.4s ease"
+              />
+              {/* Transparent holo overlay */}
+              <canvas
+                ref={canvasRef}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  display: "block",
+                  pointerEvents: "none",
+                }}
+              />
             </Box>
 
             {/* Card details */}

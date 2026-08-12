@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
-import { Box, Text, Flex } from "@chakra-ui/react";
+import { Box, Text, Flex, Image } from "@chakra-ui/react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Renderer, Program, Mesh, Texture, Geometry } from "ogl";
+import { Renderer, Program, Mesh, Geometry } from "ogl";
 import { HOLO_VERTEX, HOLO_FRAGMENT } from "./holoShader";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import type { PokemonCard as PokemonCardType } from "@/lib/pokemonCards";
@@ -20,16 +20,13 @@ type Props = {
 /**
  * A single Pokémon card with Balatro-style holographic WebGL overlay.
  *
- * The card image is rendered onto an OGL canvas with a custom fragment
- * shader that layers rainbow foil, specular highlights, grain, and edge
- * glow — all reactive to mouse position.
- *
- * The outer wrapper uses Framer Motion for smooth 3D perspective tilt.
+ * The card image is a regular <img> (no CORS issues). A transparent
+ * OGL canvas sits on top, rendering only the holographic foil effect
+ * that reacts to mouse position. Framer Motion handles the 3D tilt.
  */
 export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const programRef = useRef<Program | null>(null);
-  const rendererRef = useRef<Renderer | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const hoverRef = useRef(0);
@@ -41,40 +38,33 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), SPRING_CONFIG);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
-  // Init WebGL
+  // Init WebGL overlay
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
+    // Size the renderer to match the displayed container
+    const rect = container.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
 
     const renderer = new Renderer({
       canvas,
       alpha: true,
       premultipliedAlpha: false,
       antialias: true,
-      width: 320,
-      height: 448,
-      dpr: Math.min(window.devicePixelRatio, 2),
+      width: w,
+      height: h,
+      dpr,
     });
-    rendererRef.current = renderer;
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    // Card texture
-    const texture = new Texture(gl, {
-      generateMipmaps: false,
-      minFilter: gl.LINEAR,
-      magFilter: gl.LINEAR,
-    });
-
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      texture.image = img;
-      setImageLoaded(true);
-    };
-    img.src = card.image;
-
-    // Full-screen quad geometry
+    // Full-viewport triangle
     const geometry = new Geometry(gl, {
       position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
       uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
@@ -84,18 +74,14 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
       vertex: HOLO_VERTEX,
       fragment: HOLO_FRAGMENT,
       uniforms: {
-        tCard: { value: texture },
         uTime: { value: 0 },
         uMouse: { value: [0, 0] },
         uHover: { value: 0 },
-        uActive: { value: 0 },
       },
       transparent: true,
     });
-    programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry, program });
-
     const startTime = performance.now();
 
     const render = () => {
@@ -114,11 +100,23 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
 
     rafRef.current = requestAnimationFrame(render);
 
+    // Resize observer to keep canvas matched to container
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: ew, height: eh } = entry.contentRect;
+        if (ew > 0 && eh > 0) {
+          renderer.setSize(Math.round(ew), Math.round(eh));
+        }
+      }
+    });
+    ro.observe(container);
+
     return () => {
       cancelAnimationFrame(rafRef.current);
+      ro.disconnect();
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [card.image]);
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -187,26 +185,23 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
         tabIndex={0}
         aria-label={`Inspect ${card.name}`}
       >
-        {/* WebGL canvas with holo shader */}
+        {/* Card image + transparent holo overlay */}
         <Box
+          ref={containerRef}
           position="relative"
           width="100%"
-          paddingTop="140%"
-          bg="#1a1a2e"
           overflow="hidden"
         >
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "block",
-              opacity: imageLoaded ? 1 : 0,
-              transition: "opacity 0.4s ease",
-            }}
+          {/* The card art — plain <img>, no CORS issues */}
+          <Image
+            src={card.image}
+            alt={card.name}
+            width="100%"
+            height="auto"
+            display="block"
+            onLoad={() => setImageLoaded(true)}
+            opacity={imageLoaded ? 1 : 0}
+            transition="opacity 0.4s ease"
           />
           {!imageLoaded && (
             <Flex
@@ -218,10 +213,24 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
               fontSize="10px"
               color="brand.textMuted"
               letterSpacing="0.08em"
+              minHeight="200px"
             >
               LOADING...
             </Flex>
           )}
+          {/* Transparent WebGL holo overlay */}
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              display: "block",
+              pointerEvents: "none",
+            }}
+          />
         </Box>
 
         {/* Card info footer */}
