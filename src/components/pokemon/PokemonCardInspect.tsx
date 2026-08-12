@@ -214,6 +214,7 @@ export const PokemonCardInspect: React.FC<{
               <img
                 src={card.image}
                 alt={card.name}
+                referrerPolicy="no-referrer"
                 onLoad={() => setImageLoaded(true)}
                 style={{
                   width: "100%",

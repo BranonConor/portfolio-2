@@ -31,6 +31,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const mouseRef = useRef({ x: 0, y: 0 });
   const hoverRef = useRef(0);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Framer Motion tilt values
   const mouseX = useMotionValue(0);
@@ -38,92 +39,92 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), SPRING_CONFIG);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
-  // Init WebGL overlay — delay to ensure layout is ready (client-side nav)
-  useEffect(() => {
+  // Lazy WebGL init — only create context on first hover to avoid
+  // exceeding browser's WebGL context limit (typically 8-16)
+  const glInitialized = useRef(false);
+  const rendererRef = useRef<Renderer | null>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
+
+  const initWebGL = useCallback(() => {
+    if (glInitialized.current) return;
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    let running = true;
-    let renderer: Renderer | null = null;
-    let ro: ResizeObserver | null = null;
+    glInitialized.current = true;
+    const rect = container.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    const w = Math.max(Math.round(rect.width), 50);
+    const h = Math.max(Math.round(rect.height), 70);
 
-    // Wait for layout to be computed (important on client-side nav)
-    const initTimer = window.setTimeout(() => {
-      if (!running) return;
-      const rect = container.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio, 2);
-      const w = Math.max(Math.round(rect.width), 50);
-      const h = Math.max(Math.round(rect.height), 70);
+    const renderer = new Renderer({
+      canvas,
+      alpha: true,
+      premultipliedAlpha: false,
+      antialias: true,
+      width: w,
+      height: h,
+      dpr,
+    });
+    rendererRef.current = renderer;
+    const gl = renderer.gl;
+    gl.clearColor(0, 0, 0, 0);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-      renderer = new Renderer({
-        canvas,
-        alpha: true,
-        premultipliedAlpha: false,
-        antialias: true,
-        width: w,
-        height: h,
-        dpr,
-      });
-      const gl = renderer.gl;
-      gl.clearColor(0, 0, 0, 0);
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    const geometry = new Geometry(gl, {
+      position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
+      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
+    });
 
-      const geometry = new Geometry(gl, {
-        position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
-        uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-      });
+    const program = new Program(gl, {
+      vertex: HOLO_VERTEX,
+      fragment: HOLO_FRAGMENT,
+      uniforms: {
+        uTime: { value: 0 },
+        uMouse: { value: [0, 0] },
+        uHover: { value: 0 },
+      },
+      transparent: true,
+    });
 
-      const program = new Program(gl, {
-        vertex: HOLO_VERTEX,
-        fragment: HOLO_FRAGMENT,
-        uniforms: {
-          uTime: { value: 0 },
-          uMouse: { value: [0, 0] },
-          uHover: { value: 0 },
-        },
-        transparent: true,
-      });
+    const mesh = new Mesh(gl, { geometry, program });
+    const startTime = performance.now();
 
-      const mesh = new Mesh(gl, { geometry, program });
-      const startTime = performance.now();
-      const localRenderer = renderer;
+    const render = () => {
+      const elapsed = (performance.now() - startTime) / 1000;
+      program.uniforms.uTime.value = elapsed;
+      program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
 
-      const render = () => {
-        if (!running) return;
-        const elapsed = (performance.now() - startTime) / 1000;
-        program.uniforms.uTime.value = elapsed;
-        program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
+      const targetHover = hoverRef.current;
+      const currentHover = program.uniforms.uHover.value as number;
+      program.uniforms.uHover.value = currentHover + (targetHover - currentHover) * 0.08;
 
-        const targetHover = hoverRef.current;
-        const currentHover = program.uniforms.uHover.value as number;
-        program.uniforms.uHover.value = currentHover + (targetHover - currentHover) * 0.08;
-
-        localRenderer.render({ scene: mesh });
-        rafRef.current = requestAnimationFrame(render);
-      };
-
+      renderer.render({ scene: mesh });
       rafRef.current = requestAnimationFrame(render);
+    };
 
-      ro = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          const { width: ew, height: eh } = entry.contentRect;
-          if (ew > 0 && eh > 0) {
-            localRenderer.setSize(Math.round(ew), Math.round(eh));
-          }
+    rafRef.current = requestAnimationFrame(render);
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width: ew, height: eh } = entry.contentRect;
+        if (ew > 0 && eh > 0) {
+          renderer.setSize(Math.round(ew), Math.round(eh));
         }
-      });
-      ro.observe(container);
-    }, 100);
+      }
+    });
+    ro.observe(container);
+    roRef.current = ro;
+  }, []);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
-      running = false;
-      window.clearTimeout(initTimer);
       cancelAnimationFrame(rafRef.current);
-      if (ro) ro.disconnect();
-      if (renderer) {
-        renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      if (roRef.current) roRef.current.disconnect();
+      if (rendererRef.current) {
+        rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
       }
     };
   }, []);
@@ -142,7 +143,8 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
 
   const handleMouseEnter = useCallback(() => {
     hoverRef.current = 1;
-  }, []);
+    initWebGL();
+  }, [initWebGL]);
 
   const handleMouseLeave = useCallback(() => {
     hoverRef.current = 0;
@@ -217,17 +219,34 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
               ref={imgCallbackRef}
               src={card.image}
               alt={card.name}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageLoaded(true)}
+              referrerPolicy="no-referrer"
+              onLoad={() => { setImageLoaded(true); setImageError(false); }}
+              onError={() => { setImageLoaded(true); setImageError(true); }}
               style={{
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
                 display: "block",
-                opacity: imageLoaded ? 1 : 0,
+                opacity: imageLoaded && !imageError ? 1 : 0,
                 transition: "opacity 0.4s ease",
               }}
             />
+            {imageError && (
+              <Flex
+                position="absolute"
+                inset={0}
+                align="center"
+                justify="center"
+                className={pixelFont.className}
+                fontSize="9px"
+                color="brand.textMuted"
+                letterSpacing="0.08em"
+                textAlign="center"
+                px={2}
+              >
+                {card.name}
+              </Flex>
+            )}
             {!imageLoaded && (
               <Flex
                 position="absolute"
