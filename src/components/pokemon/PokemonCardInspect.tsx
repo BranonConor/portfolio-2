@@ -22,6 +22,7 @@ export const PokemonCardInspect: React.FC<{
   const rafRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
 
   // Close on Escape
   useEffect(() => {
@@ -121,14 +122,20 @@ export const PokemonCardInspect: React.FC<{
       const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const y = -((e.clientY - rect.top) / rect.height - 0.5) * 2;
       mouseRef.current = { x, y };
+      setTilt({ rotateX: y * 15, rotateY: x * 15 });
+    };
+    const onPointerLeave = () => {
+      setTilt({ rotateX: 0, rotateY: 0 });
     };
     container.addEventListener("pointermove", onPointerMove);
+    container.addEventListener("pointerleave", onPointerLeave);
 
     return () => {
       running = false;
       window.clearTimeout(initTimer);
       cancelAnimationFrame(rafRef.current);
       container.removeEventListener("pointermove", onPointerMove);
+      container.removeEventListener("pointerleave", onPointerLeave);
       if (ro) ro.disconnect();
       if (renderer) {
         renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
@@ -199,6 +206,10 @@ export const PokemonCardInspect: React.FC<{
               boxShadow="0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(100,100,255,0.08)"
               sx={{ aspectRatio: "5 / 7" }}
               bg="#1a1a2e"
+              style={{
+                transform: `perspective(800px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+                transition: "transform 0.1s ease-out",
+              }}
             >
               <img
                 src={card.image}
