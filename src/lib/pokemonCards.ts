@@ -42,7 +42,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "Pokémon Card GB Promo",
     number: "Unnumbered",
     rarity: "promo",
-    image: "https://archives.bulbagarden.net/media/upload/b/b1/DragoniteCardGBPromo.jpg",
+    image: "https://images.pokemontcg.io/basep/5_hires.png",
     japanese: true,
     description: "The elusive Gameboy Color promo — Japan exclusive, art by Ken Sugimori.",
   },

@@ -152,148 +152,159 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
         ? "REV HOLO"
         : card.rarity.toUpperCase();
 
+  // Handle cached images that complete before React attaches onLoad
+  const imgRef = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalHeight > 0) {
+      setImageLoaded(true);
+    }
+  }, []);
+
   return (
     <Box
-      as={motion.div}
-      style={{
-        perspective: "1000px",
-      }}
       width="100%"
       maxWidth="240px"
       cursor="pointer"
       onClick={handleClick}
     >
+      {/* 3D tilt card container */}
       <Box
         as={motion.div}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
+          perspective: "1000px",
         }}
-        borderRadius="12px"
-        overflow="hidden"
-        border="2px solid"
-        borderColor="brand.border"
-        bg="brand.surface"
-        transition="border-color 0.2s ease"
-        _hover={{ borderColor: "brand.borderHover" }}
-        position="relative"
-        role="button"
-        tabIndex={0}
-        aria-label={`Inspect ${card.name}`}
       >
-        {/* Card image + transparent holo overlay */}
         <Box
-          ref={containerRef}
-          position="relative"
-          width="100%"
+          as={motion.div}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            rotateX,
+            rotateY,
+            transformStyle: "preserve-3d",
+          }}
+          borderRadius="12px"
           overflow="hidden"
-          // Fixed aspect ratio (standard Pokemon card is ~2.5:3.5)
-          sx={{ aspectRatio: "5 / 7" }}
+          border="2px solid"
+          borderColor="brand.border"
           bg="#1a1a2e"
+          transition="border-color 0.2s ease"
+          _hover={{ borderColor: "brand.borderHover" }}
+          position="relative"
+          role="button"
+          tabIndex={0}
+          aria-label={`Inspect ${card.name}`}
         >
-          {/* The card art — native img to avoid Chakra onLoad issues */}
-          <img
-            src={card.image}
-            alt={card.name}
-            onLoad={() => setImageLoaded(true)}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-              opacity: imageLoaded ? 1 : 0,
-              transition: "opacity 0.4s ease",
-            }}
-          />
-          {!imageLoaded && (
-            <Flex
-              position="absolute"
-              inset={0}
-              align="center"
-              justify="center"
-              className={pixelFont.className}
-              fontSize="10px"
-              color="brand.textMuted"
-              letterSpacing="0.08em"
-            >
-              LOADING...
-            </Flex>
-          )}
-          {/* Transparent WebGL holo overlay */}
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "block",
-              pointerEvents: "none",
-            }}
-          />
+          {/* Card image + transparent holo overlay */}
+          <Box
+            ref={containerRef}
+            position="relative"
+            width="100%"
+            overflow="hidden"
+            sx={{ aspectRatio: "5 / 7" }}
+          >
+            <img
+              ref={imgRef}
+              src={card.image}
+              alt={card.name}
+              onLoad={() => setImageLoaded(true)}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+                opacity: imageLoaded ? 1 : 0,
+                transition: "opacity 0.4s ease",
+              }}
+            />
+            {!imageLoaded && (
+              <Flex
+                position="absolute"
+                inset={0}
+                align="center"
+                justify="center"
+                className={pixelFont.className}
+                fontSize="10px"
+                color="rgba(255,255,255,0.4)"
+                letterSpacing="0.08em"
+              >
+                LOADING...
+              </Flex>
+            )}
+            {/* Transparent WebGL holo overlay */}
+            <canvas
+              ref={canvasRef}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "block",
+                pointerEvents: "none",
+              }}
+            />
+          </Box>
         </Box>
+      </Box>
 
-        {/* Card info footer */}
-        <Box padding={2.5} paddingTop={2}>
+      {/* Card info — outside the card border for true card shape */}
+      <Box paddingX={1} paddingTop={2}>
+        <Text
+          className={pixelFont.className}
+          fontSize="9px"
+          letterSpacing="0.06em"
+          color="brand.text"
+          lineHeight="1.4"
+          noOfLines={1}
+        >
+          {card.name}
+        </Text>
+        <Flex
+          justify="space-between"
+          align="center"
+          marginTop={0.5}
+        >
           <Text
-            className={pixelFont.className}
             fontSize="9px"
-            letterSpacing="0.06em"
-            color="brand.text"
-            lineHeight="1.4"
+            color="brand.textMuted"
             noOfLines={1}
           >
-            {card.name}
+            {card.set} · {card.number}
           </Text>
-          <Flex
-            justify="space-between"
-            align="center"
-            marginTop={0.5}
-          >
-            <Text
-              fontSize="9px"
-              color="brand.textMuted"
-              noOfLines={1}
-            >
-              {card.set} · {card.number}
-            </Text>
-            <Flex gap={1} align="center" flexShrink={0}>
-              {card.firstEdition && (
-                <Text
-                  className={pixelFont.className}
-                  fontSize="7px"
-                  color="#d4a017"
-                  letterSpacing="0.06em"
-                >
-                  1ST
-                </Text>
-              )}
-              {card.japanese && (
-                <Text
-                  className={pixelFont.className}
-                  fontSize="7px"
-                  color="#e05050"
-                  letterSpacing="0.06em"
-                >
-                  JP
-                </Text>
-              )}
+          <Flex gap={1} align="center" flexShrink={0}>
+            {card.firstEdition && (
               <Text
                 className={pixelFont.className}
                 fontSize="7px"
-                color="brand.textMuted"
+                color="#d4a017"
                 letterSpacing="0.06em"
               >
-                {rarityLabel}
+                1ST
               </Text>
-            </Flex>
+            )}
+            {card.japanese && (
+              <Text
+                className={pixelFont.className}
+                fontSize="7px"
+                color="#e05050"
+                letterSpacing="0.06em"
+              >
+                JP
+              </Text>
+            )}
+            <Text
+              className={pixelFont.className}
+              fontSize="7px"
+              color="brand.textMuted"
+              letterSpacing="0.06em"
+            >
+              {rarityLabel}
+            </Text>
           </Flex>
-        </Box>
+        </Flex>
       </Box>
     </Box>
   );
