@@ -625,6 +625,37 @@ export default function About() {
                 <PhotoCarousel />
               </Box>
             </RetroCard>
+
+            {/* Pokémon card collection teaser — links to the full
+                holographic gallery at /about/pokemon */}
+            <Box
+              as={Link}
+              href="/about/pokemon"
+              display="block"
+              textDecoration="none"
+              order={[8, 8, "unset"]}
+              _hover={{ "& > div": { borderColor: "brand.borderHover" } }}
+            >
+              <RetroCard
+                p={5}
+                transition="0.15s ease border-color"
+                cursor="pointer"
+              >
+                <SectionHeading title="Pokémon Card Collection" color={ABOUT_ACCENT} />
+                <Text fontSize="13px" color="brand.textMuted" lineHeight="1.7" mb={3}>
+                  A holographic gallery of my favorite Pokémon cards — rendered with
+                  WebGL foil shaders. Hover for the holo effect.
+                </Text>
+                <Text
+                  className={pixelFont.className}
+                  fontSize="9px"
+                  color={ABOUT_ACCENT}
+                  letterSpacing="0.06em"
+                >
+                  VIEW COLLECTION →
+                </Text>
+              </RetroCard>
+            </Box>
           </Box>
         </Flex>
       </Flex>
