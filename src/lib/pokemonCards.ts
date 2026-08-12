@@ -13,14 +13,22 @@ export type CardRarity =
   | "secret"
   | "promo";
 
+export type CardGrading = {
+  company: "PSA";
+  grade: number;
+};
+
+export type CardEra = "vintage" | "mid-era" | "modern";
+
 export type PokemonCard = {
   id: string;
   name: string;
   set: string;
   number: string;
   rarity: CardRarity;
+  era?: Exclude<CardEra, "vintage">;
   image: string;
-  description?: string;
+  grading?: CardGrading;
   japanese?: boolean;
   firstEdition?: boolean;
 };
@@ -33,8 +41,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "12/105",
     rarity: "holo",
     image: "https://images.pokemontcg.io/neo4/12_hires.png",
+    grading: { company: "PSA", grade: 8 },
     firstEdition: true,
-    description: "One of the most beautiful holos from the Neo era.",
   },
   {
     id: "gb-dragonite",
@@ -43,8 +51,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "Unnumbered",
     rarity: "promo",
     image: "https://product-images.tcgplayer.com/fit-in/400x558/617417.jpg",
+    grading: { company: "PSA", grade: 8 },
     japanese: true,
-    description: "The elusive Gameboy Color promo — Japan exclusive, art by Ken Sugimori.",
   },
   {
     id: "birthday-pikachu",
@@ -52,9 +60,10 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "s8a-P Promo Card Pack 25th Anniversary",
     number: "007/025",
     rarity: "promo",
+    era: "modern",
     image: "https://product-images.tcgplayer.com/fit-in/400x558/594628.jpg",
+    grading: { company: "PSA", grade: 10 },
     japanese: true,
-    description: "Fill in your name and celebrate — Japanese 25th Anniversary promo.",
   },
   {
     id: "dark-blastoise",
@@ -63,8 +72,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "3/82",
     rarity: "holo",
     image: "https://images.pokemontcg.io/base5/3_hires.png",
+    grading: { company: "PSA", grade: 8 },
     firstEdition: true,
-    description: "Team Rocket's crown jewel. 1st Edition.",
   },
   {
     id: "ho-oh-neo",
@@ -73,8 +82,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "7/64",
     rarity: "holo",
     image: "https://images.pokemontcg.io/neo3/7_hires.png",
+    grading: { company: "PSA", grade: 1 },
     firstEdition: true,
-    description: "The rainbow phoenix, 1st Edition Neo Revelation.",
   },
   {
     id: "nagaba-leafeon",
@@ -82,9 +91,10 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "SV-P Japanese Promo",
     number: "068/SV-P",
     rarity: "promo",
+    era: "modern",
     image: "https://product-images.tcgplayer.com/fit-in/400x558/587826.jpg",
+    grading: { company: "PSA", grade: 10 },
     japanese: true,
-    description: "Yu Nagaba's gorgeous line-art illustration — reverse holo.",
   },
   {
     id: "shining-magikarp",
@@ -92,9 +102,10 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "s8a-P 25th Anniversary Promo",
     number: "010/025",
     rarity: "holo",
+    era: "modern",
     image: "https://product-images.tcgplayer.com/fit-in/400x558/594622.jpg",
+    grading: { company: "PSA", grade: 10 },
     japanese: true,
-    description: "The golden fish shines bright — 25th Anniversary promo.",
   },
   {
     id: "raichu-expedition",
@@ -103,46 +114,9 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "113/128",
     rarity: "holo",
     image: "https://product-images.tcgplayer.com/fit-in/400x558/576049.jpg",
+    grading: { company: "PSA", grade: 8 },
     japanese: true,
     firstEdition: true,
-    description: "Expedition's electric mouse — Japanese 1st Edition.",
-  },
-  {
-    id: "reshiram-charizard",
-    name: "Reshiram & Charizard GX",
-    set: "Double Blaze (Japanese)",
-    number: "007/095",
-    rarity: "holo",
-    image: "https://product-images.tcgplayer.com/fit-in/400x558/573605.jpg",
-    japanese: true,
-    description: "Two fire legends unite — Japanese Tag Team holo.",
-  },
-  {
-    id: "dragonite-ex",
-    name: "Dragonite EX",
-    set: "EX Dragon",
-    number: "90/97",
-    rarity: "ex",
-    image: "https://images.pokemontcg.io/ex3/90_hires.png",
-    description: "The original Dragonite EX — a powerhouse from EX Dragon.",
-  },
-  {
-    id: "rockets-zapdos-ex",
-    name: "Rocket's Zapdos EX",
-    set: "EX Team Rocket Returns",
-    number: "106/109",
-    rarity: "ex",
-    image: "https://images.pokemontcg.io/ex7/106_hires.png",
-    description: "Team Rocket's electrifying secret rare.",
-  },
-  {
-    id: "electrode-ex",
-    name: "Electrode EX",
-    set: "EX FireRed & LeafGreen",
-    number: "107/112",
-    rarity: "ex",
-    image: "https://images.pokemontcg.io/ex6/107_hires.png",
-    description: "The explosive orb — full art EX from FireRed & LeafGreen.",
   },
   {
     id: "golem-ex",
@@ -151,7 +125,41 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "91/97",
     rarity: "ex",
     image: "https://images.pokemontcg.io/ex3/91_hires.png",
-    description: "Rock-solid power from the EX Dragon set.",
+  },
+  {
+    id: "dragonite-ex",
+    name: "Dragonite EX",
+    set: "EX Dragon",
+    number: "90/97",
+    rarity: "ex",
+    image: "https://images.pokemontcg.io/ex3/90_hires.png",
+  },
+  {
+    id: "rockets-zapdos-ex",
+    name: "Rocket's Zapdos EX",
+    set: "EX Team Rocket Returns",
+    number: "106/109",
+    rarity: "ex",
+    image: "https://images.pokemontcg.io/ex7/106_hires.png",
+  },
+  {
+    id: "electrode-ex",
+    name: "Electrode EX",
+    set: "EX FireRed & LeafGreen",
+    number: "107/112",
+    rarity: "ex",
+    image: "https://images.pokemontcg.io/ex6/107_hires.png",
+  },
+  {
+    id: "reshiram-charizard",
+    name: "Reshiram & Charizard GX",
+    set: "Double Blaze (Japanese)",
+    number: "007/095",
+    rarity: "holo",
+    era: "modern",
+    image: "https://product-images.tcgplayer.com/fit-in/400x558/573605.jpg",
+    grading: { company: "PSA", grade: 10 },
+    japanese: true,
   },
   {
     id: "dark-gyarados",
@@ -159,8 +167,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Team Rocket Returns",
     number: "36/109",
     rarity: "reverse-holo",
-    image: "https://images.pokemontcg.io/ex7/36_hires.png",
-    description: "Stamped reverse holo — the dark sea serpent.",
+    image: "https://storage.googleapis.com/images.pricecharting.com/e6472cde27a777e70fca201af105e39bb5d67d213008678b380094d4ed804e34/1600.jpg",
   },
   {
     id: "dark-dragonite",
@@ -168,8 +175,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Team Rocket Returns",
     number: "15/109",
     rarity: "holo",
-    image: "https://images.pokemontcg.io/ex7/15_hires.png",
-    description: "Dark Dragonite — holo from Team Rocket Returns.",
+    image: "https://product-images.tcgplayer.com/fit-in/400x558/97956.jpg",
   },
   {
     id: "dark-tyranitar",
@@ -177,8 +183,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Team Rocket Returns",
     number: "20/109",
     rarity: "holo",
-    image: "https://images.pokemontcg.io/ex7/20_hires.png",
-    description: "The mountain-crushing dark titan.",
+    image: "https://storage.googleapis.com/images.pricecharting.com/7fb16fe21a8ce108d73fe248edcd3f6a136a10b224b10ac8ef24965202943110/1600.jpg",
   },
   {
     id: "dark-marowak",
@@ -187,7 +192,6 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "7/109",
     rarity: "reverse-holo",
     image: "https://images.pokemontcg.io/ex7/7_hires.png",
-    description: "Stamped reverse holo — the bone keeper of Team Rocket.",
   },
   {
     id: "giovannis-gyarados",
@@ -197,7 +201,6 @@ export const POKEMON_CARDS: PokemonCard[] = [
     rarity: "holo",
     image: "https://images.pokemontcg.io/gym2/5_hires.png",
     firstEdition: true,
-    description: "The Gym Leader's prized sea dragon — 1st Edition.",
   },
   {
     id: "blastoise-base",
@@ -205,17 +208,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "Base Set",
     number: "2/102",
     rarity: "holo",
-    image: "https://images.pokemontcg.io/base1/2_hires.png",
-    description: "The iconic Base Set Blastoise — a true classic.",
-  },
-  {
-    id: "blastoise-base-2",
-    name: "Blastoise",
-    set: "Base Set",
-    number: "2/102",
-    rarity: "holo",
-    image: "https://images.pokemontcg.io/base1/2_hires.png",
-    description: "Second copy of the Base Set legend.",
+    image: "https://product-images.tcgplayer.com/fit-in/400x558/42360.jpg",
   },
   {
     id: "venusaur-base",
@@ -223,8 +216,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "Base Set",
     number: "15/102",
     rarity: "holo",
-    image: "https://images.pokemontcg.io/base1/15_hires.png",
-    description: "The original grass titan — Base Set holo.",
+    image: "https://product-images.tcgplayer.com/fit-in/400x558/42355.jpg",
   },
   {
     id: "charmander-dragon",
@@ -232,8 +224,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Dragon",
     number: "98/97",
     rarity: "secret",
+    era: "mid-era",
     image: "https://images.pokemontcg.io/ex3/98_hires.png",
-    description: "Secret Rare Charmander — numbered past the set total.",
   },
   {
     id: "togepi-trr",
@@ -241,8 +233,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Team Rocket Returns",
     number: "50/109",
     rarity: "reverse-holo",
-    image: "https://images.pokemontcg.io/ex7/50_hires.png",
-    description: "Reverse holo Togepi from Team Rocket Returns.",
+    era: "mid-era",
+    image: "https://storage.googleapis.com/images.pricecharting.com/27d72d454414ad0b32b9939f7c9de2d6ec8d2cab6ca91b14d436b6cb2730f32d/1600.jpg",
   },
   {
     id: "butterfree-lc",
@@ -250,8 +242,7 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "Legendary Collection",
     number: "21/110",
     rarity: "reverse-holo",
-    image: "https://images.pokemontcg.io/base6/21_hires.png",
-    description: "Reverse holo from the beautiful Legendary Collection.",
+    image: "https://storage.googleapis.com/images.pricecharting.com/866d706329f08f5b3a2de3944566ea335403712ae4b9514fdfbc7eed8015e753/1600.jpg",
   },
   {
     id: "magikarp-trr",
@@ -259,8 +250,8 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "EX Team Rocket Returns",
     number: "65/109",
     rarity: "reverse-holo",
-    image: "https://images.pokemontcg.io/ex7/65_hires.png",
-    description: "Reverse holo Magikarp — Team Rocket's overlooked fish.",
+    era: "mid-era",
+    image: "https://storage.googleapis.com/images.pricecharting.com/86b0262847c2205472ad9123a5f47dbdd4da19eaf745a273f051e13d285fa5d1/1600.jpg",
   },
   {
     id: "pikachu-promo",
@@ -269,7 +260,6 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "12",
     rarity: "promo",
     image: "https://images.pokemontcg.io/np/12_hires.png",
-    description: "Holo Pikachu from the Nintendo Black Star Promos.",
   },
   {
     id: "rockets-zapdos-gym",
@@ -277,17 +267,15 @@ export const POKEMON_CARDS: PokemonCard[] = [
     set: "Gym Challenge",
     number: "15/132",
     rarity: "holo",
-    image: "https://images.pokemontcg.io/gym2/15_hires.png",
-    description: "Team Rocket's stolen thunder bird — Gym Challenge holo.",
+    image: "https://product-images.tcgplayer.com/fit-in/400x558/88800.jpg",
   },
   {
     id: "pichu-expedition",
     name: "Pichu",
     set: "Expedition",
-    number: "58/165",
+    number: "22/165",
     rarity: "reverse-holo",
-    image: "https://images.pokemontcg.io/ecard1/58_hires.png",
-    description: "Reverse holo Pichu from the Expedition set.",
+    image: "https://storage.googleapis.com/images.pricecharting.com/1950552f3cb8280c433214da40b458719ccdee8f5894e162f24d7a7471ba3137/1600.jpg",
   },
   {
     id: "eevee-promo",
@@ -296,12 +284,44 @@ export const POKEMON_CARDS: PokemonCard[] = [
     number: "11",
     rarity: "promo",
     image: "https://images.pokemontcg.io/basep/11_hires.png",
-    description: "The original Eevee promo — evolution potential unleashed.",
+  },
+  {
+    id: "mewtwo-base",
+    name: "Mewtwo",
+    set: "Base Set",
+    number: "10/102",
+    rarity: "holo",
+    image: "https://storage.googleapis.com/images.pricecharting.com/0374cd52bb22be6591b9807241107c22c6f72b2f071869c6e6342a156be99e10/1600.jpg",
+  },
+  {
+    id: "milotic-hidden-legends",
+    name: "Milotic",
+    set: "EX Hidden Legends",
+    number: "12/101",
+    rarity: "holo",
+    era: "mid-era",
+    image: "https://storage.googleapis.com/images.pricecharting.com/c1c511506113459fb5b30b4006eb477b766854c17ece66632bc75f9568fe992f/1600.jpg",
+  },
+  {
+    id: "sableye-deoxys",
+    name: "Sableye",
+    set: "EX Deoxys",
+    number: "23/107",
+    rarity: "reverse-holo",
+    image: "https://storage.googleapis.com/images.pricecharting.com/jagffw3lxs7jr64k/1600.jpg",
+  },
+  {
+    id: "squirtle-frlg",
+    name: "Squirtle",
+    set: "EX FireRed & LeafGreen",
+    number: "83/112",
+    rarity: "reverse-holo",
+    era: "mid-era",
+    image: "https://storage.googleapis.com/images.pricecharting.com/d0b964d6cb9da8b5e1728b57826b1dfb66270d92fc0104f4e9d9f919142155d1/1600.jpg",
   },
 ];
 
+export const getCardEra = (card: PokemonCard): CardEra => card.era ?? "vintage";
+
 /** All unique sets for filtering. */
 export const CARD_SETS = Array.from(new Set(POKEMON_CARDS.map((c) => c.set)));
-
-/** All unique rarities for filtering. */
-export const CARD_RARITIES = Array.from(new Set(POKEMON_CARDS.map((c) => c.rarity)));

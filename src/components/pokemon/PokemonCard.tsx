@@ -3,8 +3,9 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Renderer, Program, Mesh, Geometry } from "ogl";
-import { HOLO_VERTEX, HOLO_FRAGMENT } from "./holoShader";
+import { getSharedHoloRenderer } from "./sharedHoloRenderer";
+import { POKEMON_CARD_FRAME_PROPS } from "./pokemonCardStyles";
+import { PokemonGradeBadge } from "./PokemonGradeBadge";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import type { PokemonCard as PokemonCardType } from "@/lib/pokemonCards";
 
@@ -20,16 +21,13 @@ type Props = {
 /**
  * A single Pokémon card with Balatro-style holographic WebGL overlay.
  *
- * The card image is a regular <img> (no CORS issues). A transparent
- * OGL canvas sits on top, rendering only the holographic foil effect
- * that reacts to mouse position. Framer Motion handles the 3D tilt.
+ * The card uses a regular image element (no CORS issues). A shared transparent
+ * OGL canvas moves onto the active card and renders only the holographic foil
+ * effect that reacts to mouse position. Framer Motion handles the 3D tilt.
  */
 export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const hoverRef = useRef(0);
+  const holoRendererRef = useRef<ReturnType<typeof getSharedHoloRenderer> | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -39,96 +37,14 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), SPRING_CONFIG);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
-  // WebGL context management — create on hover, destroy on leave
-  // This ensures at most 1 active context at a time (browser limit ~8-16)
-  const rendererRef = useRef<Renderer | null>(null);
-  const roRef = useRef<ResizeObserver | null>(null);
-
-  const destroyWebGL = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    if (roRef.current) {
-      roRef.current.disconnect();
-      roRef.current = null;
-    }
-    if (rendererRef.current) {
-      rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
-      rendererRef.current = null;
-    }
-  }, []);
-
-  const initWebGL = useCallback(() => {
-    // Already active
-    if (rendererRef.current) return;
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
-
-    const rect = container.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    const w = Math.max(Math.round(rect.width), 50);
-    const h = Math.max(Math.round(rect.height), 70);
-
-    const renderer = new Renderer({
-      canvas,
-      alpha: true,
-      premultipliedAlpha: false,
-      antialias: true,
-      width: w,
-      height: h,
-      dpr,
-    });
-    rendererRef.current = renderer;
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    const geometry = new Geometry(gl, {
-      position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
-      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-    });
-
-    const program = new Program(gl, {
-      vertex: HOLO_VERTEX,
-      fragment: HOLO_FRAGMENT,
-      uniforms: {
-        uTime: { value: 0 },
-        uMouse: { value: [0, 0] },
-        uHover: { value: 1 },
-      },
-      transparent: true,
-    });
-
-    const mesh = new Mesh(gl, { geometry, program });
-    const startTime = performance.now();
-
-    const render = () => {
-      if (!rendererRef.current) return;
-      const elapsed = (performance.now() - startTime) / 1000;
-      program.uniforms.uTime.value = elapsed;
-      program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
-      renderer.render({ scene: mesh });
-      rafRef.current = requestAnimationFrame(render);
-    };
-
-    rafRef.current = requestAnimationFrame(render);
-
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width: ew, height: eh } = entry.contentRect;
-        if (ew > 0 && eh > 0) {
-          renderer.setSize(Math.round(ew), Math.round(eh));
-        }
-      }
-    });
-    ro.observe(container);
-    roRef.current = ro;
-  }, []);
-
-  // Cleanup on unmount
   useEffect(() => {
-    return () => { destroyWebGL(); };
-  }, [destroyWebGL]);
+    const container = containerRef.current;
+    return () => {
+      if (container) {
+        holoRendererRef.current?.detach(container);
+      }
+    };
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -137,26 +53,28 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
       const y = (e.clientY - rect.top) / rect.height - 0.5;
       mouseX.set(x);
       mouseY.set(y);
-      mouseRef.current = { x: x * 2, y: -y * 2 };
+      holoRendererRef.current?.setPointer(x * 2, -y * 2);
     },
     [mouseX, mouseY],
   );
 
   const handleMouseEnter = useCallback(() => {
-    hoverRef.current = 1;
-    initWebGL();
-  }, [initWebGL]);
+    const container = containerRef.current;
+    if (!container) return;
+
+    const holoRenderer = getSharedHoloRenderer();
+    holoRendererRef.current = holoRenderer;
+    holoRenderer.attach(container);
+  }, []);
 
   const handleMouseLeave = useCallback(() => {
-    hoverRef.current = 0;
     mouseX.set(0);
     mouseY.set(0);
-    mouseRef.current = { x: 0, y: 0 };
-    // Destroy context after a short delay (let last frame render)
-    setTimeout(() => {
-      if (hoverRef.current === 0) destroyWebGL();
-    }, 100);
-  }, [mouseX, mouseY, destroyWebGL]);
+    const container = containerRef.current;
+    if (container) {
+      holoRendererRef.current?.detach(container);
+    }
+  }, [mouseX, mouseY]);
 
   const handleClick = useCallback(() => {
     onInspect?.(card);
@@ -200,17 +118,11 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
             rotateY,
             transformStyle: "preserve-3d",
           }}
-          borderRadius="12px"
-          overflow="hidden"
-          border="2px solid"
-          borderColor="brand.border"
-          bg="brand.surface"
-          transition="border-color 0.2s ease"
-          _hover={{ borderColor: "brand.borderHover" }}
+          {...POKEMON_CARD_FRAME_PROPS}
           position="relative"
           role="button"
           tabIndex={0}
-          aria-label={`Inspect ${card.name}`}
+          aria-label={`Inspect ${card.name}${card.grading ? `, ${card.grading.company} ${card.grading.grade}` : ""}`}
         >
           {/* Card image + transparent holo overlay */}
           <Box
@@ -266,19 +178,6 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
                 LOADING...
               </Flex>
             )}
-            {/* Transparent WebGL holo overlay */}
-            <canvas
-              ref={canvasRef}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                display: "block",
-                pointerEvents: "none",
-              }}
-            />
           </Box>
         </Box>
       </Box>
@@ -308,6 +207,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
             {card.set} · {card.number}
           </Text>
           <Flex gap={1} align="center" flexShrink={0}>
+            {card.grading && <PokemonGradeBadge grading={card.grading} />}
             {card.firstEdition && (
               <Text
                 className={pixelFont.className}

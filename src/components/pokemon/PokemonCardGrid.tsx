@@ -9,36 +9,57 @@ import { RetroFilterPill } from "@/components/RetroFilterPill";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import {
   POKEMON_CARDS,
-  CARD_RARITIES,
+  getCardEra,
+  type CardEra,
   type PokemonCard as PokemonCardType,
-  type CardRarity,
 } from "@/lib/pokemonCards";
 
-const RARITY_LABELS: Record<CardRarity, string> = {
-  common: "Common",
-  uncommon: "Uncommon",
-  rare: "Rare",
-  holo: "Holo",
-  "reverse-holo": "Rev Holo",
-  ex: "EX",
-  secret: "Secret",
-  promo: "Promo",
-};
+type CardFilterId = "holo" | "reverse-holo" | "first-edition" | CardEra;
+
+const CARD_FILTERS: Array<{
+  id: CardFilterId;
+  label: string;
+  matches: (card: PokemonCardType) => boolean;
+}> = [
+  { id: "holo", label: "Holo", matches: (card) => card.rarity === "holo" },
+  {
+    id: "reverse-holo",
+    label: "Reverse Holo",
+    matches: (card) => card.rarity === "reverse-holo",
+  },
+  {
+    id: "first-edition",
+    label: "1st Ed.",
+    matches: (card) => Boolean(card.firstEdition),
+  },
+  {
+    id: "vintage",
+    label: "Vintage",
+    matches: (card) => getCardEra(card) === "vintage",
+  },
+  {
+    id: "mid-era",
+    label: "Mid-era",
+    matches: (card) => getCardEra(card) === "mid-era",
+  },
+  {
+    id: "modern",
+    label: "Modern",
+    matches: (card) => getCardEra(card) === "modern",
+  },
+];
 
 /**
- * Responsive grid of holographic Pokémon cards with rarity filtering.
+ * Responsive grid of holographic Pokémon cards with collection filtering.
  */
 export const PokemonCardGrid: React.FC = () => {
-  const [activeRarity, setActiveRarity] = useState<CardRarity | null>(null);
+  const [activeFilter, setActiveFilter] = useState<CardFilterId | null>(null);
   const [inspecting, setInspecting] = useState<PokemonCardType | null>(null);
 
-  const filtered = useMemo(
-    () =>
-      activeRarity
-        ? POKEMON_CARDS.filter((c) => c.rarity === activeRarity)
-        : POKEMON_CARDS,
-    [activeRarity],
-  );
+  const filtered = useMemo(() => {
+    const filter = CARD_FILTERS.find(({ id }) => id === activeFilter);
+    return filter ? POKEMON_CARDS.filter(filter.matches) : POKEMON_CARDS;
+  }, [activeFilter]);
 
   const handleInspect = useCallback((card: PokemonCardType) => {
     setInspecting(card);
@@ -50,7 +71,7 @@ export const PokemonCardGrid: React.FC = () => {
 
   return (
     <>
-      {/* Rarity filter chips */}
+      {/* Collection filter chips */}
       <Flex
         wrap="wrap"
         gap={1.5}
@@ -59,16 +80,16 @@ export const PokemonCardGrid: React.FC = () => {
       >
         <RetroFilterPill
           label="All"
-          active={activeRarity === null}
-          onClick={() => setActiveRarity(null)}
+          active={activeFilter === null}
+          onClick={() => setActiveFilter(null)}
           color="#f05032"
         />
-        {CARD_RARITIES.map((rarity: CardRarity) => (
+        {CARD_FILTERS.map(({ id, label }) => (
           <RetroFilterPill
-            key={rarity}
-            label={RARITY_LABELS[rarity]}
-            active={activeRarity === rarity}
-            onClick={() => setActiveRarity(rarity)}
+            key={id}
+            label={label}
+            active={activeFilter === id}
+            onClick={() => setActiveFilter(id)}
             color="#f05032"
           />
         ))}
@@ -89,17 +110,19 @@ export const PokemonCardGrid: React.FC = () => {
       <Box
         display="grid"
         gridTemplateColumns={[
-          "repeat(2, 1fr)",
-          "repeat(3, 1fr)",
-          "repeat(3, 1fr)",
-          "repeat(4, 1fr)",
+          "repeat(2, minmax(0, 1fr))",
+          "repeat(3, minmax(0, 1fr))",
+          "repeat(3, minmax(0, 1fr))",
+          "repeat(4, minmax(0, 1fr))",
         ]}
         gap={[3, 4, 5]}
         justifyItems="center"
+        width="100%"
       >
         {filtered.map((card, i) => (
           <motion.div
             key={card.id}
+            style={{ width: "100%", minWidth: 0, maxWidth: "240px" }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{

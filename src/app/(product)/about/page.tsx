@@ -13,10 +13,10 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { SectionHeading } from "@/components/SectionHeading";
+import { TopLevelListItem } from "@/components/TopLevelListItem";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { useRef, useState } from "react";
 import { Photography, PhotoCarousel } from "@/components/sections/Photography";
 import { Music, SpotifyEmbed } from "@/components/sections/Music";
 import {
@@ -186,21 +186,6 @@ const RoleRow = ({
 );
 
 export default function About() {
-  const portraitVideoRef = useRef<HTMLVideoElement>(null);
-  const [portraitPaused, setPortraitPaused] = useState(false);
-
-  const togglePortraitPlayback = () => {
-    const video = portraitVideoRef.current;
-    if (!video) return;
-
-    if (video.paused) {
-      void video.play().then(() => setPortraitPaused(false));
-    } else {
-      video.pause();
-      setPortraitPaused(true);
-    }
-  };
-
   return (
     <PageWrapper>
       <Flex
@@ -210,186 +195,56 @@ export default function About() {
         flexDirection="column"
         gap={4}
       >
-        <RetroCard>
-          <Flex
-            flexDirection={["column", "column", "row"]}
-            alignItems="stretch"
-            minHeight={{ md: "350px" }}
+        <RetroCard p={5}>
+          <PageHeading title="About Me" mb={2} />
+          <Text
+            as="p"
+            fontSize="13px"
+            color="brand.textMuted"
+            mb={4}
+            lineHeight="1.7"
           >
-            <Box p={5} flex="1 1 58%" display="flex" flexDirection="column">
-              <PageHeading title="About Me" mb={2} />
-              <Text
-                as="p"
-                fontSize="13px"
-                color="brand.textMuted"
-                mb={4}
-                lineHeight="1.7"
-              >
-                Design engineer currently @ <GithubEvaporation />.
-                <br />
-                From neuroscience to building technology, my passion for the human
-                experience is the driving force in my life. As a design engineer,
-                I work at the forefront of AI-driven development of tech products,
-                specializing in design systems, accessibility, prototyping, and
-                general frontend product work.
-              </Text>
-              <Text
-                as="p"
-                fontSize="13px"
-                color="brand.textMuted"
-                mb={5}
-                lineHeight="1.7"
-              >
-                Outside of my main roles, I build fullstack web apps, create Udemy
-                software development courses for tens of thousands of students, do
-                web design/development for small businesses, and much more!
-              </Text>
+            Design engineer currently @ <GithubEvaporation />.
+            <br />
+            From neuroscience to building technology, my passion for the human
+            experience is the driving force in my life. As a design engineer,
+            I work at the forefront of AI-driven development of tech products,
+            specializing in design systems, accessibility, prototyping, and
+            general frontend product work.
+          </Text>
+          <Text
+            as="p"
+            fontSize="13px"
+            color="brand.textMuted"
+            mb={5}
+            lineHeight="1.7"
+          >
+            Outside of my main roles, I build fullstack web apps, create Udemy
+            software development courses for tens of thousands of students, do
+            web design/development for small businesses, and much more!
+          </Text>
 
-              <Flex flexDirection="row" width="auto" gap={3} mt="auto">
-                <Button
-                  variant="primaryOrange"
-                  as={Link}
-                  href="/projects"
-                  size="sm"
-                  leftIcon={<SparkleIcon />}
-                >
-                  See my work
-                </Button>
-                <Button
-                  variant="secondary"
-                  as={Link}
-                  href="/blog"
-                  size="sm"
-                  leftIcon={<PencilIcon />}
-                >
-                  Visit blog
-                </Button>
-              </Flex>
-            </Box>
-
-            <Box
-              flex="1 1 42%"
-              minHeight={["260px", "320px", "auto"]}
-              position="relative"
-              overflow="hidden"
-              bg="#fff"
+          <Flex flexDirection="row" width="auto" gap={3}>
+            <Button
+              variant="primaryOrange"
+              as={Link}
+              href="/projects"
+              size="sm"
+              gap={2}
             >
-              <Box
-                aria-hidden="true"
-                position="absolute"
-                top={[0, 0, 0]}
-                left={[0, 0, 0]}
-                width={["100%", "100%", "2px"]}
-                height={["2px", "2px", "100%"]}
-                bg="brand.border"
-                zIndex={2}
-                pointerEvents="none"
-              />
-              <Box
-                as="video"
-                ref={portraitVideoRef}
-                aria-label="Animated illustrated portrait of Branon flashing peace signs"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster="/about/glitch-portrait-poster.png"
-                width="100%"
-                height="100%"
-                position="absolute"
-                inset={0}
-                objectFit="cover"
-                objectPosition="center"
-                opacity={0.52}
-                sx={{
-                  "@media (prefers-reduced-motion: reduce)": {
-                    display: "none",
-                  },
-                }}
-              >
-                <source src="/about/glitch-portrait.mp4" type="video/mp4" />
-              </Box>
-              <Image
-                src="/about/glitch-portrait-poster.png"
-                alt="Illustrated portrait of Branon flashing peace signs"
-                width="100%"
-                height="100%"
-                position="absolute"
-                inset={0}
-                objectFit="cover"
-                objectPosition="center"
-                opacity={0.68}
-                display="none"
-                sx={{
-                  "@media (prefers-reduced-motion: reduce)": {
-                    display: "block",
-                  },
-                }}
-              />
-              <Box
-                aria-hidden="true"
-                position="absolute"
-                inset={0}
-                pointerEvents="none"
-                boxShadow="inset 0 0 40px rgba(51, 44, 28, 0.08)"
-              />
-              <Box
-                as="button"
-                type="button"
-                onClick={togglePortraitPlayback}
-                aria-label={portraitPaused ? "Play portrait animation" : "Pause portrait animation"}
-                aria-pressed={portraitPaused}
-                position="absolute"
-                top={3}
-                right={3}
-                zIndex={3}
-                width="30px"
-                height="30px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                color="brand.text"
-                bg="brand.surface"
-                border="2px solid"
-                borderColor="brand.border"
-                borderRadius="6px"
-                cursor="pointer"
-                transition="0.12s ease all"
-                _hover={{
-                  borderColor: "brand.borderHover",
-                  bg: "brand.surfaceHover",
-                }}
-                _focusVisible={{
-                  outline: "2px solid",
-                  outlineColor: ABOUT_ACCENT,
-                  outlineOffset: "2px",
-                }}
-                sx={{
-                  "@media (prefers-reduced-motion: reduce)": {
-                    display: "none",
-                  },
-                }}
-              >
-                <Box
-                  as="svg"
-                  viewBox="0 0 12 12"
-                  width="12px"
-                  height="12px"
-                  display="block"
-                  aria-hidden="true"
-                >
-                  {portraitPaused ? (
-                    <path d="M3 2.1v7.8L9.3 6 3 2.1Z" fill="currentColor" />
-                  ) : (
-                    <>
-                      <rect x="2.25" y="2" width="2.5" height="8" rx="0.75" fill="currentColor" />
-                      <rect x="7.25" y="2" width="2.5" height="8" rx="0.75" fill="currentColor" />
-                    </>
-                  )}
-                </Box>
-              </Box>
-            </Box>
+              <SparkleIcon />
+              <Box as="span">See my work</Box>
+            </Button>
+            <Button
+              variant="secondary"
+              as={Link}
+              href="/blog"
+              size="sm"
+              gap={2}
+            >
+              <PencilIcon />
+              <Box as="span">Visit blog</Box>
+            </Button>
           </Flex>
         </RetroCard>
 
@@ -515,6 +370,36 @@ export default function About() {
             <RetroCard order={[6, 6, "unset"]}>
               <SpotifyEmbed />
             </RetroCard>
+
+            <RetroCard p={5} order={[8, 8, "unset"]}>
+              <SectionHeading title="Pokémon Card Collection" color={ABOUT_ACCENT} />
+              <Text fontSize="13px" color="brand.textMuted" lineHeight="1.7" mb={2}>
+                I&apos;ve been collecting pokemon cards since the very first set
+                came out - I&apos;m THAT old!
+              </Text>
+              <Flex
+                flexDirection="column"
+                sx={{ "& > *:first-of-type::after": { display: "none" } }}
+              >
+                <TopLevelListItem
+                  title="View my favorite cards"
+                  href="/about/pokemon"
+                  accent={ABOUT_ACCENT}
+                  description="Peruse my favorite cards from my personal collection. Be sure to wash your hands first! 👐"
+                  leading={
+                    <Image
+                      src="/about/magikarp-pixel.png"
+                      alt=""
+                      width="44px"
+                      height="44px"
+                      maxWidth="none"
+                      objectFit="contain"
+                      sx={{ imageRendering: "pixelated" }}
+                    />
+                  }
+                />
+              </Flex>
+            </RetroCard>
           </Box>
 
           {/* Right column — Publications/Photography. Same `display: contents`
@@ -626,36 +511,6 @@ export default function About() {
               </Box>
             </RetroCard>
 
-            {/* Pokémon card collection teaser — links to the full
-                holographic gallery at /about/pokemon */}
-            <Box
-              as={Link}
-              href="/about/pokemon"
-              display="block"
-              textDecoration="none"
-              order={[8, 8, "unset"]}
-              _hover={{ "& > div": { borderColor: "brand.borderHover" } }}
-            >
-              <RetroCard
-                p={5}
-                transition="0.15s ease border-color"
-                cursor="pointer"
-              >
-                <SectionHeading title="Pokémon Card Collection" color={ABOUT_ACCENT} />
-                <Text fontSize="13px" color="brand.textMuted" lineHeight="1.7" mb={3}>
-                  A holographic gallery of my favorite Pokémon cards — rendered with
-                  WebGL foil shaders. Hover for the holo effect.
-                </Text>
-                <Text
-                  className={pixelFont.className}
-                  fontSize="9px"
-                  color={ABOUT_ACCENT}
-                  letterSpacing="0.06em"
-                >
-                  VIEW COLLECTION →
-                </Text>
-              </RetroCard>
-            </Box>
           </Box>
         </Flex>
       </Flex>

@@ -5,8 +5,6 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { PokemonCardGrid } from "@/components/pokemon/PokemonCardGrid";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
-import Link from "next/link";
 
 export default function PokemonCollectionPage() {
   return (
@@ -19,25 +17,7 @@ export default function PokemonCollectionPage() {
       >
         <RetroCard>
           <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
-            <Flex justify="space-between" align="center">
-              <PageHeading
-                title="Pokémon Collection"
-                subtitle="Hover to see the holo ✦ Click to inspect"
-              />
-              <Text
-                as={Link}
-                href="/about"
-                className={pixelFont.className}
-                fontSize="9px"
-                letterSpacing="0.06em"
-                color="brand.textMuted"
-                _hover={{ color: "brand.text" }}
-                transition="0.15s ease color"
-                flexShrink={0}
-              >
-                ← ABOUT
-              </Text>
-            </Flex>
+            <PageHeading title="Pokémon Collection" />
           </Box>
 
           <Box padding={[4, 5, 6]}>

@@ -9,7 +9,9 @@ interface TopLevelListItemProps {
   title: string;
   href: string;
   accent: string;
-  meta: string;
+  meta?: string;
+  description?: string;
+  leading?: React.ReactNode;
   external?: boolean;
   badges?: React.ReactNode;
 }
@@ -19,6 +21,8 @@ export const TopLevelListItem = ({
   href,
   accent,
   meta,
+  description,
+  leading,
   external = false,
   badges,
 }: TopLevelListItemProps) => (
@@ -64,46 +68,73 @@ export const TopLevelListItem = ({
     transition="0.14s ease all"
   >
     <Flex flex={1} minWidth={0} pr={4} gap={2}>
-      <Text
-        as="span"
-        className={pixelFont.className}
-        fontSize="11px"
-        color="transparent"
-        _groupHover={{ color: accent }}
-        aria-hidden="true"
-        flexShrink={0}
-        mt="1px"
-        transition="color 0.14s ease"
-      >
-        {"\u25B6"}
-      </Text>
+      {leading ? (
+        <Flex
+          width="44px"
+          height="44px"
+          flexShrink={0}
+          alignItems="center"
+          justifyContent="center"
+          overflow="hidden"
+          aria-hidden="true"
+        >
+          {leading}
+        </Flex>
+      ) : (
+        <Text
+          as="span"
+          className={pixelFont.className}
+          fontSize="11px"
+          color="transparent"
+          _groupHover={{ color: accent }}
+          aria-hidden="true"
+          flexShrink={0}
+          mt="1px"
+          transition="color 0.14s ease"
+        >
+          {"\u25B6"}
+        </Text>
+      )}
       <Box minWidth={0}>
         <Flex alignItems="center" gap={2} flexWrap="wrap">
           <Text textStyle="listTitle">{title}</Text>
           <Box display={["none", "none", "block"]}>{badges}</Box>
         </Flex>
-        <Text textStyle="listMeta" mt={0.5} display={["block", "block", "none"]}>
-          {meta}
-        </Text>
+        {description && (
+          <Text fontSize="12px" color="brand.textMuted" lineHeight="1.6" mt={1}>
+            {description}
+          </Text>
+        )}
+        {meta && (
+          <Text textStyle="listMeta" mt={0.5} display={["block", "block", "none"]}>
+            {meta}
+          </Text>
+        )}
       </Box>
     </Flex>
-    <Flex flexShrink={0} alignItems="center" gap={2} alignSelf="stretch">
-      <Text
-        textStyle="listMeta"
-        display={["none", "none", "block"]}
-        whiteSpace="nowrap"
-      >
-        {meta}
-      </Text>
-      <Box
-        boxSize={3}
-        flexShrink={0}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        {external && <ExternalLinkIcon boxSize={3} color="brand.textMuted" />}
-      </Box>
-    </Flex>
+    {(meta || external) && (
+      <Flex flexShrink={0} alignItems="center" gap={2} alignSelf="stretch">
+        {meta && (
+          <Text
+            textStyle="listMeta"
+            display={["none", "none", "block"]}
+            whiteSpace="nowrap"
+          >
+            {meta}
+          </Text>
+        )}
+        {external && (
+          <Box
+            boxSize={3}
+            flexShrink={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+          </Box>
+        )}
+      </Flex>
+    )}
   </ChakraLink>
 );
