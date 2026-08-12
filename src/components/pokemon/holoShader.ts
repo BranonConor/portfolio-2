@@ -9,8 +9,9 @@
  * The overlay layers:
  * 1. A prismatic rainbow foil that shifts with mouse/tilt
  * 2. A specular highlight that follows the cursor
- * 3. A noise/grain texture for authentic foil feel
- * 4. Subtle edge glow
+ * 3. Balatro-style pixelated scanlines + CRT pixel grid
+ * 4. A noise/grain texture for authentic foil feel
+ * 5. Subtle edge glow
  */
 
 export const HOLO_VERTEX = /* glsl */ `
@@ -72,6 +73,33 @@ export const HOLO_FRAGMENT = /* glsl */ `
     float specular = exp(-dot(specPos, specPos) * 6.0);
     specular = pow(specular, 1.5) * 0.7;
 
+    // --- Balatro-style pixel grid / CRT effect ---
+    // Creates the distinctive "pixel card" look with visible sub-pixels
+    float pixelScale = 120.0; // density of the pixel grid
+    vec2 pixelUv = vUv * pixelScale;
+    vec2 pixelCell = fract(pixelUv);
+
+    // Sub-pixel RGB columns (like a CRT phosphor mask)
+    float subPixelCol = fract(pixelUv.x * 3.0);
+    vec3 subPixelMask = vec3(
+      smoothstep(0.0, 0.33, subPixelCol) - smoothstep(0.33, 0.66, subPixelCol),
+      smoothstep(0.33, 0.66, subPixelCol) - smoothstep(0.66, 1.0, subPixelCol),
+      smoothstep(0.66, 1.0, subPixelCol)
+    );
+    // Soften the mask so it's not too harsh
+    subPixelMask = mix(vec3(1.0), subPixelMask * 1.5 + 0.4, 0.35 * uHover);
+
+    // Scanline darkening (horizontal lines between pixel rows)
+    float scanline = smoothstep(0.4, 0.5, abs(pixelCell.y - 0.5));
+    scanline = mix(1.0, 0.82, scanline * 0.5 * uHover);
+
+    // Pixel cell border (subtle grid between pixels)
+    float cellBorder = smoothstep(0.05, 0.1, pixelCell.x)
+                     * smoothstep(0.05, 0.1, pixelCell.y)
+                     * smoothstep(0.05, 0.1, 1.0 - pixelCell.x)
+                     * smoothstep(0.05, 0.1, 1.0 - pixelCell.y);
+    cellBorder = mix(0.88, 1.0, cellBorder);
+
     // --- Grain / noise ---
     float grain = noise(vUv * 200.0 + uTime * 2.0) * 0.06;
 
@@ -87,9 +115,16 @@ export const HOLO_FRAGMENT = /* glsl */ `
                    + grain * rainbow * 0.5
                    + edgeGlow * rainbow;
 
+    // Apply the Balatro pixel treatment to the holo
+    holoColor *= subPixelMask * scanline * cellBorder;
+
     // Alpha fades in with hover — fully transparent when not hovering
-    float alpha = uHover * (foilStrength * 0.55 + specular * 0.6 + edgeGlow * 0.4 + 0.03);
-    alpha = clamp(alpha, 0.0, 0.65);
+    float alpha = uHover * (foilStrength * 0.55 + specular * 0.6 + edgeGlow * 0.4 + 0.06);
+
+    // The pixel grid also contributes a subtle darkening overlay
+    // even in non-rainbow areas for that overall pixelated card feel
+    float gridDarken = (1.0 - cellBorder) * 0.12 + (1.0 - scanline) * 0.08;
+    alpha = clamp(alpha + gridDarken * uHover, 0.0, 0.7);
 
     gl_FragColor = vec4(holoColor, alpha);
   }

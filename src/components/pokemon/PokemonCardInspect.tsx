@@ -2,7 +2,7 @@
 
 import { Box, Text, Flex } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Renderer, Program, Mesh, Geometry } from "ogl";
 import { HOLO_VERTEX, HOLO_FRAGMENT } from "./holoShader";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
@@ -44,15 +44,20 @@ export const PokemonCardInspect: React.FC<{
     if (!canvas || !container) return;
 
     setImageLoaded(false);
+    let renderer: Renderer | null = null;
+    let ro: ResizeObserver | null = null;
+    let running = true;
 
-    // Wait a tick for layout to settle
+    // Use a longer delay so the spring animation has settled and
+    // the container has its final dimensions
     const initTimer = window.setTimeout(() => {
+      if (!running) return;
       const rect = container.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio, 2);
-      const w = Math.max(Math.round(rect.width), 1);
-      const h = Math.max(Math.round(rect.height), 1);
+      const w = Math.max(Math.round(rect.width), 100);
+      const h = Math.max(Math.round(rect.height), 140);
 
-      const renderer = new Renderer({
+      renderer = new Renderer({
         canvas,
         alpha: true,
         premultipliedAlpha: false,
@@ -84,54 +89,52 @@ export const PokemonCardInspect: React.FC<{
 
       const mesh = new Mesh(gl, { geometry, program });
       const startTime = performance.now();
+      const localRenderer = renderer;
 
       const render = () => {
+        if (!running) return;
         const elapsed = (performance.now() - startTime) / 1000;
         program.uniforms.uTime.value = elapsed;
         program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
-        renderer.render({ scene: mesh });
+        localRenderer.render({ scene: mesh });
         rafRef.current = requestAnimationFrame(render);
       };
 
       rafRef.current = requestAnimationFrame(render);
 
       // Keep canvas sized to container
-      const ro = new ResizeObserver((entries) => {
+      ro = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const { width: ew, height: eh } = entry.contentRect;
           if (ew > 0 && eh > 0) {
-            renderer.setSize(Math.round(ew), Math.round(eh));
+            localRenderer.setSize(Math.round(ew), Math.round(eh));
           }
         }
       });
       ro.observe(container);
+    }, 200);
 
-      // Store cleanup refs
-      (canvas as any).__cleanup = () => {
-        cancelAnimationFrame(rafRef.current);
-        ro.disconnect();
-        gl.getExtension("WEBGL_lose_context")?.loseContext();
-      };
-    }, 50);
-
-    return () => {
-      window.clearTimeout(initTimer);
-      cancelAnimationFrame(rafRef.current);
-      if ((canvasRef.current as any)?.__cleanup) {
-        (canvasRef.current as any).__cleanup();
-      }
-    };
-  }, [card]);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
+    // Direct DOM mouse listener — more reliable than React synthetic events
+    // through motion.div wrappers
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = container.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const y = -((e.clientY - rect.top) / rect.height - 0.5) * 2;
       mouseRef.current = { x, y };
-    },
-    [],
-  );
+    };
+    container.addEventListener("pointermove", onPointerMove);
+
+    return () => {
+      running = false;
+      window.clearTimeout(initTimer);
+      cancelAnimationFrame(rafRef.current);
+      container.removeEventListener("pointermove", onPointerMove);
+      if (ro) ro.disconnect();
+      if (renderer) {
+        renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      }
+    };
+  }, [card]);
 
   const rarityLabel =
     card?.rarity === "ex"
@@ -183,10 +186,9 @@ export const PokemonCardInspect: React.FC<{
             padding={[4, 6]}
             cursor="default"
           >
-            {/* Large card with holo overlay — mouse tracked here */}
+            {/* Large card with holo overlay */}
             <Box
               ref={containerRef}
-              onMouseMove={handleMouseMove}
               position="relative"
               width={["260px", "320px", "360px"]}
               flexShrink={0}

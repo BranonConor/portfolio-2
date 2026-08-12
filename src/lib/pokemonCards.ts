@@ -39,12 +39,12 @@ export const POKEMON_CARDS: PokemonCard[] = [
   {
     id: "gb-dragonite",
     name: "Dragonite",
-    set: "Gameboy Promo",
-    number: "GB-149",
+    set: "Pokémon Card GB Promo",
+    number: "Unnumbered",
     rarity: "promo",
-    image: "https://images.pokemontcg.io/basep/5_hires.png",
+    image: "https://archives.bulbagarden.net/media/upload/b/b1/DragoniteCardGBPromo.jpg",
     japanese: true,
-    description: "The elusive Gameboy Color promo — Japan exclusive.",
+    description: "The elusive Gameboy Color promo — Japan exclusive, art by Ken Sugimori.",
   },
   {
     id: "birthday-pikachu",
