@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { CARTRIDGES } from "@/lib/cartridges";
 import { useBootChime } from "./boot-intro/useBootChime";
 import { proseFont } from "./proseFont";
@@ -29,6 +30,55 @@ const ROW_TOP = ["-22px", "-26px", "-30px"];
 const HOVER_Y = -8;
 const ACTIVE_Y = -14;
 
+const BREADCRUMB_LABEL_OVERRIDES: Record<string, string> = {
+  "/about/pokemon": "Pokémon Collection",
+};
+
+const BREADCRUMB_WORD_OVERRIDES: Record<string, string> = {
+  a11y: "A11y",
+  ez: "EZ",
+  figma: "Figma",
+  github: "GitHub",
+  md: "MD",
+  nih: "NIH",
+  sdsu: "SDSU",
+  tidal: "TIDAL",
+};
+
+const formatBreadcrumbSegment = (segment: string) =>
+  decodeURIComponent(segment)
+    .split("-")
+    .map((word) => {
+      const normalized = word.toLowerCase();
+      return (
+        BREADCRUMB_WORD_OVERRIDES[normalized] ??
+        `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`
+      );
+    })
+    .join(" ");
+
+const getBreadcrumb = (pathname: string) => {
+  const section = CARTRIDGES.find(
+    (cartridge) =>
+      pathname === cartridge.href || pathname.startsWith(`${cartridge.href}/`),
+  );
+  if (!section || pathname === section.href) return null;
+
+  const nestedSegments = pathname
+    .slice(section.href.length)
+    .split("/")
+    .filter((segment) => segment && segment !== "posts");
+  const currentSegment = nestedSegments.at(-1);
+  if (!currentSegment) return null;
+
+  return {
+    section,
+    currentLabel:
+      BREADCRUMB_LABEL_OVERRIDES[pathname] ??
+      formatBreadcrumbSegment(currentSegment),
+  };
+};
+
 /**
  * All five section cartridges rendered together in a row tucked at the top
  * of every inside-the-console page — replaces the old single "plugged in"
@@ -52,6 +102,11 @@ export function CartridgeNav() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { unlock, playMoveBlip } = useBootChime();
   const lastPlayedRef = useRef<number | null>(null);
+  const breadcrumb = getBreadcrumb(pathname);
+  const hoveredCartridge =
+    hoveredIndex !== null ? CARTRIDGES[hoveredIndex] : null;
+  const contextColor =
+    hoveredCartridge?.color ?? breadcrumb?.section.color ?? "transparent";
 
   const playHoverBlip = (index: number) => {
     if (lastPlayedRef.current === index) return;
@@ -141,38 +196,79 @@ export function CartridgeNav() {
         );
       })}
 
-      {/* Which cartridge is which color isn't obvious at a glance, so
-          hovering/focusing one reveals its name here — a colored dot
-          (matching that section's accent) plus its label, snug to the
-          right of the whole row. Desktop-only: there's no hover state on
-          touch, and screen space is tighter on mobile anyway. */}
+      {/* The label slot doubles as persistent nested-route context. Hovering
+          or focusing a cartridge temporarily replaces the breadcrumb, then
+          the current route returns when the preview ends. */}
       <Box
-        as="span"
+        as="div"
         alignSelf="flex-start"
-        display={["none", "none", "flex"]}
+        display={breadcrumb ? "flex" : ["none", "none", "flex"]}
         alignItems="center"
         gap={2}
         ml={3}
         mt="2px"
-        pointerEvents="none"
-        opacity={hoveredIndex !== null ? 1 : 0}
-        transform={hoveredIndex !== null ? "translateX(0)" : "translateX(-4px)"}
+        minWidth={0}
+        maxWidth={["128px", "240px", "480px"]}
+        pointerEvents={!hoveredCartridge && breadcrumb ? "auto" : "none"}
+        opacity={hoveredCartridge || breadcrumb ? 1 : 0}
+        transform={
+          hoveredCartridge || breadcrumb
+            ? "translateX(0)"
+            : "translateX(-4px)"
+        }
         transition="opacity 0.15s ease, transform 0.15s ease"
         className={proseFont.className}
-        fontSize="12px"
+        fontSize={["10px", "11px", "12px"]}
         color="brand.text"
         whiteSpace="nowrap"
-        aria-hidden="true"
       >
         <Box
           as="span"
-          width="10px"
-          height="10px"
+          width={["8px", "9px", "10px"]}
+          height={["8px", "9px", "10px"]}
           borderRadius="full"
-          bg={hoveredIndex !== null ? CARTRIDGES[hoveredIndex].color : "transparent"}
+          bg={contextColor}
           flexShrink={0}
         />
-        {hoveredIndex !== null ? CARTRIDGES[hoveredIndex].label : ""}
+        {hoveredCartridge ? (
+          <Box as="span" overflow="hidden" textOverflow="ellipsis">
+            {hoveredCartridge.label}
+          </Box>
+        ) : breadcrumb ? (
+          <Box
+            as="ol"
+            display="flex"
+            alignItems="center"
+            gap={1.5}
+            minWidth={0}
+            margin={0}
+            padding={0}
+            listStyleType="none"
+          >
+            <Box as="li" flexShrink={0}>
+              <Box
+                as={Link}
+                href={breadcrumb.section.href}
+                color="brand.textMuted"
+                _hover={{ color: "brand.text", textDecoration: "underline" }}
+              >
+                {breadcrumb.section.label}
+              </Box>
+            </Box>
+            <Box as="li" aria-hidden="true" color="brand.textMuted">
+              /
+            </Box>
+            <Box
+              as="li"
+              aria-current="page"
+              minWidth={0}
+              overflow="hidden"
+              textOverflow="ellipsis"
+            >
+              {breadcrumb.currentLabel}
+            </Box>
+          </Box>
+        ) : null}
       </Box>
     </Box>
   );
