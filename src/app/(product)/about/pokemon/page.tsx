@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
@@ -11,41 +11,51 @@ import Link from "next/link";
 export default function PokemonCollectionPage() {
   return (
     <PageWrapper>
-      {/* Back link */}
-      <Box marginBottom={4}>
-        <Text
-          as={Link}
-          href="/about"
-          className={pixelFont.className}
-          fontSize="9px"
-          letterSpacing="0.06em"
-          color="brand.textMuted"
-          _hover={{ color: "brand.text" }}
-          transition="0.15s ease color"
-        >
-          ← BACK TO ABOUT
-        </Text>
-      </Box>
+      <Flex
+        flexDirection="column"
+        width="100%"
+        alignItems="flex-start"
+        justifyContent="flex-start"
+      >
+        <RetroCard>
+          <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
+            <Flex justify="space-between" align="center">
+              <PageHeading
+                title="Pokémon Collection"
+                subtitle="Hover to see the holo ✦ Click to inspect"
+              />
+              <Text
+                as={Link}
+                href="/about"
+                className={pixelFont.className}
+                fontSize="9px"
+                letterSpacing="0.06em"
+                color="brand.textMuted"
+                _hover={{ color: "brand.text" }}
+                transition="0.15s ease color"
+                flexShrink={0}
+              >
+                ← ABOUT
+              </Text>
+            </Flex>
+          </Box>
 
-      <PageHeading
-        title="POKÉMON COLLECTION"
-        subtitle="Hover to see the holo ✦ Click to inspect"
-      />
+          <Box padding={[4, 5, 6]}>
+            <Text
+              fontSize="13px"
+              color="brand.textMuted"
+              marginBottom={6}
+              lineHeight="1.7"
+            >
+              A selection of my favorite Pokémon cards — each rendered with a
+              holographic foil shader. Move your cursor over a card to see the
+              rainbow shimmer, and click to get a closer look.
+            </Text>
 
-      <RetroCard marginTop={6} padding={[4, 5, 6]}>
-        <Text
-          fontSize="13px"
-          color="brand.textMuted"
-          marginBottom={6}
-          lineHeight="1.7"
-        >
-          A selection of my favorite Pokémon cards — each rendered with a
-          holographic foil shader. Move your cursor over a card to see the
-          rainbow shimmer, and click to get a closer look.
-        </Text>
-
-        <PokemonCardGrid />
-      </RetroCard>
+            <PokemonCardGrid />
+          </Box>
+        </RetroCard>
+      </Flex>
     </PageWrapper>
   );
 }

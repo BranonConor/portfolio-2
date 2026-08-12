@@ -109,22 +109,23 @@ export const HOLO_FRAGMENT = /* glsl */ `
     float edgeGlow = (1.0 - edgeFactor) * 0.12;
 
     // --- Compose transparent overlay ---
-    float foilStrength = bands * 0.4;
+    float foilStrength = bands * 0.55;
     vec3 holoColor = rainbow * foilStrength
-                   + specular * vec3(1.0, 0.97, 0.9)
-                   + grain * rainbow * 0.5
-                   + edgeGlow * rainbow;
+                   + specular * vec3(1.0, 0.97, 0.9) * 1.3
+                   + grain * rainbow * 0.6
+                   + edgeGlow * rainbow * 1.2;
 
     // Apply the Balatro pixel treatment to the holo
     holoColor *= subPixelMask * scanline * cellBorder;
 
-    // Alpha fades in with hover — fully transparent when not hovering
-    float alpha = uHover * (foilStrength * 0.55 + specular * 0.6 + edgeGlow * 0.4 + 0.06);
+    // Alpha — more visible on hover with a slight ambient glow at rest
+    float baseAlpha = 0.04; // subtle shimmer even when not hovering
+    float hoverAlpha = foilStrength * 0.65 + specular * 0.75 + edgeGlow * 0.5 + 0.1;
+    float alpha = mix(baseAlpha, hoverAlpha, uHover);
 
     // The pixel grid also contributes a subtle darkening overlay
-    // even in non-rainbow areas for that overall pixelated card feel
-    float gridDarken = (1.0 - cellBorder) * 0.12 + (1.0 - scanline) * 0.08;
-    alpha = clamp(alpha + gridDarken * uHover, 0.0, 0.7);
+    float gridDarken = (1.0 - cellBorder) * 0.15 + (1.0 - scanline) * 0.1;
+    alpha = clamp(alpha + gridDarken * uHover, 0.0, 0.78);
 
     gl_FragColor = vec4(holoColor, alpha);
   }

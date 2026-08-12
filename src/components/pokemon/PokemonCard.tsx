@@ -38,83 +38,93 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), SPRING_CONFIG);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
-  // Init WebGL overlay
+  // Init WebGL overlay — delay to ensure layout is ready (client-side nav)
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    // Size the renderer to match the displayed container
-    const rect = container.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    const w = Math.round(rect.width);
-    const h = Math.round(rect.height);
+    let running = true;
+    let renderer: Renderer | null = null;
+    let ro: ResizeObserver | null = null;
 
-    const renderer = new Renderer({
-      canvas,
-      alpha: true,
-      premultipliedAlpha: false,
-      antialias: true,
-      width: w,
-      height: h,
-      dpr,
-    });
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // Wait for layout to be computed (important on client-side nav)
+    const initTimer = window.setTimeout(() => {
+      if (!running) return;
+      const rect = container.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio, 2);
+      const w = Math.max(Math.round(rect.width), 50);
+      const h = Math.max(Math.round(rect.height), 70);
 
-    // Full-viewport triangle
-    const geometry = new Geometry(gl, {
-      position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
-      uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
-    });
+      renderer = new Renderer({
+        canvas,
+        alpha: true,
+        premultipliedAlpha: false,
+        antialias: true,
+        width: w,
+        height: h,
+        dpr,
+      });
+      const gl = renderer.gl;
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    const program = new Program(gl, {
-      vertex: HOLO_VERTEX,
-      fragment: HOLO_FRAGMENT,
-      uniforms: {
-        uTime: { value: 0 },
-        uMouse: { value: [0, 0] },
-        uHover: { value: 0 },
-      },
-      transparent: true,
-    });
+      const geometry = new Geometry(gl, {
+        position: { size: 2, data: new Float32Array([-1, -1, 3, -1, -1, 3]) },
+        uv: { size: 2, data: new Float32Array([0, 0, 2, 0, 0, 2]) },
+      });
 
-    const mesh = new Mesh(gl, { geometry, program });
-    const startTime = performance.now();
+      const program = new Program(gl, {
+        vertex: HOLO_VERTEX,
+        fragment: HOLO_FRAGMENT,
+        uniforms: {
+          uTime: { value: 0 },
+          uMouse: { value: [0, 0] },
+          uHover: { value: 0 },
+        },
+        transparent: true,
+      });
 
-    const render = () => {
-      const elapsed = (performance.now() - startTime) / 1000;
-      program.uniforms.uTime.value = elapsed;
-      program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
+      const mesh = new Mesh(gl, { geometry, program });
+      const startTime = performance.now();
+      const localRenderer = renderer;
 
-      // Smooth hover transition
-      const targetHover = hoverRef.current;
-      const currentHover = program.uniforms.uHover.value as number;
-      program.uniforms.uHover.value = currentHover + (targetHover - currentHover) * 0.08;
+      const render = () => {
+        if (!running) return;
+        const elapsed = (performance.now() - startTime) / 1000;
+        program.uniforms.uTime.value = elapsed;
+        program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
 
-      renderer.render({ scene: mesh });
+        const targetHover = hoverRef.current;
+        const currentHover = program.uniforms.uHover.value as number;
+        program.uniforms.uHover.value = currentHover + (targetHover - currentHover) * 0.08;
+
+        localRenderer.render({ scene: mesh });
+        rafRef.current = requestAnimationFrame(render);
+      };
+
       rafRef.current = requestAnimationFrame(render);
-    };
 
-    rafRef.current = requestAnimationFrame(render);
-
-    // Resize observer to keep canvas matched to container
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width: ew, height: eh } = entry.contentRect;
-        if (ew > 0 && eh > 0) {
-          renderer.setSize(Math.round(ew), Math.round(eh));
+      ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width: ew, height: eh } = entry.contentRect;
+          if (ew > 0 && eh > 0) {
+            localRenderer.setSize(Math.round(ew), Math.round(eh));
+          }
         }
-      }
-    });
-    ro.observe(container);
+      });
+      ro.observe(container);
+    }, 100);
 
     return () => {
+      running = false;
+      window.clearTimeout(initTimer);
       cancelAnimationFrame(rafRef.current);
-      ro.disconnect();
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      if (ro) ro.disconnect();
+      if (renderer) {
+        renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      }
     };
   }, []);
 
@@ -145,21 +155,19 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     onInspect?.(card);
   }, [card, onInspect]);
 
+  // Callback ref for the img element — handles both cached and fresh loads
+  const imgCallbackRef = useCallback((node: HTMLImageElement | null) => {
+    if (node && node.complete && node.naturalHeight > 0) {
+      setImageLoaded(true);
+    }
+  }, []);
+
   const rarityLabel =
     card.rarity === "ex"
       ? "EX"
       : card.rarity === "reverse-holo"
         ? "REV HOLO"
         : card.rarity.toUpperCase();
-
-  // Handle cached images that complete before React attaches onLoad
-  const imgRef = useRef<HTMLImageElement>(null);
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalHeight > 0) {
-      setImageLoaded(true);
-    }
-  }, []);
 
   return (
     <Box
@@ -189,7 +197,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
           overflow="hidden"
           border="2px solid"
           borderColor="brand.border"
-          bg="#1a1a2e"
+          bg="brand.surface"
           transition="border-color 0.2s ease"
           _hover={{ borderColor: "brand.borderHover" }}
           position="relative"
@@ -206,10 +214,11 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
             sx={{ aspectRatio: "5 / 7" }}
           >
             <img
-              ref={imgRef}
+              ref={imgCallbackRef}
               src={card.image}
               alt={card.name}
               onLoad={() => setImageLoaded(true)}
+              onError={() => setImageLoaded(true)}
               style={{
                 width: "100%",
                 height: "100%",
@@ -227,7 +236,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
                 justify="center"
                 className={pixelFont.className}
                 fontSize="10px"
-                color="rgba(255,255,255,0.4)"
+                color="brand.textMuted"
                 letterSpacing="0.08em"
               >
                 LOADING...
