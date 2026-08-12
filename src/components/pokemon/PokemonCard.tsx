@@ -39,19 +39,30 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [TILT_MAX, -TILT_MAX]), SPRING_CONFIG);
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
-  // Lazy WebGL init — only create context on first hover to avoid
-  // exceeding browser's WebGL context limit (typically 8-16)
-  const glInitialized = useRef(false);
+  // WebGL context management — create on hover, destroy on leave
+  // This ensures at most 1 active context at a time (browser limit ~8-16)
   const rendererRef = useRef<Renderer | null>(null);
   const roRef = useRef<ResizeObserver | null>(null);
 
+  const destroyWebGL = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+    if (roRef.current) {
+      roRef.current.disconnect();
+      roRef.current = null;
+    }
+    if (rendererRef.current) {
+      rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      rendererRef.current = null;
+    }
+  }, []);
+
   const initWebGL = useCallback(() => {
-    if (glInitialized.current) return;
+    // Already active
+    if (rendererRef.current) return;
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    glInitialized.current = true;
     const rect = container.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio, 2);
     const w = Math.max(Math.round(rect.width), 50);
@@ -83,7 +94,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
       uniforms: {
         uTime: { value: 0 },
         uMouse: { value: [0, 0] },
-        uHover: { value: 0 },
+        uHover: { value: 1 },
       },
       transparent: true,
     });
@@ -92,14 +103,10 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     const startTime = performance.now();
 
     const render = () => {
+      if (!rendererRef.current) return;
       const elapsed = (performance.now() - startTime) / 1000;
       program.uniforms.uTime.value = elapsed;
       program.uniforms.uMouse.value = [mouseRef.current.x, mouseRef.current.y];
-
-      const targetHover = hoverRef.current;
-      const currentHover = program.uniforms.uHover.value as number;
-      program.uniforms.uHover.value = currentHover + (targetHover - currentHover) * 0.08;
-
       renderer.render({ scene: mesh });
       rafRef.current = requestAnimationFrame(render);
     };
@@ -120,14 +127,8 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
 
   // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      if (roRef.current) roRef.current.disconnect();
-      if (rendererRef.current) {
-        rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
-      }
-    };
-  }, []);
+    return () => { destroyWebGL(); };
+  }, [destroyWebGL]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -151,7 +152,11 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     mouseX.set(0);
     mouseY.set(0);
     mouseRef.current = { x: 0, y: 0 };
-  }, [mouseX, mouseY]);
+    // Destroy context after a short delay (let last frame render)
+    setTimeout(() => {
+      if (hoverRef.current === 0) destroyWebGL();
+    }, 100);
+  }, [mouseX, mouseY, destroyWebGL]);
 
   const handleClick = useCallback(() => {
     onInspect?.(card);
