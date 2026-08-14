@@ -200,12 +200,20 @@ export default function About() {
           <Text
             as="p"
             fontSize="13px"
+            fontWeight="bold"
             color="brand.textMuted"
-            mb={4}
+            mb={5}
             lineHeight="1.7"
           >
             Design engineer currently @ <GithubEvaporation />.
-            <br />
+          </Text>
+          <Text
+            as="p"
+            fontSize="13px"
+            color="brand.textMuted"
+            mb={5}
+            lineHeight="1.7"
+          >
             From neuroscience to building technology, my passion for the human
             experience is the driving force in my life. As a design engineer,
             I work at the forefront of AI-driven development of tech products,
