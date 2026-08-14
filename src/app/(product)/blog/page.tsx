@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Text, Box } from "@chakra-ui/react";
+import { Flex, Box } from "@chakra-ui/react";
 import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
@@ -20,6 +20,20 @@ export default function Blog() {
       category: "Accessibility",
       link: "/blog/posts/the-need-for-inclusion-md",
       date: "May 2026",
+    },
+    {
+      title: "How Does That AI Model REALLY work?",
+      category: "AI & DX",
+      link: "https://www.thesis.social/article/cmokbk084000f04jrukqewlqb",
+      date: "April 2026",
+      external: true,
+    },
+    {
+      title: "Our Brains on AI 🧠",
+      category: "AI & DX",
+      link: "https://www.thesis.social/article/cmob51t6n000f04jpp5s4qpqk",
+      date: "April 2026",
+      external: true,
     },
     {
       title: "Creating an A11y Auditing Kit",
