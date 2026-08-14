@@ -41,7 +41,7 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
       zIndex={101}
       transition="0.25s ease top, 0.15s ease border-color, 0.15s ease background-color"
       borderRadius="10px"
-      bg={`${accentColor}26`}
+      bg="brand.surface"
       border="2px solid"
       borderColor={`${accentColor}55`}
       color="brand.text"
@@ -58,7 +58,7 @@ const ScrollButton: React.FC<ScrollButtonProps> = ({
         }
       }}
       boxSizing="border-box"
-      _hover={{ borderColor: accentColor, bg: `${accentColor}28` }}
+      _hover={{ borderColor: accentColor, bg: "brand.surfaceHover" }}
       whileHover={{
         scale: 1.06,
         transition: { duration: 0.1 },

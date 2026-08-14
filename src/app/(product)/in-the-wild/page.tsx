@@ -5,7 +5,7 @@ import { PageWrapper } from "@/components/PageWrapper";
 import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -120,27 +120,20 @@ export default function InTheWild() {
                     textDecoration: "none",
                     bg: `${ACCENT}14`,
                     borderColor: `${ACCENT}55`,
-                    transform: "translateX(3px)",
+                    transform: ["none", "none", "translateX(3px)"],
                     zIndex: 1,
                     _after: { transform: "scaleX(0)" },
                   }}
                   transition="0.14s ease all"
                 >
-                  <Flex flex={1} minWidth={0} pr={4} gap={2}>
-                    <Text
-                      as="span"
-                      className={pixelFont.className}
-                      fontSize="11px"
-                      color="transparent"
-                      _groupHover={{ color: ACCENT }}
-                      aria-hidden="true"
-                      flexShrink={0}
-                      mt="1px"
-                      transition="color 0.14s ease"
+                  <Flex flex={1} minWidth={0} pr={4} position="relative">
+                    <HoverArrow color={ACCENT} />
+                    <Box
+                      transition="transform 0.14s ease"
+                      _groupHover={{
+                        transform: ["none", "none", `translateX(${HOVER_ARROW_SHIFT})`],
+                      }}
                     >
-                      {"\u25B6"}
-                    </Text>
-                    <Box>
                       <Text textStyle="listTitle">{item.title}</Text>
                       <Text
                         textStyle="listMeta"

@@ -2,7 +2,7 @@ import { Box, Flex, Text, Link as ChakraLink } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 
 export const Music = () => {
   const items = [
@@ -65,8 +65,8 @@ export const Music = () => {
               content: '""',
               position: "absolute",
               top: 0,
-              left: 2,
-              right: 2,
+              left: 0,
+              right: 0,
               height: "2px",
               bg: "brand.border",
               transition: "0.15s ease all",
@@ -76,29 +76,27 @@ export const Music = () => {
               textDecoration: "none",
               bg: "#f0503214",
               borderColor: "#f0503255",
-              transform: "translateX(3px)",
+              transform: ["none", "none", "translateX(3px)"],
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
             }}
             transition="0.14s ease all"
           >
-            <Flex alignItems="center" gap={2}>
-              <Text
-                as="span"
-                className={pixelFont.className}
-                fontSize="11px"
-                color="transparent"
-                _groupHover={{ color: "#f05032" }}
-                aria-hidden="true"
-                flexShrink={0}
-                transition="color 0.14s ease"
+            <Flex alignItems="center" gap={2} position="relative">
+              <HoverArrow color="#f05032" />
+              <Flex
+                alignItems="center"
+                gap={2}
+                transition="transform 0.14s ease"
+                _groupHover={{
+                  transform: ["none", "none", `translateX(${HOVER_ARROW_SHIFT})`],
+                }}
               >
-                {"\u25B6"}
-              </Text>
               <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
               </Text>
               <Text textStyle="listMeta">{item.date}</Text>
+              </Flex>
             </Flex>
             <ExternalLinkIcon
               boxSize={3}

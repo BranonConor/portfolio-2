@@ -9,6 +9,7 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import { useBootChime } from "@/components/boot-intro/useBootChime";
+import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 
 export const Photography = () => {
   const awards = [
@@ -94,8 +95,8 @@ export const Photography = () => {
               content: '""',
               position: "absolute",
               top: 0,
-              left: 2,
-              right: 2,
+              left: 0,
+              right: 0,
               height: "2px",
               bg: "brand.border",
               transition: "0.15s ease all",
@@ -105,7 +106,7 @@ export const Photography = () => {
               textDecoration: "none",
               bg: "#f0503214",
               borderColor: "#f0503255",
-              transform: "translateX(3px)",
+              transform: ["none", "none", "translateX(3px)"],
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
             }}
@@ -116,21 +117,16 @@ export const Photography = () => {
               alignItems="flex-start"
               gap={3}
             >
-              <Flex flex={1} minWidth={0} gap={2}>
-                <Text
-                  as="span"
-                  className={pixelFont.className}
-                  fontSize="11px"
-                  color="transparent"
-                  _groupHover={{ color: "#f05032" }}
-                  aria-hidden="true"
-                  flexShrink={0}
-                  mt="1px"
-                  transition="color 0.14s ease"
+              <Flex flex={1} minWidth={0} position="relative">
+                <HoverArrow color="#f05032" />
+                <Box
+                  flex={1}
+                  minWidth={0}
+                  transition="transform 0.14s ease"
+                  _groupHover={{
+                    transform: ["none", "none", `translateX(${HOVER_ARROW_SHIFT})`],
+                  }}
                 >
-                  {"\u25B6"}
-                </Text>
-                <Box flex={1} minWidth={0}>
                   <Text textStyle="listTitle">{item.title}</Text>
                   <Text textStyle="listMeta" mt={0.5}>
                     {item.date}
@@ -178,8 +174,8 @@ export const Photography = () => {
               content: '""',
               position: "absolute",
               top: 0,
-              left: 2,
-              right: 2,
+              left: 0,
+              right: 0,
               height: "2px",
               bg: "brand.border",
               transition: "0.15s ease all",
@@ -189,26 +185,22 @@ export const Photography = () => {
               textDecoration: "none",
               bg: "#f0503214",
               borderColor: "#f0503255",
-              transform: "translateX(3px)",
+              transform: ["none", "none", "translateX(3px)"],
               zIndex: 1,
               _after: { transform: "scaleX(0)" },
             }}
             transition="0.14s ease all"
           >
-            <Flex alignItems="center" gap={2}>
+            <Flex alignItems="center" position="relative">
+              <HoverArrow color="#f05032" />
               <Text
                 as="span"
-                className={pixelFont.className}
-                fontSize="11px"
-                color="transparent"
-                _groupHover={{ color: "#f05032" }}
-                aria-hidden="true"
-                flexShrink={0}
-                transition="color 0.14s ease"
+                textStyle="listTitle"
+                transition="transform 0.14s ease"
+                _groupHover={{
+                  transform: ["none", "none", `translateX(${HOVER_ARROW_SHIFT})`],
+                }}
               >
-                {"\u25B6"}
-              </Text>
-              <Text as="span" textStyle="listTitle" transition="0.12s ease all">
                 {item.title}
               </Text>
             </Flex>
@@ -221,74 +213,6 @@ export const Photography = () => {
         ))}
       </Flex>
 
-      <Text textStyle="listTitle" color="brand.textMuted" mb={2}>
-        Instagram
-      </Text>
-      <Flex
-        flexDirection="column"
-        gap={0}
-        sx={{
-          "& > *:first-of-type::after": { display: "none" },
-          "& > *:hover + *::after": { transform: "scaleX(0)" },
-        }}
-      >
-        <ChakraLink
-          href="https://www.instagram.com/photosbyanasian/"
-          isExternal
-          role="group"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          position="relative"
-          paddingY={2.5}
-          paddingX={3}
-          borderRadius="10px"
-          border="2px solid transparent"
-          _after={{
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 2,
-            right: 2,
-            height: "2px",
-            bg: "brand.border",
-            transition: "0.15s ease all",
-            transformOrigin: "center",
-          }}
-          _hover={{
-            textDecoration: "none",
-            bg: "#f0503214",
-            borderColor: "#f0503255",
-            transform: "translateX(3px)",
-            zIndex: 1,
-            _after: { transform: "scaleX(0)" },
-          }}
-          transition="0.14s ease all"
-        >
-          <Flex alignItems="center" gap={2}>
-            <Text
-              as="span"
-              className={pixelFont.className}
-              fontSize="11px"
-              color="transparent"
-              _groupHover={{ color: "#f05032" }}
-              aria-hidden="true"
-              flexShrink={0}
-              transition="color 0.14s ease"
-            >
-              {"\u25B6"}
-            </Text>
-            <Text as="span" textStyle="listTitle" transition="0.12s ease all">
-              @photosbyanasian
-            </Text>
-          </Flex>
-          <ExternalLinkIcon
-            boxSize={3}
-            color="brand.textMuted"
-            flexShrink={0}
-          />
-        </ChakraLink>
-      </Flex>
     </Box>
   );
 };
@@ -318,8 +242,6 @@ const CarouselArrow = ({
     type="button"
     onClick={onClick}
     aria-label={direction === "prev" ? "Previous photo" : "Next photo"}
-    className={pixelFont.className}
-    fontSize="10px"
     color="brand.text"
     bg="brand.surface"
     border="2px solid"
@@ -335,7 +257,17 @@ const CarouselArrow = ({
     transition="0.12s ease all"
     _hover={{ borderColor: "brand.borderHover", bg: "brand.surfaceHover" }}
   >
-    {direction === "prev" ? "\u25C2" : "\u25B8"}
+    <Box
+      as="svg"
+      viewBox="0 0 12 12"
+      width="12px"
+      height="12px"
+      display="block"
+      transform={direction === "prev" ? "rotate(180deg)" : undefined}
+      aria-hidden="true"
+    >
+      <path d="M3 2.25 9 6 3 9.75Z" fill="currentColor" />
+    </Box>
   </Box>
 );
 

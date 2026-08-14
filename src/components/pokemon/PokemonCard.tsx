@@ -23,11 +23,15 @@ type Props = {
  *
  * The card uses a regular image element (no CORS issues). A shared transparent
  * OGL canvas moves onto the active card and renders only the holographic foil
- * effect that reacts to mouse position. Framer Motion handles the 3D tilt.
+ * effect that reacts while the card is pressed and dragged. Framer Motion
+ * handles the 3D tilt.
  */
 export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const holoRendererRef = useRef<ReturnType<typeof getSharedHoloRenderer> | null>(null);
+  const activePointerRef = useRef<number | null>(null);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const suppressClickRef = useRef(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -46,8 +50,8 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     };
   }, []);
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+  const updateTilt = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
       const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -58,16 +62,16 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     [mouseX, mouseY],
   );
 
-  const handleMouseEnter = useCallback(() => {
+  const attachRenderer = useCallback(() => {
     const container = containerRef.current;
-    if (!container) return;
-
+    if (!container) return false;
     const holoRenderer = getSharedHoloRenderer();
     holoRendererRef.current = holoRenderer;
     holoRenderer.attach(container);
+    return true;
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
+  const resetTilt = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
     const container = containerRef.current;
@@ -76,7 +80,63 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     }
   }, [mouseX, mouseY]);
 
+  const handlePointerEnter = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.pointerType !== "mouse" || !attachRenderer()) return;
+      updateTilt(e);
+    },
+    [attachRenderer, updateTilt],
+  );
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse" || !attachRenderer()) return;
+
+    activePointerRef.current = e.pointerId;
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    suppressClickRef.current = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    updateTilt(e);
+  }, [attachRenderer, updateTilt]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse") {
+      updateTilt(e);
+      return;
+    }
+    if (activePointerRef.current !== e.pointerId) return;
+    if (
+      Math.hypot(
+        e.clientX - dragStartRef.current.x,
+        e.clientY - dragStartRef.current.y,
+      ) > 5
+    ) {
+      suppressClickRef.current = true;
+    }
+    updateTilt(e);
+  }, [updateTilt]);
+
+  const finishInteraction = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointerRef.current !== e.pointerId) return;
+    activePointerRef.current = null;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    resetTilt();
+  }, [resetTilt]);
+
+  const handlePointerLeave = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.pointerType === "mouse") resetTilt();
+    },
+    [resetTilt],
+  );
+
   const handleClick = useCallback(() => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
     onInspect?.(card);
   }, [card, onInspect]);
 
@@ -110,13 +170,23 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
       >
         <Box
           as={motion.div}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onPointerEnter={handlePointerEnter}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishInteraction}
+          onPointerCancel={finishInteraction}
+          onPointerLeave={handlePointerLeave}
+          onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleClick();
+            }
+          }}
           style={{
             rotateX,
             rotateY,
             transformStyle: "preserve-3d",
+            touchAction: "none",
           }}
           {...POKEMON_CARD_FRAME_PROPS}
           position="relative"
@@ -146,7 +216,9 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
                 display: "block",
                 opacity: imageLoaded && !imageError ? 1 : 0,
                 transition: "opacity 0.4s ease",
+                userSelect: "none",
               }}
+              draggable={false}
             />
             {imageError && (
               <Flex
@@ -179,6 +251,11 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
               </Flex>
             )}
           </Box>
+          {card.grading && (
+            <Box position="absolute" top={2} right={2} zIndex={4} pointerEvents="none">
+              <PokemonGradeBadge grading={card.grading} />
+            </Box>
+          )}
         </Box>
       </Box>
 
@@ -207,7 +284,6 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
             {card.set} · {card.number}
           </Text>
           <Flex gap={1} align="center" flexShrink={0}>
-            {card.grading && <PokemonGradeBadge grading={card.grading} />}
             {card.firstEdition && (
               <Text
                 className={pixelFont.className}

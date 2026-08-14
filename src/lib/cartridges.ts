@@ -14,25 +14,11 @@ export type Cartridge = {
 
 export const CARTRIDGES: Cartridge[] = [
   {
-    label: "PROJECTS",
-    href: "/projects",
-    color: "#da70d6",
-    blurb: "Things I've built",
-    art: "purple.svg",
-  },
-  {
-    label: "BLOG",
-    href: "/blog",
-    color: "#61dafb",
-    blurb: "Things I've written",
-    art: "blue.svg",
-  },
-  {
-    label: "ENGAGEMENTS",
-    href: "/engagements",
-    color: "#22c55e",
-    blurb: "Talks & workshops",
-    art: "green.svg",
+    label: "ABOUT",
+    href: "/about",
+    color: "#f05032",
+    blurb: "Who I am",
+    art: "red.svg",
   },
   {
     label: "IN THE WILD",
@@ -42,11 +28,24 @@ export const CARTRIDGES: Cartridge[] = [
     art: "yellow.svg",
   },
   {
-    label: "ABOUT",
-    href: "/about",
-    color: "#f05032",
-    blurb: "Who I am",
-    art: "red.svg",
+    label: "ENGAGEMENTS",
+    href: "/engagements",
+    color: "#22c55e",
+    blurb: "Talks & workshops",
+    art: "green.svg",
+  },
+  {
+    label: "BLOG",
+    href: "/blog",
+    color: "#61dafb",
+    blurb: "Things I've written",
+    art: "blue.svg",
+  },
+  {
+    label: "PROJECTS",
+    href: "/projects",
+    color: "#da70d6",
+    blurb: "Things I've built",
+    art: "purple.svg",
   },
 ];
-

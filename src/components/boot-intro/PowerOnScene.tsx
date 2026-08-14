@@ -2,8 +2,8 @@
 
 import {
   forwardRef,
-  useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
 } from "react";
 import { Box as ChakraBox } from "@chakra-ui/react";
@@ -76,7 +76,7 @@ export const PowerOnScene = forwardRef<PowerOnSceneHandle, PowerOnSceneProps>(
       powerOff: () => deactivateRef.current(),
     }));
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       let destroyed = false;
       let rafId = 0;
       const smoothedMouse = { x: 0, y: 0 };
