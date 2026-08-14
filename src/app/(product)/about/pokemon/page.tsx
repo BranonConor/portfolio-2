@@ -27,9 +27,8 @@ export default function PokemonCollectionPage() {
               marginBottom={6}
               lineHeight="1.7"
             >
-              A selection of my favorite Pokémon cards — each rendered with a
-              holographic foil shader. Move your cursor over a card to see the
-              rainbow shimmer, and click to get a closer look.
+              I&apos;ve been collecting pokemon cards since the very first set came
+              out - I&apos;m THAT old! Here&apos;s some of my favorites I own.
             </Text>
 
             <PokemonCardGrid />

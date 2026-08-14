@@ -12,6 +12,7 @@ import { useBootChime } from "@/components/boot-intro/useBootChime";
 import { SoundMuteIcon } from "@/components/boot-intro/SoundMuteIcon";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
 import { proseFont } from "@/components/proseFont";
+import { PixelTrailFooter } from "@/components/PixelTrailFooter";
 
 // The exact same paper texture (grain + vignette, no scanlines) the boot
 // intro's cartridge-select screen uses — so the "screen flicks on to
@@ -38,6 +39,14 @@ export default function ProductLayout({ children }: { children: React.ReactNode 
   const router = useRouter();
   const [poweringOff, setPoweringOff] = useState(false);
   const { muted, toggleMute } = useBootChime();
+
+  // Keep the console route ready before the user presses ESC. In development,
+  // an invalidated "/" route can otherwise spend several seconds compiling
+  // after this page has already faded out, which looks like a stuck green
+  // screen even though navigation is still pending.
+  useEffect(() => {
+    router.prefetch("/");
+  }, [router]);
 
   // Themes the ESC/power button with the current route's cartridge accent
   // color (same lookup pattern used by PageHeading/filter chips), so it
@@ -113,6 +122,10 @@ export default function ProductLayout({ children }: { children: React.ReactNode 
         pb={[10, 12, 16]}
         paddingX={[4, 6, 8]}
         width="100%"
+        minHeight="100vh"
+        boxSizing="border-box"
+        display="flex"
+        flexDirection="column"
         zIndex={1}
         initial={false}
         animate={
@@ -130,10 +143,11 @@ export default function ProductLayout({ children }: { children: React.ReactNode 
               }
         }
       >
-        <Box position="relative">
+        <Box position="relative" flex={1}>
           <CartridgeNav />
           {children}
         </Box>
+        <PixelTrailFooter />
       </Box>
 
       <Flex position="fixed" top={4} left={4} zIndex={101} alignItems="center" gap={2}>

@@ -200,7 +200,7 @@ export default function Projects() {
                   textDecoration: "none",
                   bg: "#da70d614",
                   borderColor: "#da70d655",
-                  transform: "translateX(3px)",
+                  transform: ["none", "none", "translateX(3px)"],
                   zIndex: 1,
                   _after: { transform: "scaleX(0)" },
                 }}

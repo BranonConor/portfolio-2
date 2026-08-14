@@ -51,6 +51,7 @@ const SWEEP_DURATION_MS = 650;
 // `screenOffFlashActive`) — kept short so it reads as a snappy CRT-style
 // power-down beat rather than a slow fade.
 const SCREEN_OFF_FLASH_MS = 360;
+const REVERSE_ZOOM_MS = 580;
 // Duration of the forward "screen power-on" flash (see
 // `screenOnFlashActive`) — a touch longer than the power-off version since
 // it has one more beat (dot -> line -> full flash -> settle, vs. the
@@ -164,11 +165,10 @@ export function BootIntro() {
       setCartridgeUiReady(true);
       return;
     }
-    window.sessionStorage.removeItem(REVERSE_BOOT_STORAGE_KEY);
-
     // Reduced-motion visitors just land on the normal idle screen — nothing
     // to reverse-animate.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.sessionStorage.removeItem(REVERSE_BOOT_STORAGE_KEY);
       setCartridgeUiReady(true);
       return;
     }
@@ -183,7 +183,22 @@ export function BootIntro() {
       setScreenOffFlashActive(false);
       powerOnRef.current?.powerOff();
     }, SCREEN_OFF_FLASH_MS);
-    return () => window.clearTimeout(flashTimeout);
+    // Mirror the known zoom duration in state as well as listening for the
+    // renderer callback. This prevents a throttled/missed animation frame from
+    // leaving the root screen gated behind `reverseBoot`.
+    const settleTimeout = window.setTimeout(() => {
+      setScreenOffFlashActive(false);
+      setReverseBoot(false);
+      window.sessionStorage.removeItem(REVERSE_BOOT_STORAGE_KEY);
+    }, SCREEN_OFF_FLASH_MS + REVERSE_ZOOM_MS);
+    const revealTimeout = window.setTimeout(() => {
+      setCartridgeUiReady(true);
+    }, SCREEN_OFF_FLASH_MS + REVERSE_ZOOM_MS + 420);
+    return () => {
+      window.clearTimeout(flashTimeout);
+      window.clearTimeout(settleTimeout);
+      window.clearTimeout(revealTimeout);
+    };
   }, []);
 
   const handlePowerOffComplete = useCallback(() => {
@@ -485,7 +500,10 @@ export function BootIntro() {
   // screen has "flicked on" (bootFlickLit) — except during the reverse
   // zoom-out, which stays on SCREEN_BG throughout so it lands seamlessly
   // on the console's own dark-green screen artwork.
-  const showPaperScreen = reverseBoot ? false : phase === "select" || bootFlickLit;
+  const showPaperScreen =
+    reverseBoot && !cartridgeUiReady
+      ? false
+      : phase === "select" || bootFlickLit;
 
   return (
     <Box

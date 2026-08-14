@@ -14,7 +14,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { RetroCard } from "@/components/RetroCard";
 import { SectionHeading } from "@/components/SectionHeading";
 import { TopLevelListItem } from "@/components/TopLevelListItem";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Photography, PhotoCarousel } from "@/components/sections/Photography";
@@ -148,7 +148,7 @@ const RoleRow = ({
     current?: boolean;
   };
 }) => (
-  <Flex gap={3} alignItems="flex-start">
+  <Flex gap={3} alignItems="flex-start" paddingX={3}>
     <Box
       width="32px"
       height="32px"
@@ -254,7 +254,7 @@ export default function About() {
           alignItems="flex-start"
           gap={4}
         >
-          {/* Left column — Experience/Education/Honors/Music/Spotify. On
+          {/* Left column — Experience/Education/Honors/Socials/Pokémon/Music/Spotify. On
               desktop this is a real flex column so its items stack and
               top-align independently of the right column's item heights.
               On mobile `display: contents` removes this wrapper from the
@@ -304,6 +304,7 @@ export default function About() {
                     gap={3}
                     alignItems="flex-start"
                     paddingY={2.5}
+                    paddingX={3}
                     borderTop={i === 0 ? "none" : "2px solid"}
                     borderTopColor="brand.border"
                   >
@@ -349,6 +350,7 @@ export default function About() {
                   <Box
                     key={item.title}
                     paddingY={2.5}
+                    paddingX={3}
                     borderTop={i === 0 ? "none" : "2px solid"}
                     borderTopColor="brand.border"
                   >
@@ -364,18 +366,40 @@ export default function About() {
             </RetroCard>
 
             <RetroCard p={5} order={[5, 5, "unset"]}>
-              <SectionHeading title="Music Production" color={ABOUT_ACCENT} />
-              <Music />
-            </RetroCard>
-            <RetroCard order={[6, 6, "unset"]}>
-              <SpotifyEmbed />
+              <SectionHeading title="Socials" color={ABOUT_ACCENT} />
+              <Flex
+                flexDirection="column"
+                sx={{
+                  "& > *:first-of-type::after": { display: "none" },
+                  "& > *:hover + *::after": { transform: "scaleX(0)" },
+                }}
+              >
+                <TopLevelListItem
+                  title="LinkedIn"
+                  href="https://linkedin.com/in/branonconor"
+                  accent={ABOUT_ACCENT}
+                  external
+                />
+                <TopLevelListItem
+                  title="Bluesky"
+                  href="https://bsky.app/profile/branon.dev"
+                  accent={ABOUT_ACCENT}
+                  external
+                />
+                <TopLevelListItem
+                  title="Instagram"
+                  href="https://www.instagram.com/photosbyanasian/"
+                  accent={ABOUT_ACCENT}
+                  external
+                />
+              </Flex>
             </RetroCard>
 
-            <RetroCard p={5} order={[8, 8, "unset"]}>
+            <RetroCard p={5} order={[6, 6, "unset"]}>
               <SectionHeading title="Pokémon Card Collection" color={ABOUT_ACCENT} />
               <Text fontSize="13px" color="brand.textMuted" lineHeight="1.7" mb={2}>
-                I&apos;ve been collecting pokemon cards since the very first set
-                came out - I&apos;m THAT old!
+                Peruse my favorite cards from my personal collection. Be sure to
+                wash your hands first! 👐
               </Text>
               <Flex
                 flexDirection="column"
@@ -385,20 +409,36 @@ export default function About() {
                   title="View my favorite cards"
                   href="/about/pokemon"
                   accent={ABOUT_ACCENT}
-                  description="Peruse my favorite cards from my personal collection. Be sure to wash your hands first! 👐"
+                  description="Collecting 1999-Current"
                   leading={
-                    <Image
-                      src="/about/magikarp-pixel.png"
-                      alt=""
-                      width="44px"
-                      height="44px"
-                      maxWidth="none"
-                      objectFit="contain"
-                      sx={{ imageRendering: "pixelated" }}
-                    />
+                    <picture>
+                      <source
+                        media="(prefers-reduced-motion: reduce)"
+                        srcSet="/about/charmander-static.png"
+                      />
+                      <img
+                        src="/about/charmander.gif"
+                        alt=""
+                        width="32"
+                        height="32"
+                        style={{
+                          display: "block",
+                          objectFit: "contain",
+                          imageRendering: "pixelated",
+                        }}
+                      />
+                    </picture>
                   }
                 />
               </Flex>
+            </RetroCard>
+
+            <RetroCard p={5} order={[7, 7, "unset"]}>
+              <SectionHeading title="Music Production" color={ABOUT_ACCENT} />
+              <Music />
+            </RetroCard>
+            <RetroCard order={[8, 8, "unset"]}>
+              <SpotifyEmbed />
             </RetroCard>
           </Box>
 
@@ -439,8 +479,8 @@ export default function About() {
                       content: '""',
                       position: "absolute",
                       top: 0,
-                      left: 2,
-                      right: 2,
+                      left: 0,
+                      right: 0,
                       height: "2px",
                       bg: "brand.border",
                       transition: "0.15s ease all",
@@ -450,28 +490,27 @@ export default function About() {
                       textDecoration: "none",
                       bg: `${ABOUT_ACCENT}14`,
                       borderColor: `${ABOUT_ACCENT}55`,
-                      transform: "translateX(3px)",
+                      transform: ["none", "none", "translateX(3px)"],
                       zIndex: 1,
                       _after: { transform: "scaleX(0)" },
                     }}
                     transition="0.14s ease all"
                   >
                     <Flex justifyContent="space-between" alignItems="flex-start" gap={3}>
-                      <Flex flex={1} minWidth={0} gap={2}>
-                        <Text
-                          as="span"
-                          className={pixelFont.className}
-                          fontSize="11px"
-                          color="transparent"
-                          _groupHover={{ color: ABOUT_ACCENT }}
-                          aria-hidden="true"
-                          flexShrink={0}
-                          mt="1px"
-                          transition="color 0.14s ease"
+                      <Flex flex={1} minWidth={0} position="relative">
+                        <HoverArrow color={ABOUT_ACCENT} />
+                        <Box
+                          flex={1}
+                          minWidth={0}
+                          transition="transform 0.14s ease"
+                          _groupHover={{
+                            transform: [
+                              "none",
+                              "none",
+                              `translateX(${HOVER_ARROW_SHIFT})`,
+                            ],
+                          }}
                         >
-                          {"\u25B6"}
-                        </Text>
-                        <Box flex={1} minWidth={0}>
                           <Box mb={0.5}>
                             <Text textStyle="listTitle">{item.title}</Text>
                             <Text textStyle="listMeta">
@@ -482,8 +521,8 @@ export default function About() {
                               fontSize="10px"
                               fontWeight="600"
                               letterSpacing="0.02em"
-                              color={item.tag === "Tech" ? "#61dafb" : "#22c55e"}
-                              bg={item.tag === "Tech" ? "#61dafb15" : "#22c55e15"}
+                              color="#9f2f1b"
+                              bg={`${ABOUT_ACCENT}18`}
                               px={2}
                               py={0.5}
                               borderRadius="4px"
@@ -503,7 +542,7 @@ export default function About() {
               </Flex>
             </RetroCard>
 
-            <RetroCard p={5} order={[7, 7, "unset"]}>
+            <RetroCard p={5} order={[9, 9, "unset"]}>
               <SectionHeading title="Photography & Digital Art" color={ABOUT_ACCENT} />
               <Photography />
               <Box mt={4}>

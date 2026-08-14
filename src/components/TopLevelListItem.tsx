@@ -3,7 +3,7 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Box, Flex, Link as ChakraLink, Text } from "@chakra-ui/react";
 import Link from "next/link";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
+import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 
 interface TopLevelListItemProps {
   title: string;
@@ -50,8 +50,8 @@ export const TopLevelListItem = ({
       content: '""',
       position: "absolute",
       top: 0,
-      left: 2,
-      right: 2,
+      left: 0,
+      right: 0,
       height: "2px",
       bg: "brand.border",
       transition: "0.15s ease all",
@@ -61,13 +61,13 @@ export const TopLevelListItem = ({
       textDecoration: "none",
       bg: `${accent}14`,
       borderColor: `${accent}55`,
-      transform: "translateX(3px)",
+      transform: ["none", "none", "translateX(3px)"],
       zIndex: 1,
       _after: { transform: "scaleX(0)" },
     }}
     transition="0.14s ease all"
   >
-    <Flex flex={1} minWidth={0} pr={4} gap={2}>
+    <Flex flex={1} minWidth={0} pr={4} gap={2} position="relative">
       {leading ? (
         <Flex
           width="44px"
@@ -81,21 +81,17 @@ export const TopLevelListItem = ({
           {leading}
         </Flex>
       ) : (
-        <Text
-          as="span"
-          className={pixelFont.className}
-          fontSize="11px"
-          color="transparent"
-          _groupHover={{ color: accent }}
-          aria-hidden="true"
-          flexShrink={0}
-          mt="1px"
-          transition="color 0.14s ease"
-        >
-          {"\u25B6"}
-        </Text>
+        <HoverArrow color={accent} />
       )}
-      <Box minWidth={0}>
+      <Box
+        minWidth={0}
+        transition="transform 0.14s ease"
+        _groupHover={
+          leading
+            ? undefined
+            : { transform: ["none", "none", `translateX(${HOVER_ARROW_SHIFT})`] }
+        }
+      >
         <Flex alignItems="center" gap={2} flexWrap="wrap">
           <Text textStyle="listTitle">{title}</Text>
           <Box display={["none", "none", "block"]}>{badges}</Box>

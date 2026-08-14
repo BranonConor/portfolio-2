@@ -8,7 +8,6 @@ import {
 } from "@chakra-ui/react";
 import type { MDXComponents } from "mdx/types";
 import Image, { ImageProps } from "next/image";
-import { FancyHeading } from "./components/FancyHeading";
 import { pixelFont } from "./components/boot-intro/pixelFont";
 import { proseFont } from "./components/proseFont";
 
@@ -23,6 +22,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <Heading
         as="h2"
         className={pixelFont.className}
+        fontFamily={pixelFont.style.fontFamily}
         fontSize={["15px", "18px"]}
         fontWeight="400"
         letterSpacing="0.02em"
@@ -35,9 +35,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </Heading>
     ),
     h2: ({ children }) => (
-      <FancyHeading
+      <Heading
         as="h3"
+        className={proseFont.className}
+        fontFamily={proseFont.style.fontFamily}
         fontSize={["13px", "15px"]}
+        fontWeight="700"
+        lineHeight="1.5"
         pl={2}
         borderLeft="2px solid"
         borderLeftColor="brand.border"
@@ -46,14 +50,15 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         color="brand.text"
       >
         {children}
-      </FancyHeading>
+      </Heading>
     ),
     h3: ({ children }) => (
       <Heading
         as="h4"
-        className={pixelFont.className}
+        className={proseFont.className}
+        fontFamily={proseFont.style.fontFamily}
         fontSize={["12px", "13px"]}
-        fontWeight="400"
+        fontWeight="700"
         letterSpacing="0.02em"
         lineHeight="1.5"
         borderLeft="2px solid"
@@ -69,9 +74,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h4: ({ children }) => (
       <Heading
         as="h5"
-        className={pixelFont.className}
+        className={proseFont.className}
+        fontFamily={proseFont.style.fontFamily}
         fontSize={["10.5px", "11px"]}
-        fontWeight="400"
+        fontWeight="700"
         letterSpacing="0.02em"
         lineHeight="1.5"
         mt={6}
