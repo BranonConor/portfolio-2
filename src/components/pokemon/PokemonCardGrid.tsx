@@ -13,7 +13,6 @@ import { motion } from "framer-motion";
 import { PokemonCard } from "./PokemonCard";
 import { PokemonCardInspect } from "./PokemonCardInspect";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
-import { pixelFont } from "@/components/boot-intro/pixelFont";
 import { proseFont } from "@/components/proseFont";
 import {
   ARCHIVED_POKEMON_CARDS,
@@ -29,16 +28,19 @@ type CollectionTabId = "current" | "archive";
 const COLLECTION_TABS: Array<{
   id: CollectionTabId;
   label: string;
+  count: number;
   panelId: string;
 }> = [
   {
     id: "current",
     label: "Currently owned",
+    count: POKEMON_CARDS.length,
     panelId: "pokemon-currently-owned-panel",
   },
   {
     id: "archive",
     label: "Previously owned",
+    count: ARCHIVED_POKEMON_CARDS.length,
     panelId: "pokemon-previously-owned-panel",
   },
 ];
@@ -142,97 +144,72 @@ export const PokemonCardGrid: React.FC = () => {
   return (
     <>
       <Flex
+        role="tablist"
+        aria-label="Pokémon collection views"
         align="center"
-        justify="space-between"
-        gap={3}
+        gap={[1.5, 2]}
+        minWidth={0}
         marginBottom={5}
       >
-        <Flex
-          role="tablist"
-          aria-label="Pokémon collection views"
-          align="center"
-          gap={[1.5, 2]}
-          minWidth={0}
-        >
-          {COLLECTION_TABS.map((tab, index) => {
-            const isActive = tab.id === activeCollection;
+        {COLLECTION_TABS.map((tab, index) => {
+          const isActive = tab.id === activeCollection;
 
-            return (
-              <Fragment key={tab.id}>
-                {index > 0 && (
-                  <Text
-                    aria-hidden="true"
-                    className={proseFont.className}
-                    color="brand.borderDark"
-                    fontSize={["11px", "13px"]}
-                  >
-                    /
-                  </Text>
-                )}
-                <Button
-                  ref={(node: HTMLButtonElement | null) => {
-                    tabRefs.current[index] = node;
-                  }}
-                  type="button"
-                  role="tab"
-                  id={`pokemon-${tab.id}-tab`}
-                  aria-controls={tab.panelId}
-                  aria-selected={isActive}
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => handleCollectionChange(tab.id)}
-                  onKeyDown={(event) => handleTabKeyDown(event, index)}
+          return (
+            <Fragment key={tab.id}>
+              {index > 0 && (
+                <Text
+                  aria-hidden="true"
                   className={proseFont.className}
-                  minWidth={0}
-                  height="auto"
-                  padding={0}
-                  paddingBottom="3px"
-                  borderRadius={0}
-                  borderBottom="2px solid"
-                  borderBottomColor={isActive ? "#f05032" : "transparent"}
-                  bg="transparent"
-                  color={isActive ? "brand.text" : "brand.textMuted"}
-                  fontSize={["10px", "12px"]}
-                  fontWeight={isActive ? 600 : 400}
-                  lineHeight="1.3"
-                  whiteSpace="nowrap"
-                  cursor="pointer"
-                  transition="0.12s ease"
-                  _hover={{
-                    color: "brand.text",
-                    borderBottomColor: isActive ? "#f05032" : "#f0503255",
-                    bg: "transparent",
-                  }}
-                  _focusVisible={{
-                    outline: "2px solid",
-                    outlineColor: "#f05032",
-                    outlineOffset: "3px",
-                  }}
+                  color="brand.borderDark"
+                  fontSize={["11px", "13px"]}
                 >
-                  {tab.label}
-                </Button>
-              </Fragment>
-            );
-          })}
-        </Flex>
-
-        <Text
-          aria-live="polite"
-          aria-label={`${filtered.length} card${filtered.length !== 1 ? "s" : ""} in ${activeTab.label}`}
-          className={pixelFont.className}
-          flexShrink={0}
-          paddingX={[2, 2.5]}
-          paddingY={1.5}
-          border="2px solid"
-          borderColor="brand.border"
-          borderRadius="8px"
-          bg="brand.surface"
-          color="brand.textMuted"
-          fontSize={["7px", "8px"]}
-          letterSpacing="0.06em"
-          lineHeight="1"
-        >
-          {filtered.length} CARD{filtered.length !== 1 ? "S" : ""}
-        </Text>
+                  /
+                </Text>
+              )}
+              <Button
+                ref={(node: HTMLButtonElement | null) => {
+                  tabRefs.current[index] = node;
+                }}
+                type="button"
+                role="tab"
+                id={`pokemon-${tab.id}-tab`}
+                aria-controls={tab.panelId}
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => handleCollectionChange(tab.id)}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
+                className={proseFont.className}
+                minWidth={0}
+                height="auto"
+                padding={0}
+                paddingBottom="3px"
+                borderRadius={0}
+                borderBottom="2px solid"
+                borderBottomColor={isActive ? "#f05032" : "transparent"}
+                bg="transparent"
+                color={isActive ? "brand.text" : "brand.textMuted"}
+                fontSize={["10px", "12px"]}
+                fontWeight={isActive ? 600 : 400}
+                lineHeight="1.3"
+                whiteSpace="nowrap"
+                cursor="pointer"
+                transition="0.12s ease"
+                _hover={{
+                  color: "brand.text",
+                  borderBottomColor: isActive ? "#f05032" : "#f0503255",
+                  bg: "transparent",
+                }}
+                _focusVisible={{
+                  outline: "2px solid",
+                  outlineColor: "#f05032",
+                  outlineOffset: "3px",
+                }}
+              >
+                {tab.label} ({tab.count})
+              </Button>
+            </Fragment>
+          );
+        })}
       </Flex>
 
       {COLLECTION_TABS.filter(({ id }) => id !== activeCollection).map(
