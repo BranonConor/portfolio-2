@@ -2,7 +2,18 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import {
+  getHoloArtworkWindow,
+  getHoloSeed,
+  HOLO_FALLBACK_BACKGROUND,
+} from "./holoConfig";
 import { getSharedHoloRenderer } from "./sharedHoloRenderer";
 import { POKEMON_CARD_FRAME_PROPS } from "./pokemonCardStyles";
 import { PokemonGradeBadge } from "./PokemonGradeBadge";
@@ -19,21 +30,26 @@ type Props = {
 };
 
 /**
- * A single Pokémon card with Balatro-style holographic WebGL overlay.
+ * A single Pokémon card with an artwork-clipped cosmo-holo WebGL overlay.
  *
  * The card uses a regular image element (no CORS issues). A shared transparent
- * OGL canvas moves onto the active card and renders only the holographic foil
- * effect that reacts while the card is pressed and dragged. Framer Motion
- * handles the 3D tilt.
+ * OGL canvas moves onto the active card's artwork window. Framer Motion handles
+ * the 3D tilt while the shader shares the same normalized pointer position.
  */
 export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const artworkRef = useRef<HTMLDivElement>(null);
   const holoRendererRef = useRef<ReturnType<typeof getSharedHoloRenderer> | null>(null);
   const activePointerRef = useRef<number | null>(null);
+  const hoveredRef = useRef(false);
+  const focusedRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const suppressClickRef = useRef(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [holoActive, setHoloActive] = useState(false);
+  const reduceMotion = useReducedMotion() ?? false;
+  const artworkWindow = getHoloArtworkWindow(card);
+  const holoSeed = getHoloSeed(card.id);
 
   // Framer Motion tilt values
   const mouseX = useMotionValue(0);
@@ -42,10 +58,10 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-TILT_MAX, TILT_MAX]), SPRING_CONFIG);
 
   useEffect(() => {
-    const container = containerRef.current;
+    const artwork = artworkRef.current;
     return () => {
-      if (container) {
-        holoRendererRef.current?.detach(container);
+      if (artwork) {
+        holoRendererRef.current?.detach(artwork);
       }
     };
   }, []);
@@ -55,34 +71,41 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
       const y = (e.clientY - rect.top) / rect.height - 0.5;
-      mouseX.set(x);
-      mouseY.set(y);
+      if (!reduceMotion) {
+        mouseX.set(x);
+        mouseY.set(y);
+      }
       holoRendererRef.current?.setPointer(x * 2, -y * 2);
     },
-    [mouseX, mouseY],
+    [mouseX, mouseY, reduceMotion],
   );
 
   const attachRenderer = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return false;
+    const artwork = artworkRef.current;
+    if (!artwork || imageError) return false;
+    setHoloActive(true);
     const holoRenderer = getSharedHoloRenderer();
     holoRendererRef.current = holoRenderer;
-    holoRenderer.attach(container);
+    holoRenderer?.attach(artwork, { reducedMotion: reduceMotion, seed: holoSeed });
     return true;
-  }, []);
+  }, [holoSeed, imageError, reduceMotion]);
 
-  const resetTilt = useCallback(() => {
+  const resetTilt = useCallback((keepHolo = false) => {
     mouseX.set(0);
     mouseY.set(0);
-    const container = containerRef.current;
-    if (container) {
-      holoRendererRef.current?.detach(container);
+    holoRendererRef.current?.setPointer(0, 0);
+    const artwork = artworkRef.current;
+    if (artwork && !keepHolo) {
+      setHoloActive(false);
+      holoRendererRef.current?.deactivate(artwork);
     }
   }, [mouseX, mouseY]);
 
   const handlePointerEnter = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.pointerType !== "mouse" || !attachRenderer()) return;
+      if (e.pointerType !== "mouse") return;
+      hoveredRef.current = true;
+      if (!attachRenderer()) return;
       updateTilt(e);
     },
     [attachRenderer, updateTilt],
@@ -122,15 +145,27 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
-    resetTilt();
+    resetTilt(focusedRef.current || hoveredRef.current);
   }, [resetTilt]);
 
   const handlePointerLeave = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.pointerType === "mouse") resetTilt();
+      if (e.pointerType !== "mouse") return;
+      hoveredRef.current = false;
+      resetTilt(focusedRef.current);
     },
     [resetTilt],
   );
+
+  const handleFocus = useCallback(() => {
+    focusedRef.current = true;
+    attachRenderer();
+  }, [attachRenderer]);
+
+  const handleBlur = useCallback(() => {
+    focusedRef.current = false;
+    resetTilt(hoveredRef.current);
+  }, [resetTilt]);
 
   const handleClick = useCallback(() => {
     if (suppressClickRef.current) {
@@ -176,6 +211,8 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
           onPointerUp={finishInteraction}
           onPointerCancel={finishInteraction}
           onPointerLeave={handlePointerLeave}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
@@ -186,7 +223,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
             rotateX,
             rotateY,
             transformStyle: "preserve-3d",
-            touchAction: "none",
+            touchAction: "pan-y",
           }}
           {...POKEMON_CARD_FRAME_PROPS}
           position="relative"
@@ -196,7 +233,6 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
         >
           {/* Card image + transparent holo overlay */}
           <Box
-            ref={containerRef}
             position="relative"
             width="100%"
             overflow="hidden"
@@ -250,6 +286,21 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
                 LOADING...
               </Flex>
             )}
+            <Box
+              ref={artworkRef}
+              aria-hidden="true"
+              position="absolute"
+              pointerEvents="none"
+              overflow="hidden"
+              {...artworkWindow}
+              opacity={holoActive ? 1 : 0}
+              transition={reduceMotion ? "none" : "opacity 220ms ease"}
+              sx={{
+                background:
+                  HOLO_FALLBACK_BACKGROUND,
+                mixBlendMode: "screen",
+              }}
+            />
           </Box>
           {card.grading && (
             <Box position="absolute" top={2} right={2} zIndex={4} pointerEvents="none">
