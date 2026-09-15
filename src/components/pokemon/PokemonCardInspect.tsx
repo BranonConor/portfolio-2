@@ -1,8 +1,13 @@
 "use client";
 
 import { Box, Text, Flex } from "@chakra-ui/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import {
+  getHoloArtworkWindow,
+  getHoloSeed,
+  HOLO_FALLBACK_BACKGROUND,
+} from "./holoConfig";
 import { getSharedHoloRenderer } from "./sharedHoloRenderer";
 import { POKEMON_CARD_FRAME_PROPS } from "./pokemonCardStyles";
 import { PokemonGradeBadge } from "./PokemonGradeBadge";
@@ -18,11 +23,26 @@ export const PokemonCardInspect: React.FC<{
   card: PokemonCardType | null;
   onClose: () => void;
 }> = ({ card, onClose }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const artworkRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const holoRendererRef = useRef<ReturnType<typeof getSharedHoloRenderer> | null>(null);
   const activePointerRef = useRef<number | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const reduceMotion = useReducedMotion() ?? false;
+  const artworkWindow = card ? getHoloArtworkWindow(card) : null;
+
+  useEffect(() => {
+    if (!card) return;
+    const previouslyFocused = document.activeElement;
+    const frame = requestAnimationFrame(() => dialogRef.current?.focus());
+    return () => {
+      cancelAnimationFrame(frame);
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus();
+      }
+    };
+  }, [card]);
 
   // Close on Escape
   useEffect(() => {
@@ -64,18 +84,21 @@ export const PokemonCardInspect: React.FC<{
   // Attach the shared WebGL overlay for the inspect view
   useEffect(() => {
     if (!card) return;
-    const container = containerRef.current;
-    if (!container) return;
+    const artwork = artworkRef.current;
+    if (!artwork) return;
 
     setImageLoaded(false);
     const holoRenderer = getSharedHoloRenderer();
     holoRendererRef.current = holoRenderer;
-    holoRenderer.attach(container);
+    holoRenderer?.attach(artwork, {
+      reducedMotion: reduceMotion,
+      seed: getHoloSeed(card.id),
+    });
 
     return () => {
-      holoRenderer.detach(container);
+      holoRenderer?.detach(artwork);
     };
-  }, [card]);
+  }, [card, reduceMotion]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse") return;
@@ -94,7 +117,9 @@ export const PokemonCardInspect: React.FC<{
     const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = -((event.clientY - rect.top) / rect.height - 0.5) * 2;
     holoRendererRef.current?.setPointer(x, y);
-    setTilt({ rotateX: y * 15, rotateY: x * 15 });
+    if (!reduceMotion) {
+      setTilt({ rotateX: y * 15, rotateY: x * 15 });
+    }
   };
 
   const finishInteraction = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -127,7 +152,7 @@ export const PokemonCardInspect: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: reduceMotion ? 0 : 0.25 }}
           style={{
             position: "fixed",
             inset: 0,
@@ -147,11 +172,20 @@ export const PokemonCardInspect: React.FC<{
             cursor="pointer"
           />
           <motion.div
-            initial={{ scale: 0.85, y: 30 }}
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${card.name} card details`}
+            tabIndex={-1}
+            initial={reduceMotion ? false : { scale: 0.85, y: 30 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.85, y: 30 }}
-            transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            style={{ position: "relative", zIndex: 1 }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 260, damping: 24 }
+            }
+            style={{ position: "relative", zIndex: 1, outline: "none" }}
           >
             <Box
               onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -165,7 +199,6 @@ export const PokemonCardInspect: React.FC<{
             >
               {/* Large card with holo overlay */}
               <Box
-                ref={containerRef}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={finishInteraction}
@@ -182,7 +215,7 @@ export const PokemonCardInspect: React.FC<{
                 style={{
                   transform: `perspective(800px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
                   transition: "transform 0.1s ease-out",
-                  touchAction: "none",
+                  touchAction: "pan-y",
                 }}
               >
                 <img
@@ -201,6 +234,22 @@ export const PokemonCardInspect: React.FC<{
                   }}
                   draggable={false}
                 />
+                {artworkWindow && (
+                  <Box
+                    ref={artworkRef}
+                    aria-hidden="true"
+                    position="absolute"
+                    pointerEvents="none"
+                    overflow="hidden"
+                    {...artworkWindow}
+                    opacity={0.72}
+                    sx={{
+                      background:
+                        HOLO_FALLBACK_BACKGROUND,
+                      mixBlendMode: "screen",
+                    }}
+                  />
+                )}
               </Box>
 
               {/* Card details */}
