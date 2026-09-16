@@ -7,7 +7,7 @@ import { SCREEN_BG } from "@/lib/consoleTheme";
 const GA_MEASUREMENT_ID = "G-C74KV5XNVN";
 
 const DEFAULT_OG_IMAGE =
-  "/api/og?title=Branon%20Eusebio&subtitle=Design%20Engineer%20building%20%40%20GitHub";
+  "/api/og?title=Branon%20Eusebio&subtitle=Design%20Engineer%20building%20%40%20GitHub&path=%2F";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://branon.dev"),

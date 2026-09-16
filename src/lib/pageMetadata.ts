@@ -6,9 +6,8 @@ const SITE_URL = "https://branon.dev";
 /**
  * Shared per-route metadata builder. Every route/post uses this so link
  * previews (Slack, Discord, iMessage, X/Twitter, etc.) show that page's own
- * title + description alongside "Branon Eusebio", and render an OG image
- * (via `/api/og`) featuring the new wordmark logo rather than falling back to
- * the site's generic homepage preview for every link.
+ * title + description in a section-colored cartridge preview rather than
+ * falling back to the site's generic homepage image for every link.
  */
 export function buildPageMetadata({
   title,
@@ -23,7 +22,7 @@ export function buildPageMetadata({
   const url = `${SITE_URL}${routePath}`;
   const ogImage = `/api/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(
     description
-  )}`;
+  )}&path=${encodeURIComponent(routePath)}`;
 
   return {
     title: fullTitle,
