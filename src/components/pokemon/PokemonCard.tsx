@@ -5,7 +5,6 @@ import { Box, Text, Flex } from "@chakra-ui/react";
 import {
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
   useTransform,
 } from "framer-motion";
@@ -15,6 +14,7 @@ import {
   HOLO_FALLBACK_BACKGROUND,
 } from "./holoConfig";
 import { getSharedHoloRenderer } from "./sharedHoloRenderer";
+import { useReducedMotionPreference } from "./useReducedMotionPreference";
 import { POKEMON_CARD_FRAME_PROPS } from "./pokemonCardStyles";
 import { PokemonGradeBadge } from "./PokemonGradeBadge";
 import { pixelFont } from "@/components/boot-intro/pixelFont";
@@ -47,7 +47,7 @@ export const PokemonCard: React.FC<Props> = ({ card, onInspect }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [holoActive, setHoloActive] = useState(false);
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReducedMotionPreference();
   const artworkWindow = getHoloArtworkWindow(card);
   const holoSeed = getHoloSeed(card.id);
 

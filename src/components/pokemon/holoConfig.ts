@@ -9,7 +9,7 @@ export type HoloArtworkWindow = {
 };
 
 export const HOLO_FALLBACK_BACKGROUND =
-  "radial-gradient(circle at 28% 34%, rgba(170, 205, 255, .2), transparent 25%), radial-gradient(circle at 72% 68%, rgba(255, 145, 220, .14), transparent 28%), linear-gradient(120deg, rgba(115, 220, 255, .08), rgba(255, 245, 170, .12), rgba(220, 130, 255, .08))";
+  "radial-gradient(circle at 18% 24%, rgba(255,255,255,.9) 0 1px, transparent 2px), radial-gradient(circle at 72% 18%, rgba(255,255,255,.8) 0 1px, transparent 2px), radial-gradient(circle at 82% 76%, rgba(255,255,255,.72) 0 1px, transparent 2px), radial-gradient(circle at 31% 73%, transparent 0 8%, rgba(170,215,255,.5) 9%, transparent 15%), radial-gradient(circle at 68% 42%, transparent 0 13%, rgba(255,170,235,.42) 14%, transparent 22%), linear-gradient(125deg, rgba(90,200,255,.16), rgba(255,245,180,.2), rgba(220,110,255,.15))";
 
 const ARTWORK_WINDOWS = {
   classic: {

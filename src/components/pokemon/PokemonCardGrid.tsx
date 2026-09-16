@@ -9,9 +9,10 @@ import {
   type KeyboardEvent,
 } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { PokemonCard } from "./PokemonCard";
 import { PokemonCardInspect } from "./PokemonCardInspect";
+import { useReducedMotionPreference } from "./useReducedMotionPreference";
 import { RetroFilterPill } from "@/components/RetroFilterPill";
 import { proseFont } from "@/components/proseFont";
 import {
@@ -87,7 +88,7 @@ export const PokemonCardGrid: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<CardFilterId | null>(null);
   const [inspecting, setInspecting] = useState<PokemonCardType | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const reduceMotion = useReducedMotion() ?? false;
+  const reduceMotion = useReducedMotionPreference();
 
   const activeCards =
     activeCollection === "current" ? POKEMON_CARDS : ARCHIVED_POKEMON_CARDS;

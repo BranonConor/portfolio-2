@@ -8,6 +8,7 @@ const MIN_HEIGHT = 35;
 const MAX_DPR = 1.5;
 const FADE_IN_SPEED = 5.5;
 const FADE_OUT_SPEED = 12;
+const POINTER_EASE_SPEED = 12;
 
 const getRendererDpr = () => {
   const lowPowerDevice =
@@ -28,6 +29,7 @@ class SharedHoloRenderer {
   private readonly program: Program;
   private readonly mesh: Mesh;
   private readonly pointer: [number, number] = [0, 0];
+  private readonly targetPointer: [number, number] = [0, 0];
   private readonly resizeObserver: ResizeObserver;
   private readonly intersectionObserver: IntersectionObserver;
   private activeTarget: HTMLElement | null = null;
@@ -52,7 +54,7 @@ class SharedHoloRenderer {
       pointerEvents: "none",
       zIndex: "1",
       mixBlendMode: "screen",
-      opacity: "0.82",
+      opacity: "1",
     });
 
     this.renderer = new Renderer({
@@ -132,6 +134,8 @@ class SharedHoloRenderer {
     this.program.uniforms.uSeed.value = options.seed;
     this.pointer[0] = 0;
     this.pointer[1] = 0;
+    this.targetPointer[0] = 0;
+    this.targetPointer[1] = 0;
 
     if (this.canvas.parentElement !== target) {
       target.appendChild(this.canvas);
@@ -172,8 +176,8 @@ class SharedHoloRenderer {
 
   setPointer(x: number, y: number) {
     if (this.reducedMotion) return;
-    this.pointer[0] = x;
-    this.pointer[1] = y;
+    this.targetPointer[0] = x;
+    this.targetPointer[1] = y;
   }
 
   private resize(width: number, height: number) {
@@ -228,6 +232,9 @@ class SharedHoloRenderer {
       : FADE_OUT_SPEED;
     const blend = 1 - Math.exp(-speed * deltaSeconds);
     this.intensity += (this.targetIntensity - this.intensity) * blend;
+    const pointerBlend = 1 - Math.exp(-POINTER_EASE_SPEED * deltaSeconds);
+    this.pointer[0] += (this.targetPointer[0] - this.pointer[0]) * pointerBlend;
+    this.pointer[1] += (this.targetPointer[1] - this.pointer[1]) * pointerBlend;
     this.renderFrame(now);
 
     if (this.targetIntensity === 0 && this.intensity < 0.01) {
