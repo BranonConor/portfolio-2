@@ -105,7 +105,13 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
             {children}
           </Box>
           <Flex>
-            <Button mt={8} variant="primaryAmber" as={Link} href="/in-the-wild">
+            <Button
+              mt={8}
+              variant="primaryAmber"
+              color="brand.text"
+              as={Link}
+              href="/in-the-wild"
+            >
               👈🏽 Back to In the Wild
             </Button>
           </Flex>
