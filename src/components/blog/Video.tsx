@@ -4,9 +4,10 @@ import { AspectRatio, Box } from "@chakra-ui/react";
 
 interface IVideoProps {
   url: string;
+  title: string;
 }
 
-const Video: React.FC<IVideoProps> = ({ url }) => {
+const Video: React.FC<IVideoProps> = ({ url, title }) => {
   return (
     <Box
       width="100%"
@@ -19,7 +20,13 @@ const Video: React.FC<IVideoProps> = ({ url }) => {
       maxWidth={["calc(100% - 32px)", "calc(100% - 40px)", "calc(100% - 48px)"]}
     >
       <AspectRatio maxW="100%" ratio={2 / 1}>
-        <iframe src={url} />
+        <iframe
+          src={url}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
       </AspectRatio>
     </Box>
   );

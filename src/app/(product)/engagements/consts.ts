@@ -1,5 +1,11 @@
 export const publicSpeaking = [
   {
+    title: "My Journey to Design Engineering @ GitHub",
+    category: "Public Speaking",
+    link: "/engagements/posts/github-design-townhall-career-journey",
+    date: "September 2026",
+  },
+  {
     title: "Design Systems Panel + Brunch 🥞",
     category: "Public Speaking",
     image: "/engagements/design-systems-brunch/cover.png",
