@@ -21,7 +21,7 @@ import {
 import { useState } from "react";
 
 const categories = [
-  { key: "all", label: "All" },
+  { key: "featured", label: "Featured" },
   { key: "Side Projects", label: "Side Projects" },
   { key: "Design Systems", label: "Design Systems" },
   { key: "Product", label: "Product" },
@@ -83,11 +83,14 @@ const allProjects = [
 ].sort((a, b) => parseProjectDate(b.date) - parseProjectDate(a.date));
 
 export default function Projects() {
-  const [currentFilter, setCurrentFilter] = useState("all");
+  const [currentFilter, setCurrentFilter] = useState("featured");
 
   const filteredProjects =
-    currentFilter === "all"
-      ? allProjects
+    currentFilter === "featured"
+      ? allProjects.filter(
+          (project) =>
+            !("hiddenFromFeatured" in project && project.hiddenFromFeatured),
+        )
       : allProjects.filter((p) =>
           Array.isArray(p.category)
             ? p.category.includes(currentFilter)

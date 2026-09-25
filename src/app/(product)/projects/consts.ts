@@ -5,6 +5,7 @@ export const brandingProjects = [
     image: "/projects/tidal/cover.png",
     link: "/projects/posts/tidal",
     date: "December 2023",
+    hiddenFromFeatured: true,
   },
 ];
 export const designSystemsProjects = [
@@ -15,6 +16,7 @@ export const designSystemsProjects = [
     link: "/projects/posts/toolbar",
     date: "December 2024",
     hasPassword: true,
+    hiddenFromFeatured: true,
   },
   {
     title: "Rearchitecting Themes @ Smartsheet",
@@ -30,6 +32,7 @@ export const designSystemsProjects = [
     image: "/projects/dynamic-token-layers/cover.png",
     link: "/projects/posts/dynamic-token-layers",
     date: "June 2023",
+    hiddenFromFeatured: true,
   },
   {
     title: "Color Palette Parity @ Color Health",
@@ -53,6 +56,7 @@ export const a11yProjects = [
     image: "/projects/focus-utility/cover.png",
     link: "/projects/posts/focus-utility",
     date: "Nov 2024",
+    hiddenFromFeatured: true,
   },
   {
     title: "A11y Audit Program @ Color Health",
@@ -83,6 +87,7 @@ export const otherProjects = [
     image: "/projects/fidget/cover.png",
     link: "/projects/posts/fidget",
     date: "August 2022",
+    hiddenFromFeatured: true,
   },
 ];
 export const sideProjects = [
