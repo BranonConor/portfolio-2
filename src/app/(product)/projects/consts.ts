@@ -108,12 +108,16 @@ export const productProjects = [
 // Small side-project/course "showcase" — migrated here from the old
 // src/app/page.tsx home page (no longer reachable) since it's projects-
 // focused (open-source repos, apps, courses) rather than About-page content.
+const UDEMY_ICON_BG = "#ffffff";
+
 export const showcaseItems = [
   {
-    title: "INCLUSION.md",
-    description: "Context for inclusive AI design",
-    link: "https://github.com/BranonConor/inclusion.md",
-    icon: "/icons/code-dark.svg",
+    title: "Scramb",
+    description: "Global daily word puzzle game",
+    link: "https://www.scramb.io/",
+    icon: "/scramb-egg.svg",
+    iconSize: "20px",
+    iconBg: "#f9cb80",
     tag: "Live",
   },
   {
@@ -121,6 +125,7 @@ export const showcaseItems = [
     description: "AI-assisted knowledge network",
     link: "https://thesis.social",
     icon: "/thesis.png",
+    iconBg: "#2b2b2b",
     tag: "Live",
   },
   {
@@ -128,6 +133,17 @@ export const showcaseItems = [
     description: "Collaborative event planning app",
     link: "https://listrocket.app",
     icon: "/listrocket.svg",
+    iconBg:
+      "linear-gradient(135deg, rgba(99, 102, 241, 0.8) 0%, rgba(168, 85, 247, 0.8) 100%)",
+    iconFilter: "brightness(0) invert(1)",
+    tag: "Live",
+  },
+  {
+    title: "INCLUSION.md",
+    description: "Context for inclusive AI design",
+    link: "https://github.com/BranonConor/inclusion.md",
+    emoji: "🧡",
+    iconBg: "#000000",
     tag: "Live",
   },
   {
@@ -135,11 +151,15 @@ export const showcaseItems = [
     description: "Udemy course w/ Colt Steele",
     link: "https://www.udemy.com/course/html-and-css-bootcamp",
     icon: "/udemy.png",
+    iconBg: UDEMY_ICON_BG,
+    tag: "Live",
   },
   {
     title: "Typescript Course",
     description: "Udemy course w/ Colt Steele",
     link: "https://www.udemy.com/course/learn-typescript",
     icon: "/udemy.png",
+    iconBg: UDEMY_ICON_BG,
+    tag: "Live",
   },
 ];

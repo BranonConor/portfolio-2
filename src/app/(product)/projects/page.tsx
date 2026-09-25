@@ -102,70 +102,16 @@ export default function Projects() {
         alignItems="flex-start"
         justifyContent="flex-start"
       >
-        <RetroCard>
+        <RetroCard pb={5}>
           <Box p={5} pb={3} borderBottom="2px solid" borderBottomColor="brand.border">
             <PageHeading title="Projects" subtitle="Cool things I've worked on." />
           </Box>
 
-          {/* Filters */}
-          <Flex flexWrap="wrap" alignItems="center" gap={2} px={5} pt={4} pb={4}>
-            {categories.map((cat) => (
-              <RetroFilterPill
-                key={cat.key}
-                label={cat.label}
-                color="#da70d6"
-                active={currentFilter === cat.key}
-                onClick={() => setCurrentFilter(cat.key)}
-              />
-            ))}
-          </Flex>
-
-          {/* Project List */}
-          <Flex
-            flexDirection="column"
-            width="100%"
-            gap={0}
-            px={5}
-            pb={3}
-            sx={{
-              "& > *:first-of-type::after": { display: "none" },
-              "& > *:hover + *::after": { transform: "scaleX(0)" },
-            }}
-          >
-            {filteredProjects.map((project) => (
-              <TopLevelListItem
-                key={project.title}
-                href={project.link}
-                title={project.title}
-                accent="#da70d6"
-                meta={`${(Array.isArray(project.category)
-                  ? project.category
-                  : [project.category]
-                ).join(", ")} · ${project.date}`}
-                badges={
-                  <>
-                    {(project as { hasPassword?: boolean }).hasPassword && (
-                      <Text fontSize="11px" opacity={0.5}>
-                        🔒
-                      </Text>
-                    )}
-                    {(project as { inProgress?: boolean }).inProgress && (
-                      <Text fontSize="10px" color="#b7791f">
-                        IN PROG
-                      </Text>
-                    )}
-                  </>
-                }
-              />
-            ))}
-          </Flex>
-        </RetroCard>
-
-        <RetroCard p={5} mt={4}>
-          <SectionHeading title="Showcase" color="#da70d6" />
+          <SectionHeading title="Showcase" color="#da70d6" mx={5} mt={5} />
           <Flex
             flexDirection="column"
             gap={0}
+            mx={5}
             sx={{
               "& > *:first-of-type::after": { display: "none" },
               "& > *:hover + *::after": { transform: "scaleX(0)" },
@@ -214,20 +160,27 @@ export default function Projects() {
                     borderRadius="6px"
                     border="2px solid"
                     borderColor="brand.border"
-                    bg={item.title === "Thesis" ? "#2b2b2b" : "brand.surface"}
+                    bg={item.iconBg}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
                     overflow="hidden"
+                    aria-hidden="true"
                   >
-                    <Image
-                      src={item.icon}
-                      alt={item.title}
-                      width="18px"
-                      height="18px"
-                      objectFit="contain"
-                      borderRadius="3px"
-                    />
+                    {"emoji" in item ? (
+                      <Text as="span" fontSize="15px" lineHeight="1">
+                        {item.emoji}
+                      </Text>
+                    ) : (
+                      <Image
+                        src={item.icon}
+                        alt=""
+                        boxSize={"iconSize" in item ? item.iconSize : "18px"}
+                        objectFit="contain"
+                        borderRadius="3px"
+                        filter={"iconFilter" in item ? item.iconFilter : undefined}
+                      />
+                    )}
                   </Box>
                   <Box minWidth={0}>
                     <Flex alignItems="center" gap={2}>
@@ -256,6 +209,58 @@ export default function Projects() {
                 </Flex>
                 <ExternalLinkIcon boxSize={3} color="brand.textMuted" flexShrink={0} />
               </ChakraLink>
+            ))}
+          </Flex>
+        </RetroCard>
+
+        <RetroCard p={5} mt={4}>
+          <SectionHeading title="Case Studies" color="#da70d6" />
+          <Flex flexWrap="wrap" alignItems="center" gap={2} pt={1} pb={4}>
+            {categories.map((cat) => (
+              <RetroFilterPill
+                key={cat.key}
+                label={cat.label}
+                color="#da70d6"
+                active={currentFilter === cat.key}
+                onClick={() => setCurrentFilter(cat.key)}
+              />
+            ))}
+          </Flex>
+
+          <Flex
+            flexDirection="column"
+            width="100%"
+            gap={0}
+            sx={{
+              "& > *:first-of-type::after": { display: "none" },
+              "& > *:hover + *::after": { transform: "scaleX(0)" },
+            }}
+          >
+            {filteredProjects.map((project) => (
+              <TopLevelListItem
+                key={project.title}
+                href={project.link}
+                title={project.title}
+                accent="#da70d6"
+                meta={`${(Array.isArray(project.category)
+                  ? project.category
+                  : [project.category]
+                ).join(", ")} · ${project.date}`}
+                badges={
+                  <>
+                    {(project as { hasPassword?: boolean }).hasPassword && (
+                      <Text fontSize="11px" opacity={0.5}>
+                        🔒
+                      </Text>
+                    )}
+                    {(project as { inProgress?: boolean }).inProgress && (
+                      <Text fontSize="10px" color="#b7791f">
+                        IN PROG
+                      </Text>
+                    )}
+                  </>
+                }
+              />
             ))}
           </Flex>
         </RetroCard>
