@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BOOT_AUDIO_SRC } from "./bootTimeline";
 
 // Every call to useBootChime() (boot intro, the persistent mute button in
 // the product layout, the photo carousel's click sound, etc.) creates its
@@ -34,17 +35,15 @@ function setSharedMuted(next: boolean) {
   muteListeners.forEach((listener) => listener(next));
 }
 
-// A major pentatonic scale, spanning a couple of octaves, gives every note a
-// consonant/"heavenly" quality no matter which degree a given letter lands
-// on — this is what each letter's twinkle picks a pitch from.
-const PENTATONIC = [
-  523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.51, 1567.98,
-  1760.0,
-];
-
 interface Chain {
   ctx: AudioContext;
-  master: GainNode;
+}
+
+interface BootPlayback {
+  source: AudioBufferSourceNode | null;
+  startedAt: number | null;
+  pausedAtMs: number | null;
+  active: boolean;
 }
 
 // A ~0.1s silent WAV, used purely to flip Mobile Safari's audio session
@@ -53,26 +52,31 @@ const SILENT_WAV_DATA_URI =
   "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
 /**
- * Synthesizes an original GBA-style boot audio set with the Web Audio API —
- * no sampled or copyrighted audio. Two original sounds are produced:
- *  - a soft, airy "heavenly" twinkle for each letter as it lands, built from
- *    detuned sine pairs run through a feedback-delay shimmer for an airy tail
- *  - a bright ascending "sparkle" for the rainbow shine sweep, layering a
- *    quick bell arpeggio with a filtered noise burst
- * Playback requires a user gesture (browsers block un-requested audio):
- * call `unlock()` on/after a gesture to resume the AudioContext. Because the
- * boot animation itself doesn't wait for that gesture, `playLetterTwinkle`
- * and `playSparkle` are simply no-ops until the context is actually running
- * — any sound trigger firing before the first gesture is silently muted
- * rather than scheduled against a frozen (suspended) clock, which would
- * otherwise cause every sound to bunch up and play back garbled the moment
- * the context resumes.
+ * Owns the shared Web Audio graph. Navigation sounds remain lightweight
+ * synthesized cues, while the boot sequence uses the user's committed MP3
+ * as its authoritative clock.
+ * Playback requires a user gesture (browsers block unrequested audio):
+ * `unlock()` resumes the context for UI sounds, while `startBootTrack()`
+ * schedules the decoded MP3 from the cartridge activation gesture.
  */
-const BASE_MASTER_GAIN = 0.9;
+const BOOT_TRACK_GAIN = 0.18;
 
-export function useBootChime() {
+interface UseBootChimeOptions {
+  preloadBootTrack?: boolean;
+}
+
+export function useBootChime({
+  preloadBootTrack = false,
+}: UseBootChimeOptions = {}) {
   const chainRef = useRef<Chain | null>(null);
-  const noiseBufferRef = useRef<AudioBuffer | null>(null);
+  const bootBufferPromiseRef = useRef<Promise<AudioBuffer | null> | null>(null);
+  const bootGainRef = useRef<GainNode | null>(null);
+  const bootPlaybackRef = useRef<BootPlayback>({
+    source: null,
+    startedAt: null,
+    pausedAtMs: null,
+    active: false,
+  });
   const mutedRef = useRef(sharedMuted);
   const [muted, setMuted] = useState(sharedMuted);
   const sessionUnlockElRef = useRef<HTMLAudioElement | null>(null);
@@ -85,15 +89,15 @@ export function useBootChime() {
     sharedMuted = stored;
     mutedRef.current = stored;
     setMuted(stored);
-    if (chainRef.current) {
-      chainRef.current.master.gain.value = stored ? 0 : BASE_MASTER_GAIN;
+    if (bootGainRef.current) {
+      bootGainRef.current.gain.value = stored ? 0 : BOOT_TRACK_GAIN;
     }
 
     const listener = (next: boolean) => {
       mutedRef.current = next;
       setMuted(next);
-      if (chainRef.current) {
-        chainRef.current.master.gain.value = next ? 0 : BASE_MASTER_GAIN;
+      if (bootGainRef.current) {
+        bootGainRef.current.gain.value = next ? 0 : BOOT_TRACK_GAIN;
       }
     };
     muteListeners.add(listener);
@@ -112,48 +116,47 @@ export function useBootChime() {
     if (!AudioContextClass) return null;
 
     const ctx = new AudioContextClass();
-    const master = ctx.createGain();
-    master.gain.value = mutedRef.current ? 0 : BASE_MASTER_GAIN;
-
-    // A cheap "airy" feedback-delay shimmer shared by all sounds, so notes
-    // trail off softly instead of cutting out abruptly.
-    const delay = ctx.createDelay();
-    delay.delayTime.value = 0.22;
-    const feedback = ctx.createGain();
-    feedback.gain.value = 0.32;
-    const delayFilter = ctx.createBiquadFilter();
-    delayFilter.type = "lowpass";
-    delayFilter.frequency.value = 3200;
-
-    master.connect(ctx.destination);
-    master.connect(delay);
-    delay.connect(delayFilter);
-    delayFilter.connect(feedback);
-    feedback.connect(delay);
-    delayFilter.connect(ctx.destination);
-
-    const chain = { ctx, master };
+    const chain = { ctx };
     chainRef.current = chain;
     return chain;
   }, []);
 
+  const loadBootBuffer = useCallback(() => {
+    if (bootBufferPromiseRef.current) return bootBufferPromiseRef.current;
+
+    const chain = getChain();
+    if (!chain) return Promise.resolve(null);
+
+    bootBufferPromiseRef.current = fetch(BOOT_AUDIO_SRC)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Boot audio failed to load (${response.status})`);
+        }
+        return response.arrayBuffer();
+      })
+      .then((data) => chain.ctx.decodeAudioData(data))
+      .catch((error) => {
+        console.error(error);
+        setSharedMuted(true);
+        return null;
+      });
+
+    return bootBufferPromiseRef.current;
+  }, [getChain]);
+
+  useEffect(() => {
+    if (preloadBootTrack) void loadBootBuffer();
+  }, [loadBootBuffer, preloadBootTrack]);
+
   const unlock = useCallback(async () => {
     const chain = getChain();
-    if (chain?.ctx.state === "suspended") {
-      try {
-        await chain.ctx.resume();
-      } catch {
-        return false;
-      }
-    }
-
     // Mobile Safari plays Web Audio API oscillators through the "ambient"
     // audio session category, which is silenced by the hardware ringer/
     // silent switch regardless of in-page volume — unlike an HTML
     // <audio>/<video> element's "playback" category, which ignores that
     // switch. Playing (even a silent) audio element here, synchronously
     // within the same user gesture, flips the whole page's session over to
-    // "playback" so the synthesized chimes are audible with the ringer
+    // "playback" so the page audio is audible with the ringer
     // switched to silent, matching how every other web audio player avoids
     // this same well-known iOS quirk.
     if (!sessionUnlockElRef.current) {
@@ -163,8 +166,153 @@ export function useBootChime() {
       sessionUnlockElRef.current = el;
     }
     sessionUnlockElRef.current.play().catch(() => {});
+
+    if (chain?.ctx.state === "suspended") {
+      try {
+        await chain.ctx.resume();
+      } catch {
+        return false;
+      }
+    }
     return chain?.ctx.state === "running";
   }, [getChain]);
+
+  const stopBootTrack = useCallback(() => {
+    const playback = bootPlaybackRef.current;
+    playback.active = false;
+    playback.startedAt = null;
+    playback.pausedAtMs = null;
+    if (playback.source) {
+      try {
+        playback.source.stop();
+      } catch {
+        // Already stopped.
+      }
+      playback.source.disconnect();
+      playback.source = null;
+    }
+  }, []);
+
+  const createBootSource = useCallback(
+    (buffer: AudioBuffer, startAt: number, offsetMs = 0) => {
+      const chain = getChain();
+      if (!chain) return false;
+
+      if (!bootGainRef.current) {
+        const gain = chain.ctx.createGain();
+        gain.gain.value = mutedRef.current ? 0 : BOOT_TRACK_GAIN;
+        gain.connect(chain.ctx.destination);
+        bootGainRef.current = gain;
+      }
+
+      const source = chain.ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(bootGainRef.current);
+      source.start(startAt, offsetMs / 1000);
+      source.onended = () => {
+        if (bootPlaybackRef.current.source === source) {
+          bootPlaybackRef.current.source = null;
+          bootPlaybackRef.current.active = false;
+        }
+      };
+      bootPlaybackRef.current.source = source;
+      bootPlaybackRef.current.startedAt = startAt - offsetMs / 1000;
+      bootPlaybackRef.current.pausedAtMs = null;
+      bootPlaybackRef.current.active = true;
+      return true;
+    },
+    [getChain]
+  );
+
+  const startBootTrack = useCallback(
+    async (delayMs: number) => {
+      stopBootTrack();
+      const chain = getChain();
+      if (!chain) {
+        setSharedMuted(true);
+        return false;
+      }
+
+      // Anchor the requested start to wall time before any asynchronous
+      // resume/decode work. A suspended AudioContext's currentTime is frozen,
+      // so calculating only from that clock would add startup latency to the
+      // intended delay and let the first letter get ahead of the track.
+      const requestedStartAtMs = performance.now() + delayMs;
+      const unlocked = await unlock();
+      const buffer = await loadBootBuffer();
+      if (!unlocked || !buffer) {
+        setSharedMuted(true);
+        return false;
+      }
+
+      const now = chain.ctx.currentTime;
+      const remainingMs = requestedStartAtMs - performance.now();
+      const lateByMs = Math.max(0, -remainingMs);
+      return createBootSource(
+        buffer,
+        now + Math.max(0.005, remainingMs / 1000),
+        lateByMs
+      );
+    },
+    [createBootSource, getChain, loadBootBuffer, stopBootTrack, unlock]
+  );
+
+  const getBootElapsedMs = useCallback(() => {
+    const chain = chainRef.current;
+    const playback = bootPlaybackRef.current;
+    if (!chain || !playback.active) return null;
+    if (playback.pausedAtMs !== null) return playback.pausedAtMs;
+    if (playback.startedAt === null) return null;
+    return Math.max(0, (chain.ctx.currentTime - playback.startedAt) * 1000);
+  }, []);
+
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      const chain = chainRef.current;
+      const playback = bootPlaybackRef.current;
+      if (!chain || !playback.active) return;
+
+      if (document.hidden) {
+        playback.pausedAtMs = getBootElapsedMs();
+        if (playback.source) {
+          try {
+            playback.source.stop();
+          } catch {
+            // Already stopped.
+          }
+          playback.source.disconnect();
+          playback.source = null;
+        }
+        return;
+      }
+
+      const pausedAtMs = playback.pausedAtMs;
+      if (pausedAtMs === null) return;
+      try {
+        if (chain.ctx.state === "suspended") await chain.ctx.resume();
+      } catch {
+        setSharedMuted(true);
+        return;
+      }
+      const buffer = await loadBootBuffer();
+      if (!buffer || chain.ctx.state !== "running") {
+        setSharedMuted(true);
+        return;
+      }
+      createBootSource(buffer, chain.ctx.currentTime + 0.005, pausedAtMs);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      stopBootTrack();
+    };
+  }, [
+    createBootSource,
+    getBootElapsedMs,
+    loadBootBuffer,
+    stopBootTrack,
+  ]);
 
   const toggleMute = useCallback(() => {
     // Writes through the shared store (which also updates this instance
@@ -176,9 +324,7 @@ export function useBootChime() {
 
   /**
    * A quick, gentle navigation "beep" for moving between cartridges — a
-   * single short dry sine tone. Deliberately bypasses the shared shimmer/
-   * delay chain (routed straight to `ctx.destination`) since that reverb
-   * tail reads as muddy/echoey for a rapid, repeated UI sound like this.
+   * single short dry sine tone routed straight to `ctx.destination`.
    */
   const playMoveBlip = useCallback(async () => {
     const chain = getChain();
@@ -210,96 +356,13 @@ export function useBootChime() {
     osc.stop(start + duration + 0.02);
   }, [getChain]);
 
-  /** Soft ascending twinkle for the letter at `index` of `total` landing. */
-  const playLetterTwinkle = useCallback(
-    (index: number, total: number) => {
-      const chain = getChain();
-      // The AudioContext stays suspended until a real user gesture resumes
-      // it, and its currentTime is frozen the whole time it's suspended —
-      // scheduling sounds against a frozen clock means they'd all bunch up
-      // and play back garbled the instant it's later resumed. Since the
-      // animation itself no longer waits for a gesture, simply skip (mute)
-      // any sound trigger that fires before the context is actually running;
-      // once unlocked, subsequent triggers schedule cleanly against a live
-      // clock.
-      if (!chain || chain.ctx.state !== "running") return;
-      const { ctx, master } = chain;
-
-      const degree = Math.round((index / Math.max(total - 1, 1)) * (PENTATONIC.length - 1));
-      const freq = PENTATONIC[Math.min(degree, PENTATONIC.length - 1)];
-      const start = ctx.currentTime + 0.005;
-      const duration = 0.42;
-
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(0.16, start + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-      gain.connect(master);
-
-      // Two gently detuned sines, "chorus" style, for a soft/heavenly tone
-      // rather than a harsh single-oscillator beep.
-      [0, 6].forEach((detune) => {
-        const osc = ctx.createOscillator();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, start);
-        osc.detune.setValueAtTime(detune, start);
-        osc.connect(gain);
-        osc.start(start);
-        osc.stop(start + duration + 0.05);
-      });
-    },
-    [getChain]
-  );
-
-  /** Bright shimmering sparkle for the rainbow shine sweep. */
-  const playSparkle = useCallback(() => {
-    const chain = getChain();
-    if (!chain || chain.ctx.state !== "running") return;
-    const { ctx, master } = chain;
-    const start = ctx.currentTime + 0.005;
-
-    // Quick ascending bell arpeggio.
-    const bellNotes = [1046.5, 1318.51, 1567.98, 2093.0];
-    bellNotes.forEach((freq, i) => {
-      const noteStart = start + i * 0.05;
-      const osc = ctx.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq, noteStart);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, noteStart);
-      gain.gain.linearRampToValueAtTime(0.14, noteStart + 0.008);
-      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.3);
-      osc.connect(gain);
-      gain.connect(master);
-      osc.start(noteStart);
-      osc.stop(noteStart + 0.32);
-    });
-
-    // Filtered noise burst layered underneath for a bright "sparkle" texture.
-    if (!noiseBufferRef.current) {
-      const bufferSize = ctx.sampleRate * 0.4;
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-      noiseBufferRef.current = buffer;
-    }
-    const noise = ctx.createBufferSource();
-    noise.buffer = noiseBufferRef.current;
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = "highpass";
-    noiseFilter.frequency.setValueAtTime(6000, start);
-    const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0, start);
-    noiseGain.gain.linearRampToValueAtTime(0.06, start + 0.02);
-    noiseGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(master);
-    noise.start(start);
-    noise.stop(start + 0.4);
-  }, [getChain]);
-
-  return { unlock, playLetterTwinkle, playSparkle, playMoveBlip, muted, toggleMute };
+  return {
+    unlock,
+    playMoveBlip,
+    startBootTrack,
+    stopBootTrack,
+    getBootElapsedMs,
+    muted,
+    toggleMute,
+  };
 }

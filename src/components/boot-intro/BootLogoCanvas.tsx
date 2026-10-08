@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Box } from "@chakra-ui/react";
 import { Renderer, Program, Mesh, Texture, Geometry, Transform } from "ogl";
 import { pixelFont } from "./pixelFont";
+import { BOOT_TIMELINE, getLetterStaggerMs } from "./bootTimeline";
 
 const VERTEX = /* glsl */ `
   attribute vec2 position;
@@ -85,18 +86,16 @@ interface LetterEntry {
 
 interface BootLogoCanvasProps {
   label: string;
-  staggerMs: number;
-  letterDurationMs: number;
-  sweepGapMs: number;
-  sweepDurationMs: number;
+  /** Reads elapsed milliseconds from the shared boot audio clock. */
+  getTimelineElapsedMs?: () => number | null;
   /** Fired once per letter, the instant it begins its entrance. */
   onLetterStart?: (index: number, total: number) => void;
   /** Fired once, the moment the last letter finishes its landing bounce. */
   onLettersSettled?: () => void;
   /** Fired once the rainbow sweep begins. */
   onSweepStart?: () => void;
-  /** Fired once the rainbow sweep has fully played out. */
-  onSweepComplete?: () => void;
+  /** Fired once the measured audio tail has completed. */
+  onTimelineComplete?: () => void;
 }
 
 // Letters rocket in dramatically oversized, flash their own color, then
@@ -206,32 +205,30 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
  * shrinking to its resting scale, then immediately does a couple of quick
  * in-place bounces — the whole "fly in -> bounce -> settle" sequence
  * cascades independently per letter (staggered only by start time) so it
- * stays snappy. Once the last letter finishes settling, a rainbow shine
- * sweeps across the whole logo.
+ * stays snappy. The custom boot track is the authoritative clock: the full
+ * letter entrance occupies its first measured 120 ms measure, and the
+ * rainbow shine begins at the prominent DING.
  */
 export function BootLogoCanvas({
   label,
-  staggerMs,
-  letterDurationMs,
-  sweepGapMs,
-  sweepDurationMs,
+  getTimelineElapsedMs,
   onLetterStart,
   onLettersSettled,
   onSweepStart,
-  onSweepComplete,
+  onTimelineComplete,
 }: BootLogoCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const callbacksRef = useRef({
     onLetterStart,
     onLettersSettled,
     onSweepStart,
-    onSweepComplete,
+    onTimelineComplete,
   });
   callbacksRef.current = {
     onLetterStart,
     onLettersSettled,
     onSweepStart,
-    onSweepComplete,
+    onTimelineComplete,
   };
 
   useEffect(() => {
@@ -359,6 +356,7 @@ export function BootLogoCanvas({
 
       const letters: LetterEntry[] = [];
       const visibleCount = rawMetrics.filter((m) => m.char !== " ").length;
+      const letterStaggerMs = getLetterStaggerMs(visibleCount);
       let visibleIndex = 0;
       rawMetrics.forEach(({ char, x, width }) => {
         if (char === " ") return;
@@ -416,7 +414,7 @@ export function BootLogoCanvas({
           halfWidthFrac,
           globalU0: centerXFrac - halfWidthFrac,
           globalU1: centerXFrac + halfWidthFrac,
-          startDelayMs: visibleIndex * staggerMs,
+          startDelayMs: visibleIndex * letterStaggerMs,
           color,
         });
         visibleIndex += 1;
@@ -424,28 +422,35 @@ export function BootLogoCanvas({
 
       const lastLetterDelay =
         letters.length > 0 ? letters[letters.length - 1].startDelayMs : 0;
-      const settleTimeMs = lastLetterDelay + letterDurationMs;
+      const settleTimeMs =
+        lastLetterDelay + BOOT_TIMELINE.letterEntranceDurationMs;
       // Each letter's own post-landing bounce starts right after *its own*
       // entrance finishes (not the whole word's) — this keeps every letter
       // cascading through "fly in -> bounce -> settle" independently instead
       // of everyone waiting for the last letter before bouncing.
-      const bounceDurationMs = BOUNCE_CYCLE_MS * BOUNCE_REPEATS;
-      const lastLetterBounceEnd =
-        lastLetterDelay + letterDurationMs + BOUNCE_GAP_MS + bounceDurationMs;
-      const sweepStartMs = lastLetterBounceEnd + sweepGapMs;
+      const sweepStartMs = BOOT_TIMELINE.dingFromLogoRevealMs;
       let settledFired = false;
       let sweepStartFired = false;
       let sweepCompleteFired = false;
       const letterStartFired = new Array(letters.length).fill(false);
 
-      const startTime = performance.now();
+      const localStartTime = performance.now();
 
       const tick = () => {
         if (destroyed) return;
-        const elapsed = performance.now() - startTime;
+        const sharedElapsed = getTimelineElapsedMs?.();
+        const elapsed =
+          sharedElapsed === null || sharedElapsed === undefined
+            ? performance.now() - localStartTime
+            : Math.max(
+                0,
+                sharedElapsed - BOOT_TIMELINE.audioContentStartMs
+              );
 
         letters.forEach(({ program, centerXFrac, halfWidthFrac, startDelayMs }, i) => {
-          const rawT = (elapsed - startDelayMs) / letterDurationMs;
+          const rawT =
+            (elapsed - startDelayMs) /
+            BOOT_TIMELINE.letterEntranceDurationMs;
           const started = rawT > 0;
           const t = Math.min(Math.max(rawT, 0), 1);
           const scaleEased = scaleProgress(t);
@@ -459,7 +464,10 @@ export function BootLogoCanvas({
 
           // Once this letter has landed, it immediately does its own couple
           // of in-place bounces — independent of any other letter.
-          const letterBounceStart = startDelayMs + letterDurationMs + BOUNCE_GAP_MS;
+          const letterBounceStart =
+            startDelayMs +
+            BOOT_TIMELINE.letterEntranceDurationMs +
+            BOUNCE_GAP_MS;
           const bounce =
             t >= 1 ? bounceScale(elapsed - letterBounceStart) : 1;
           const scale = entranceScale * bounce;
@@ -488,7 +496,10 @@ export function BootLogoCanvas({
         }
 
         const sweepT = Math.min(
-          Math.max((elapsed - sweepStartMs) / sweepDurationMs, 0),
+          Math.max(
+            (elapsed - sweepStartMs) / BOOT_TIMELINE.sweepDurationMs,
+            0
+          ),
           1
         );
         letters.forEach(({ program }) => {
@@ -500,9 +511,12 @@ export function BootLogoCanvas({
           callbacksRef.current.onSweepStart?.();
         }
 
-        if (!sweepCompleteFired && elapsed >= sweepStartMs + sweepDurationMs) {
+        if (
+          !sweepCompleteFired &&
+          elapsed >= BOOT_TIMELINE.navigateFromLogoRevealMs
+        ) {
           sweepCompleteFired = true;
-          callbacksRef.current.onSweepComplete?.();
+          callbacksRef.current.onTimelineComplete?.();
         }
 
         renderer.render({ scene: root });
@@ -528,7 +542,7 @@ export function BootLogoCanvas({
       disposeGl?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label, staggerMs, letterDurationMs, sweepGapMs, sweepDurationMs]);
+  }, [getTimelineElapsedMs, label]);
 
   return (
     <Box
