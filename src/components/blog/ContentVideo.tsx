@@ -5,9 +5,16 @@ import { Image, Text, Box, AspectRatio } from "@chakra-ui/react";
 interface ContentVideoProps {
   url: string;
   caption?: string;
+  description?: string;
+  aspectRatio?: number;
 }
 
-const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
+const ContentVideo: React.FC<ContentVideoProps> = ({
+  url,
+  caption,
+  description,
+  aspectRatio = 2 / 1,
+}) => {
   return (
     <Box px={[4, 5, 6]}>
       <Box
@@ -20,9 +27,10 @@ const ContentVideo: React.FC<ContentVideoProps> = ({ url, caption }) => {
         border="1px solid"
         borderColor="brand.border"
       >
-        <AspectRatio maxW="100%" ratio={2 / 1}>
+        <AspectRatio maxW="100%" ratio={aspectRatio}>
           <video
             src={url}
+            aria-label={description}
             loop
             autoPlay
             muted

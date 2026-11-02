@@ -8,6 +8,8 @@ export const metadata = buildPageMetadata({
 
 import HeroStrip from "@/components/blog/HeroStrip";
 import ContentImage from "@/components/blog/ContentImage";
+import ContentVideo from "@/components/blog/ContentVideo";
+import Video from "@/components/blog/Video";
 
 <HeroStrip
   title="Dependabot reachability: making call paths easier to investigate"
@@ -31,9 +33,11 @@ That verdict adds context for prioritizing work alongside severity, EPSS, and wh
 
 A verdict is a starting point, but the path helps answer *why*. To investigate an alert, a developer needs to see how code in their repository connects to a vulnerable function, one step at a time. A path can move through repository code, packages, and direct or transitive dependencies. If those steps all look alike, it's harder to see where to start looking. Where the evidence is incomplete, the interface shouldn't make an endpoint look more certain than it is.
 
-<ContentImage
-  image="/in-the-wild/dependabot-reachability/call-path.png"
-  caption="A sample call path on a Dependabot alert, showing code snippets and steps from repository code into a dependency. Screenshot from the GitHub Changelog."
+<ContentVideo
+  url="/in-the-wild/dependabot-reachability/call-path-demo.mp4"
+  aspectRatio={1704 / 1080}
+  description="A demo Dependabot alert opens sample call paths, highlights repository code, and navigates to a second path with omitted steps."
+  caption="A local demo of call-path navigation, highlighted code, and incomplete evidence."
 />
 
 ### Where I fit in
@@ -44,7 +48,15 @@ Product designers shaped the call-path investigation experience on Dependabot al
 - **Read the relevant code.** I implemented compact, highlighted snippets from repository code and an action to open the source file. Together we made the vulnerable function easier to spot on a complete path without making an incomplete one look certain.
 - **Stay oriented.** I polished step transitions and previous/next navigation in code, including keyboard focus and reduced-motion behavior as the path changes.
 
-The goal is to make the evidence on an alert useful for deciding what to inspect next. Reachable alerts can show up to five *sample* paths, not an exhaustive map, and verdicts are a point-in-time assessment. Teams still have to weigh that context with the rest of the alert and choose what to fix first.
+### See it in action
+
+The GitHub team put together a quick walkthrough of reachability analysis, including some of the call-path UI I helped implement with the product designers. HUGE shoutout to **[Carlin Cherry](https://github.com/carlincherry)**, the Dependabot PM in this video, who was amazing to work with on this. Enjoy!
+
+<Video
+  url="https://www.youtube-nocookie.com/embed/6r9prGBlaSc"
+  title="GitHub's Security in 60 Seconds: Reachability Analysis for Dependabot"
+  portrait
+/>
 
 ### Read the announcement
 
