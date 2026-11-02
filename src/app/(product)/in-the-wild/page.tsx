@@ -8,10 +8,29 @@ import { RetroFilterPill } from "@/components/RetroFilterPill";
 import { HoverArrow, HOVER_ARROW_SHIFT } from "@/components/HoverArrow";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { inTheWild } from "./consts";
 
 const ACCENT = "#fbbf24";
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** Parse Month YYYY explicitly because Safari may reject it as a Date string. */
+const monthYear = (date: string): number => {
+  const match = date.match(/^([A-Za-z]+) (\d{4})$/);
+  const month = match ? MONTHS.indexOf(match[1]) : -1;
+  if (!match || month === -1) {
+    throw new Error(`Invalid In the Wild date: ${date}`);
+  }
+  return Number(match[2]) * 12 + month;
+};
+
+const newestFirst = inTheWild
+  .map((item, index) => ({ item, index, date: monthYear(item.date) }))
+  .sort((a, b) => b.date - a.date || a.index - b.index)
+  .map(({ item }) => item);
 
 export default function InTheWild() {
   const [currentFilter, setCurrentFilter] = useState("all");
@@ -25,19 +44,10 @@ export default function InTheWild() {
 
   const filtered =
     currentFilter === "all"
-      ? inTheWild
+      ? newestFirst
       : currentFilter === "github"
-        ? inTheWild.filter((item) => item.source === "GitHub")
-        : inTheWild.filter((item) => item.source !== "GitHub");
-
-  // Always show newest first, regardless of array order in consts.
-  const sorted = useMemo(
-    () =>
-      [...filtered].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      ),
-    [filtered],
-  );
+        ? newestFirst.filter((item) => item.source === "GitHub")
+        : newestFirst.filter((item) => item.source !== "GitHub");
 
   return (
     <PageWrapper>
@@ -80,7 +90,7 @@ export default function InTheWild() {
               "& > *:hover + *::after": { transform: "scaleX(0)" },
             }}
           >
-            {sorted.map((item) => {
+            {filtered.map((item) => {
               const linkProps = item.external
                 ? {
                     href: item.link,
