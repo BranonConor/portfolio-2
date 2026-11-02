@@ -20,6 +20,14 @@ export interface WildItem {
 
 export const inTheWild: WildItem[] = [
   {
+    title: "Dependabot reachability: making call paths easier to investigate",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineer on the alert-side call-path investigation experience",
+    link: "/in-the-wild/posts/dependabot-reachability",
+    date: "October 2026",
+  },
+  {
     title: "GitHub Code Quality is now generally available",
     category: "Shipped",
     source: "GitHub",

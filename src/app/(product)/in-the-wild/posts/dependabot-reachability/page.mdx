@@ -1,0 +1,47 @@
+import { buildPageMetadata } from "@/lib/pageMetadata";
+
+export const metadata = buildPageMetadata({
+  title: "Dependabot reachability: making call paths easier to investigate",
+  description: "I helped refine the call-path view on Dependabot alerts so developers can follow code and dependencies with clearer steps, code snippets, navigation, and accessible motion.",
+  path: "/in-the-wild/posts/dependabot-reachability",
+});
+
+import HeroStrip from "@/components/blog/HeroStrip";
+import ContentImage from "@/components/blog/ContentImage";
+
+<HeroStrip
+  title="Dependabot reachability: making call paths easier to investigate"
+  subtitle="I helped refine the call-path view on Dependabot alerts so developers can follow code and dependencies with clearer steps, code snippets, navigation, and accessible motion."
+  date="October 2026"
+  category="Shipped"
+/>
+
+<ContentImage
+  image="/in-the-wild/dependabot-reachability/call-path.png"
+  caption="A sample call path on a Dependabot alert, from application code through a dependency to a vulnerable function. Screenshot from the GitHub Changelog."
+/>
+
+### What shipped
+
+On October 28, 2026, GitHub [announced reachability analysis for Dependabot alerts](https://github.blog/changelog/2026-10-28-prioritize-dependabot-alerts-with-reachability-analysis/). In public preview for JavaScript and TypeScript, it looks for call paths from your code to vulnerable functions in dependencies. Alerts can be **reachable**, **potentially reachable**, **unreachable**, or **reachability unavailable**.
+
+That verdict adds context for prioritizing work alongside severity, EPSS, and what you know about your application. It doesn't dismiss alerts for you: reachable doesn't necessarily mean exploitable, and unreachable isn't a guarantee that a dependency is safe.
+
+### The problem
+
+A verdict is a starting point, but the path helps answer *why*. To investigate an alert, a developer needs to see how code in their repository connects to a vulnerable function, one step at a time. A path can move through repository code, packages, and direct or transitive dependencies. If those steps all look alike, it's harder to see where to start looking. Where the evidence is incomplete, the interface shouldn't make an endpoint look more certain than it is.
+
+### Where I fit in
+
+I contributed design engineering to the alert-side call-path investigation experience, alongside the team that built the analysis. My focus was making its evidence easier to read and navigate, not computing the verdicts:
+
+- **Follow the chain.** I clarified the hierarchy between repository, package, and function steps, including direct and transitive dependencies.
+- **Read the relevant code.** I added compact, highlighted snippets from repository code with an action to open the source file. I also made the vulnerable function easier to spot when a complete path identifies it, without implying the same certainty for an incomplete path.
+- **Stay oriented.** I refined transitions and previous/next navigation, including keyboard focus and reduced-motion behavior when moving between steps.
+
+The goal is to make the evidence on an alert useful for deciding what to inspect next. Reachable alerts can show up to five *sample* paths, not an exhaustive map, and verdicts are a point-in-time assessment. Teams still have to weigh that context with the rest of the alert and choose what to fix first.
+
+### Read the announcement
+
+- [Prioritize Dependabot alerts with reachability analysis → (GitHub Changelog)](https://github.blog/changelog/2026-10-28-prioritize-dependabot-alerts-with-reachability-analysis/)
+- [About reachability analysis for Dependabot alerts → (GitHub Docs)](https://docs.github.com/code-security/concepts/supply-chain-security/about-reachability-analysis-for-dependabot-alerts)
