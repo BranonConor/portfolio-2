@@ -23,8 +23,17 @@ export const inTheWild: WildItem[] = [
     title: "Dependabot reachability: making call paths easier to investigate",
     category: "Shipped",
     source: "GitHub",
-    role: "Design engineer on the alert-side call-path investigation experience",
+    role: "Implemented call-path UI and contributed to design decisions with product designers",
     link: "/in-the-wild/posts/dependabot-reachability",
+    date: "October 2026",
+  },
+  {
+    title: "Public monitoring for enterprises generally available",
+    category: "Shipped",
+    source: "GitHub",
+    role: "Design engineer shipping UI features & polish",
+    link: "https://github.blog/changelog/2026-10-28-public-monitoring-for-enterprises-generally-available/",
+    external: true,
     date: "October 2026",
   },
   {

@@ -2,7 +2,7 @@ import { buildPageMetadata } from "@/lib/pageMetadata";
 
 export const metadata = buildPageMetadata({
   title: "Dependabot reachability: making call paths easier to investigate",
-  description: "I helped refine the call-path view on Dependabot alerts so developers can follow code and dependencies with clearer steps, code snippets, navigation, and accessible motion.",
+  description: "I implemented much of the alert-side call-path experience for Dependabot reachability and helped make key design decisions alongside the product designers who shaped it.",
   path: "/in-the-wild/posts/dependabot-reachability",
 });
 
@@ -11,14 +11,14 @@ import ContentImage from "@/components/blog/ContentImage";
 
 <HeroStrip
   title="Dependabot reachability: making call paths easier to investigate"
-  subtitle="I helped refine the call-path view on Dependabot alerts so developers can follow code and dependencies with clearer steps, code snippets, navigation, and accessible motion."
+  subtitle="I implemented much of the alert-side call-path experience for Dependabot reachability and helped make key design decisions alongside the product designers who shaped it."
   date="October 2026"
   category="Shipped"
 />
 
 <ContentImage
-  image="/in-the-wild/dependabot-reachability/call-path.png"
-  caption="A sample call path on a Dependabot alert, from application code through a dependency to a vulnerable function. Screenshot from the GitHub Changelog."
+  image="/in-the-wild/dependabot-reachability/announcement-hero.png"
+  caption="GitHub's public changelog announcement for Dependabot reachability analysis, with a green GitHub graphic beneath the headline. Screenshot: GitHub Changelog."
 />
 
 ### What shipped
@@ -31,13 +31,18 @@ That verdict adds context for prioritizing work alongside severity, EPSS, and wh
 
 A verdict is a starting point, but the path helps answer *why*. To investigate an alert, a developer needs to see how code in their repository connects to a vulnerable function, one step at a time. A path can move through repository code, packages, and direct or transitive dependencies. If those steps all look alike, it's harder to see where to start looking. Where the evidence is incomplete, the interface shouldn't make an endpoint look more certain than it is.
 
+<ContentImage
+  image="/in-the-wild/dependabot-reachability/call-path.png"
+  caption="A sample call path on a Dependabot alert, showing code snippets and steps from repository code into a dependency. Screenshot from the GitHub Changelog."
+/>
+
 ### Where I fit in
 
-I contributed design engineering to the alert-side call-path investigation experience, alongside the team that built the analysis. My focus was making its evidence easier to read and navigate, not computing the verdicts:
+Product designers shaped the call-path investigation experience on Dependabot alerts. I worked closely with them, primarily implementing the UI while contributing to key design decisions about how to present and navigate the evidence. The broader team built the analysis and verdicts; my work was on the alert-side experience:
 
-- **Follow the chain.** I clarified the hierarchy between repository, package, and function steps, including direct and transitive dependencies.
-- **Read the relevant code.** I added compact, highlighted snippets from repository code with an action to open the source file. I also made the vulnerable function easier to spot when a complete path identifies it, without implying the same certainty for an incomplete path.
-- **Stay oriented.** I refined transitions and previous/next navigation, including keyboard focus and reduced-motion behavior when moving between steps.
+- **Follow the chain.** Working with the designers, I helped decide how repository, package, and function steps, including direct and transitive dependencies, should read together, then implemented that hierarchy in the UI.
+- **Read the relevant code.** I implemented compact, highlighted snippets from repository code and an action to open the source file. Together we made the vulnerable function easier to spot on a complete path without making an incomplete one look certain.
+- **Stay oriented.** I polished step transitions and previous/next navigation in code, including keyboard focus and reduced-motion behavior as the path changes.
 
 The goal is to make the evidence on an alert useful for deciding what to inspect next. Reachable alerts can show up to five *sample* paths, not an exhaustive map, and verdicts are a point-in-time assessment. Teams still have to weigh that context with the rest of the alert and choose what to fix first.
 
