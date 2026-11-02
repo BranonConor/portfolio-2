@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Image, Text, Box, AspectRatio } from "@chakra-ui/react";
 
 interface ContentVideoProps {
@@ -15,6 +16,24 @@ const ContentVideo: React.FC<ContentVideoProps> = ({
   description,
   aspectRatio = 2 / 1,
 }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showControls, setShowControls] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    setShowControls(false);
+    let active = true;
+    video.play().catch(() => {
+      if (active) setShowControls(true);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [url]);
+
   return (
     <Box px={[4, 5, 6]}>
       <Box
@@ -37,6 +56,7 @@ const ContentVideo: React.FC<ContentVideoProps> = ({
             // Strip audio tracks entirely so there's no way for a user to
             // re-enable sound (e.g. via devtools toggling `muted`).
             ref={(el) => {
+              videoRef.current = el;
               if (el) {
                 el.muted = true;
                 el.volume = 0;
@@ -50,7 +70,7 @@ const ContentVideo: React.FC<ContentVideoProps> = ({
                 }
               }
             }}
-            controls={false}
+            controls={showControls}
             controlsList="nodownload nofullscreen noremoteplayback"
             disablePictureInPicture
             disableRemotePlayback
