@@ -529,7 +529,7 @@ export default function About() {
                               fontSize="10px"
                               fontWeight="600"
                               letterSpacing="0.02em"
-                              color="#9f2f1b"
+                              color={ABOUT_ACCENT}
                               bg={`${ABOUT_ACCENT}18`}
                               px={2}
                               py={0.5}
