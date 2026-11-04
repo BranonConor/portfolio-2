@@ -80,6 +80,7 @@ export default function Blog() {
                 title={post.title}
                 href={post.link}
                 external={post.external}
+                reserveExternalIconSpace
                 accent="#61dafb"
                 meta={`${post.category} · ${post.date}`}
               />

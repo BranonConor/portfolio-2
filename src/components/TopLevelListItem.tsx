@@ -13,6 +13,7 @@ interface TopLevelListItemProps {
   description?: string;
   leading?: React.ReactNode;
   external?: boolean;
+  reserveExternalIconSpace?: boolean;
   badges?: React.ReactNode;
 }
 
@@ -24,6 +25,7 @@ export const TopLevelListItem = ({
   description,
   leading,
   external = false,
+  reserveExternalIconSpace = false,
   badges,
 }: TopLevelListItemProps) => (
   <ChakraLink
@@ -108,7 +110,7 @@ export const TopLevelListItem = ({
         )}
       </Box>
     </Flex>
-    {(meta || external) && (
+    {(meta || external || reserveExternalIconSpace) && (
       <Flex flexShrink={0} alignItems="center" gap={2} alignSelf="stretch">
         {meta && (
           <Text
@@ -119,7 +121,7 @@ export const TopLevelListItem = ({
             {meta}
           </Text>
         )}
-        {external && (
+        {(external || reserveExternalIconSpace) && (
           <Box
             boxSize={3}
             flexShrink={0}
@@ -127,7 +129,7 @@ export const TopLevelListItem = ({
             alignItems="center"
             justifyContent="center"
           >
-            <ExternalLinkIcon boxSize={3} color="brand.textMuted" />
+            {external && <ExternalLinkIcon boxSize={3} color="brand.textMuted" />}
           </Box>
         )}
       </Flex>
