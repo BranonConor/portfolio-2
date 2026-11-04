@@ -5,7 +5,7 @@ import { PageHeading } from "../PageHeading";
 
 interface HeroStripProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   date: string;
   category: string;
   image?: string; // kept for backwards compat, no longer rendered

@@ -9,6 +9,12 @@ import { TopLevelListItem } from "@/components/TopLevelListItem";
 export default function Blog() {
   const posts = [
     {
+      title: "One year at GitHub",
+      category: "Personal",
+      link: "/blog/posts/one-year-at-github",
+      date: "Nov 2026",
+    },
+    {
       title: "The CLI is the New UI",
       category: "AI & DX",
       link: "https://www.thesis.social/article/cmp73stnr000o04l6bxr194c5",
