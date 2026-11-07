@@ -17,6 +17,7 @@ import { CursorSparkles } from "./CursorSparkles";
 import { useBootChime } from "./useBootChime";
 import { SoundMuteIcon } from "./SoundMuteIcon";
 import { pixelFont } from "./pixelFont";
+import { BOOT_TIMELINE, getAudioStartDelayMs } from "./bootTimeline";
 import { proseFont } from "../proseFont";
 import { SCREEN_BG, REVERSE_BOOT_STORAGE_KEY, PIXEL_CURSOR, PAPER_BG_SX } from "@/lib/consoleTheme";
 import { CARTRIDGES } from "@/lib/cartridges";
@@ -37,33 +38,10 @@ const BASE_ROLE = "DESIGN ENGINEER";
 // radial vignette, so the console reads as sitting on a warm surface
 // rather than floating in a flat black void.
 
-// Each letter spirals in oversized (right -> up -> left -> down -> center)
-// and settles to size, then immediately does a couple of in-place bounces —
-// cascading independently per letter (only offset by a short stagger) so the
-// whole sequence stays snappy. Once every letter has cascaded through, the
-// rainbow shine sweeps across the settled logo.
-const STAGGER_MS = 55;
-const LETTER_DURATION_MS = 480;
-const SWEEP_GAP_MS = 120;
-const SWEEP_DURATION_MS = 650;
-
-// Duration of the reverse-boot "screen power-off" flash (see
-// `screenOffFlashActive`) — kept short so it reads as a snappy CRT-style
-// power-down beat rather than a slow fade.
-const SCREEN_OFF_FLASH_MS = 360;
-const REVERSE_ZOOM_MS = 580;
-// Duration of the forward "screen power-on" flash (see
-// `screenOnFlashActive`) — a touch longer than the power-off version since
-// it has one more beat (dot -> line -> full flash -> settle, vs. the
-// power-off's flash -> line -> dot), but still snappy.
-const SCREEN_ON_FLASH_MS = 420;
-
-const PLUG_IN_MS = 460;
-// How long the finished boot logo (post-sweep) holds on screen before
-// handing off to the destination page — gives players a beat to actually
-// read the name/subtitle instead of it flashing straight through.
-const POST_SWEEP_HOLD_MS = 1100;
-
+// The committed MP3 is the authoritative clock for the logo sequence. The
+// 13 visible letters enter across its measured first 120 ms (one literal
+// 4/4 measure at the stated 2000 BPM), then the rainbow/subtitle reveal lands
+// on the prominent DING measured at 2.435 s.
 type Phase = "select" | "booting";
 
 /**
@@ -83,6 +61,7 @@ export function BootIntro() {
   const [phase, setPhase] = useState<Phase>("select");
   const [selected, setSelected] = useState(0);
   const [activating, setActivating] = useState<number | null>(null);
+  const activationRef = useRef(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   // True while playing the reverse "zoom back out" that picks up when
@@ -129,8 +108,14 @@ export function BootIntro() {
   // this finishes, so the two beats read in the right order: screen off,
   // then camera pulls back.
   const [screenOffFlashActive, setScreenOffFlashActive] = useState(false);
-  const { unlock, playLetterTwinkle, playSparkle, playMoveBlip, muted, toggleMute } =
-    useBootChime();
+  const {
+    unlock,
+    playMoveBlip,
+    startBootTrack,
+    getBootElapsedMs,
+    muted,
+    toggleMute,
+  } = useBootChime({ preloadBootTrack: true });
   const powerOnRef = useRef<PowerOnSceneHandle>(null);
   const peekRef = useRef<HTMLImageElement>(null);
   const [flightStart, setFlightStart] = useState<{
@@ -182,7 +167,7 @@ export function BootIntro() {
     const flashTimeout = window.setTimeout(() => {
       setScreenOffFlashActive(false);
       powerOnRef.current?.powerOff();
-    }, SCREEN_OFF_FLASH_MS);
+    }, BOOT_TIMELINE.screenOffFlashMs);
     // Mirror the known zoom duration in state as well as listening for the
     // renderer callback. This prevents a throttled/missed animation frame from
     // leaving the root screen gated behind `reverseBoot`.
@@ -190,10 +175,15 @@ export function BootIntro() {
       setScreenOffFlashActive(false);
       setReverseBoot(false);
       window.sessionStorage.removeItem(REVERSE_BOOT_STORAGE_KEY);
-    }, SCREEN_OFF_FLASH_MS + REVERSE_ZOOM_MS);
-    const revealTimeout = window.setTimeout(() => {
-      setCartridgeUiReady(true);
-    }, SCREEN_OFF_FLASH_MS + REVERSE_ZOOM_MS + 420);
+    }, BOOT_TIMELINE.screenOffFlashMs + BOOT_TIMELINE.consoleZoomMs);
+    const revealTimeout = window.setTimeout(
+      () => {
+        setCartridgeUiReady(true);
+      },
+      BOOT_TIMELINE.screenOffFlashMs +
+        BOOT_TIMELINE.consoleZoomMs +
+        BOOT_TIMELINE.reverseUiRevealDelayMs
+    );
     return () => {
       window.clearTimeout(flashTimeout);
       window.clearTimeout(settleTimeout);
@@ -208,7 +198,10 @@ export function BootIntro() {
     // screen color back to the paper backdrop once `reverseBoot` flips.
     // Wait for that fade to fully settle too before revealing the
     // cartridge list, so it can never appear to pop in mid-transition.
-    window.setTimeout(() => setCartridgeUiReady(true), 420);
+    window.setTimeout(
+      () => setCartridgeUiReady(true),
+      BOOT_TIMELINE.reverseUiRevealDelayMs
+    );
   }, []);
 
   // Lock the page underneath from scrolling while this overlay is mounted —
@@ -333,7 +326,8 @@ export function BootIntro() {
       hidden: {},
       visible: {
         transition: {
-          staggerChildren: SWEEP_DURATION_MS / 1000 / 2 / roleChars.length,
+          staggerChildren:
+            BOOT_TIMELINE.sweepDurationMs / 1000 / 2 / roleChars.length,
         },
       },
     }),
@@ -369,12 +363,17 @@ export function BootIntro() {
 
   const loadCartridge = useCallback(
     (index: number) => {
-      if (activating !== null) return;
+      if (activationRef.current) return;
 
       if (reducedMotion) {
+        // Skip the track as well as the animation: playing the DING without
+        // its paired reveal would create the exact sensory mismatch this
+        // preference is meant to avoid.
+        activationRef.current = true;
         router.push(CARTRIDGES[index].href);
         return;
       }
+      activationRef.current = true;
 
       // Snapshot where the peeking cartridge currently sits on screen so
       // the "plug it into the console" flight can animate from its real
@@ -393,19 +392,20 @@ export function BootIntro() {
 
       setSelected(index);
       setActivating(index);
-      // Audio unlock happens synchronously in this gesture handler (not
-      // after the plug-in flight's timeout) to stay within the browser's
-      // user-activation window for autoplay policies.
-      unlock();
+      // Decode is preloaded on mount, then playback is scheduled from this
+      // gesture against the AudioContext clock. The first audible sample is
+      // aligned with the first visible letter after cartridge flight, zoom,
+      // and CRT flash.
+      void startBootTrack(getAudioStartDelayMs(Boolean(rect)));
 
       window.setTimeout(
         () => {
           powerOnRef.current?.powerOn();
         },
-        rect ? PLUG_IN_MS : 0
+        rect ? BOOT_TIMELINE.cartridgeFlightMs : 0
       );
     },
-    [activating, reducedMotion, router, unlock]
+    [reducedMotion, router, startBootTrack]
   );
 
   useEffect(() => {
@@ -449,7 +449,7 @@ export function BootIntro() {
       bootFlickTimeoutRef.current = window.setTimeout(() => {
         setScreenOnFlashActive(false);
         setBootFlickLit(true);
-      }, SCREEN_ON_FLASH_MS);
+      }, BOOT_TIMELINE.screenOnFlashMs);
       return "booting";
     });
   }, []);
@@ -463,21 +463,13 @@ export function BootIntro() {
     []
   );
 
-  const handleLetterStart = useCallback(
-    (index: number, total: number) => {
-      playLetterTwinkle(index, total);
-    },
-    [playLetterTwinkle]
-  );
-
   const handleSweepStart = useCallback(() => {
-    playSparkle();
     setShowSubtitle(true);
-  }, [playSparkle]);
+  }, []);
 
-  const handleSweepComplete = useCallback(() => {
+  const handleTimelineComplete = useCallback(() => {
     if (!cartridge) return;
-    window.setTimeout(() => router.push(cartridge.href), POST_SWEEP_HOLD_MS);
+    router.push(cartridge.href);
   }, [cartridge, router]);
 
   // Sizing/positioning for the fanned row of cartridges shown at the top of
@@ -561,7 +553,7 @@ export function BootIntro() {
             pointerEvents="none"
             transformOrigin="center"
             sx={{
-              animation: `boot-screen-off-flash ${SCREEN_OFF_FLASH_MS}ms ease-in forwards`,
+              animation: `boot-screen-off-flash ${BOOT_TIMELINE.screenOffFlashMs}ms ease-in forwards`,
             }}
           />
         </>
@@ -591,7 +583,7 @@ export function BootIntro() {
             pointerEvents="none"
             transformOrigin="center"
             sx={{
-              animation: `boot-screen-on-flash ${SCREEN_ON_FLASH_MS}ms ease-out forwards`,
+              animation: `boot-screen-on-flash ${BOOT_TIMELINE.screenOnFlashMs}ms ease-out forwards`,
             }}
           />
         </>
@@ -1112,7 +1104,7 @@ export function BootIntro() {
                   rotate: 0,
                   opacity: [1, 1, 0],
                   transition: {
-                    duration: PLUG_IN_MS / 1000,
+                    duration: BOOT_TIMELINE.cartridgeFlightMs / 1000,
                     ease: "easeIn",
                     opacity: { times: [0, 0.75, 1] },
                   },
@@ -1138,13 +1130,9 @@ export function BootIntro() {
             {!screenOnFlashActive && (
               <BootLogoCanvas
                 label={NAME}
-                staggerMs={STAGGER_MS}
-                letterDurationMs={LETTER_DURATION_MS}
-                sweepGapMs={SWEEP_GAP_MS}
-                sweepDurationMs={SWEEP_DURATION_MS}
-                onLetterStart={handleLetterStart}
+                getTimelineElapsedMs={getBootElapsedMs}
                 onSweepStart={handleSweepStart}
-                onSweepComplete={handleSweepComplete}
+                onTimelineComplete={handleTimelineComplete}
               />
             )}
             {showSubtitle && (

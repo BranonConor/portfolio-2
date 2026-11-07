@@ -7,6 +7,7 @@ import {
   useRef,
 } from "react";
 import { Box as ChakraBox } from "@chakra-ui/react";
+import { BOOT_TIMELINE } from "./bootTimeline";
 
 export interface PowerOnSceneHandle {
   /** Kicks off the zoom-into-screen transition (call once a cartridge is selected). */
@@ -43,8 +44,6 @@ const SCREEN_ORIGIN_Y = "28%";
 // silhouette.
 const BASE_ROT_X = 3;
 const BASE_ROT_Y = -4;
-const TRANSITION_MS = 580;
-
 /**
  * A dormant console shell, tilted in CSS 3D space and gently reactive to
  * mouse movement for parallax. The shell art itself is a pre-built,
@@ -127,7 +126,10 @@ export const PowerOnScene = forwardRef<PowerOnSceneHandle, PowerOnSceneProps>(
         let translateY = idleBob;
 
         if (poweringOn) {
-          const t = Math.min((now - powerStart) / TRANSITION_MS, 1);
+          const t = Math.min(
+            (now - powerStart) / BOOT_TIMELINE.consoleZoomMs,
+            1
+          );
           const eased = t * t * (3 - 2 * t);
           rotX = BASE_ROT_X * (1 - eased);
           rotY = BASE_ROT_Y * (1 - eased);
@@ -140,7 +142,10 @@ export const PowerOnScene = forwardRef<PowerOnSceneHandle, PowerOnSceneProps>(
             return;
           }
         } else if (poweringOut) {
-          const t = Math.min((now - powerOutStart) / TRANSITION_MS, 1);
+          const t = Math.min(
+            (now - powerOutStart) / BOOT_TIMELINE.consoleZoomMs,
+            1
+          );
           const eased = t * t * (3 - 2 * t);
           rotX = BASE_ROT_X * eased;
           rotY = BASE_ROT_Y * eased;
