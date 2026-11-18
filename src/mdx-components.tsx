@@ -105,6 +105,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         className={proseFont.className}
         fontSize="15px"
         mt={4}
+        ml="18px"
         color="brand.textMuted"
         lineHeight="1.6"
         px={[4, 5, 6]}

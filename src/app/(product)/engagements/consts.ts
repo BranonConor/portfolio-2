@@ -1,5 +1,11 @@
 export const publicSpeaking = [
   {
+    title: "Superhuman Strength, Human Touch @ AWS Design Summit",
+    category: "Public Speaking",
+    link: "/engagements/posts/aws-design-summit-human-touch",
+    date: "Nov 2026",
+  },
+  {
     title: "My Journey to Design Engineering @ GitHub",
     category: "Public Speaking",
     link: "/engagements/posts/github-design-townhall-career-journey",
